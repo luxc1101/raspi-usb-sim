@@ -1,0 +1,15 @@
+{
+    "SSHConf":
+    {
+        "_comment": "how to find IPAddress please check https://confluence.joynext.com/display/ORG8/The+USB+Simulator+Tool#TheUSBSimulatorTool-PreparingtheSSHConnection:IP,Port,SSIDandPassword",
+        "User": "pi",
+        "IPAddress": "192.168.5.31",
+        "Key": "raspberry"
+    },
+    "WiFi":
+    {
+        "_comment": "ssid and password https://confluence.joynext.com/pages/viewpage.action?pageId=320602385#AMB-StreamWLAN",
+        "ssid": "Galaxy-S21-5G2ea3",
+        "psk": "eiln6435"
+    }
+}

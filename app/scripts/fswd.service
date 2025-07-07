@@ -1,0 +1,11 @@
+[Unit]
+Description=USBwatchdog
+After=multi-user.target
+ 
+[Service]
+Type=idle
+ExecStart=
+User=
+ 
+[Install]
+WantedBy=multi-user.target

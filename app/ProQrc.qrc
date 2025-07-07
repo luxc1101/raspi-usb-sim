@@ -1,0 +1,20 @@
+<RCC>
+  <qresource>
+    <file>icon/AnpassenIcon.png</file>
+    <file>icon/disconnect.png</file>
+    <file>icon/AppIcon.png</file>
+    <file>icon/exit.png</file>
+    <file>icon/clear.png</file>
+    <file>icon/connect.png</file>
+    <file>icon/disconnect.png</file>
+    <file>icon/help.png</file>
+    <file>icon/delete.png</file>
+    <file>icon/remote.png</file>
+	  <file>icon/download.png</file>
+    <file>icon/eye.png</file>
+    <file>icon/ssh-raspi.png</file>
+    <file>icon/ssh-disconnect-raspi.png</file>
+    <file>icon/install.png</file>
+    <file>icon/explorer.png</file>
+  </qresource>
+</RCC>

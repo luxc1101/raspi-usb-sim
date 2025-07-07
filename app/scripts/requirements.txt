@@ -1,0 +1,6 @@
+ntfs-3g
+hfsprogs
+samba
+inotify-tools
+btrfs-progs
+tree
