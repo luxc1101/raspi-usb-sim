@@ -4,7 +4,6 @@ import sys
 import markdown
 
 changelog_path = "CHANGELOG.md"
-conflunce_link = 'https://confluence.joynext.com/display/ORG8/The+USB+Simulator+Tool'
 
 def find_version_in_changelog(changelog_path, version):
     # Read the content of the markdown file
@@ -36,7 +35,7 @@ def find_version_in_changelog(changelog_path, version):
 def convert_markdown_to_html(markdown_text):
     html = markdown.markdown(markdown_text)
 
-    html_content = conflunce_link + '\n' +  html.replace('\n', '').replace('\r', '')
+    html_content = '\n' +  html.replace('\n', '').replace('\r', '')
 
     return html_content
 

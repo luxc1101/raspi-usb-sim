@@ -225,7 +225,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.LE_LogPath.setText(self.setup_dict["SSHConf"]["Log"])
         self.groupBox_WiFi.setTitle("WiFi")
         self.LB_ssid.setText("SSID")
-        self.LB_psk.setText("<a href=\"https://confluence.joynext.com/pages/viewpage.action?pageId=320602385\">Password</a>")
+        self.LB_psk.setText("Password")
         self.LB_psk.setOpenExternalLinks(True)
         self.LE_psk.setPlaceholderText("WiFi network password")
         self.LE_psk.setText(self.setup_dict["WiFi"]["psk"])

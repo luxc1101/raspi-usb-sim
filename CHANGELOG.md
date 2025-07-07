@@ -16,7 +16,7 @@
 - `fix`: putty security alert hinders putty setup
 - `fix`: wifi autoconnection sometimes failed
 - `fix`: UI scaling issue with windows different scaling from 100% to 200%
-- `docs`: Wifi ssid and password will not be stored in repository, please check [Logindaten](https://confluence.joynext.com/pages/viewpage.action?pageId=320602385) instead
+- `docs`: Wifi ssid and password will not be stored in repository
 - `feat`: putty session window will be minimized 
 
 #### version 1.0.4  
