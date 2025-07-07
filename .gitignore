@@ -1,0 +1,6 @@
+.venv
+./app/__pycache__
+./app/*.ui
+./app/*.spec
+poetry.lock
+.poetry
