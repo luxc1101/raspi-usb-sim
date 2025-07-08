@@ -32,7 +32,8 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install poetry
+          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+          echo "$HOME\.local\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
           poetry self add poetry-plugin-shell
 
       - name: Install Dependencies
