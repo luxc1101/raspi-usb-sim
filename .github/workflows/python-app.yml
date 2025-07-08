@@ -1,39 +1,129 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Python USBTool CI
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+      tags:
+        - 'v*.*.*'   # Trigger on version tags like v1.0.0
 
-permissions:
-  contents: read
+env:
+  APP_DIR: 'app'
+  ARTIFACTS_DIR: 'dist'
+  ARTIFACTS_NAME: 'USBSimulator'
+  USBTOOL_INSTALL: 'usbtool_install'
+  ZIP_NAME: 'usb-tool_${{ github.ref_name }}.zip'
+  WIFI_CONFIG: '${{ github.workspace }}/wificonfig'
+  PACKAGE_REGISTRY_URL: 'https://github.com/${{ github.repository }}/packages' # Adjust as needed
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  install-dependencies:
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry self add poetry-plugin-shell
+
+      - name: Install Dependencies
+        run: |
+          if (Test-Path "poetry.lock") { Remove-Item "poetry.lock" }
+          poetry install
+        shell: pwsh
+
+  build-usbtool:
+    runs-on: windows-latest
+    needs: install-dependencies
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build with PyInstaller
+        run: |
+          cd $env:APP_DIR
+          poetry run pyrcc5 ProQrc.qrc -o Icons.py
+          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=AppIcon.ico --log-level=DEBUG .\Main.py
+        shell: pwsh
+
+  archive-job:
+    runs-on: windows-latest
+    needs: build-usbtool
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Archive files
+        run: |
+          cd $env:APP_DIR
+          New-Item -Path "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -ItemType Directory -Force
+          Copy-Item "Config.json" -Destination "$env:ARTIFACTS_DIR"
+          Copy-Item "device_proj.json" -Destination "$env:ARTIFACTS_DIR"
+          Copy-Item "$env:WIFI_CONFIG" -Destination "$env:ARTIFACTS_DIR" -Recurse -Force
+          Copy-Item "src" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
+          Copy-Item "device_proj.json" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL"
+          Copy-Item "scripts\*" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
+        shell: pwsh
+
+  deploy-prod:
+    runs-on: windows-latest
+    needs: archive-job
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to local folder and zip
+        run: |
+          Compress-Archive -Path $env:ARTIFACTS_DIR -DestinationPath $env:ZIP_NAME
+        shell: pwsh
+  
+  upload-job:
+    runs-on: windows-latest
+    needs: deploy-prod
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload ZIP to GitHub Releases (or alternative)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: ${{ env.APP_DIR }}/${{ env.ZIP_NAME }}
+
+  release-job:
+    runs-on: windows-latest
+    needs: upload-job
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Release Notes
+        run: |
+          cd $env:APP_DIR
+          $desc = poetry run python .\release_description_helper.py "${{ github.ref_name }}"
+          echo "RELEASE_DESCRIPTION=$desc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "usbtool-${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          body: ${{ env.RELEASE_DESCRIPTION }}
+          files: ${{ env.APP_DIR }}/${{ env.ZIP_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
