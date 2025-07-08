@@ -28,7 +28,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.10.x'
 
       - name: Install Poetry
         run: |
@@ -51,7 +51,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.10.x'
+
+      - name: Show Poetry environment info
+        run: poetry env info
 
       - name: Build with PyInstaller
         run: |
@@ -76,7 +79,7 @@ jobs:
           Copy-Item "$env:WIFI_CONFIG" -Destination "$env:ARTIFACTS_DIR" -Recurse -Force
           Copy-Item "src" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
           Copy-Item "device_proj.json" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL"
-          Copy-Item "scripts\*" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
+          Copy-Item "scripts/*" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
         shell: pwsh
 
   deploy-prod:
@@ -98,7 +101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Upload ZIP to GitHub Releases (or alternative)
+      - name: Upload ZIP to GitHub Releases
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ZIP_NAME }}
