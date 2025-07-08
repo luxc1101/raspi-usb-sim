@@ -39,11 +39,6 @@ packages = [
 	{ include = "app/Main.py"}
 ]
 
-[tool.poetry.requires-plugins] 
-poetry-plugin-shell = ">=1.0.1" 
-poetry-plugin-dotenv = ">=2.9.1" 
-poetry-plugin-truststore = ">=1.0.1"
-
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
