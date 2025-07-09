@@ -8,6 +8,9 @@ on:
       tags:
         - 'v*.*.*'   # Trigger on version tags like v1.0.0
 
+permissions:
+  contents: write
+
 env:
   APP_DIR: 'app'
   ARTIFACTS_DIR: 'dist'
