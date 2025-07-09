@@ -47,7 +47,7 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 | Hardware                   | Software                                                       |
 | -------------              | -------------                                                  |
 | RaspberryPi zero W         | [Raspberry Pi Imanger (download)](https://www.raspberrypi.com/software/)  |
-| USB Mico-B Cable (OTG)     | [The latest released USBTool](https://git1.jnd.joynext.com/test-entertainment/raspi-usb-sim/-/releases)                                                               |
+| USB Mico-B Cable (OTG)     | [The latest released USBTool](https://github.com/luxc1101/raspi-usb-sim/releases) |
 | USB Mico-B Cable (Power)   |                                                                |
 | micoSD Card (e.g. 128 GB)  |                                                                |
 | micoSD Card Reader         |                                                                |
@@ -73,8 +73,8 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 - Choose SD card
 - Setting option
   - Hostname: raspberrypi<?>.local # e.g. raspberrypi0.local
-  - Username: pi
-  - pw: raspberry
+  - Username: rpi
+  - pw: pass
   - WiFi:
     - SSID: <WiFi network name (ssid)>
     - PW: <password of ssid>
@@ -85,7 +85,7 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 
 ### Download USBTool Software
 
-find the latest released version from [Releases · Raspi-USB-Simulator · Github](https://<tbd>/rpi-usb-sim/-/releases), click packages usbtool-vx.x.x to download.
+find the latest released version from [Releases · Raspi-USB-Simulator · Github](https://github.com/luxc1101/raspi-usb-sim/releases), click packages usbtool-vx.x.x to download.
 
 unzip the downloaded packages, the downloaded release folder structure:
 <details>
