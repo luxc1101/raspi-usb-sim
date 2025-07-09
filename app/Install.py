@@ -24,6 +24,7 @@ class Ui_RaspiInstallation(QMainWindow):
     def setup_ui(self, RaspiInstallation:QtWidgets.QDialog, ssh_client=None):
         self.ssh_client = ssh_client
         self.remote_path = "/home/pi/"  # Change this to desired remote path
+        self.install_script = "install.sh"  # Name of the installation script   
         RaspiInstallation.setWindowTitle("Install USB Gadget on Rpi")
         RaspiInstallation.resize(400, 200)
         RaspiInstallation.setWindowIcon(QtGui.QIcon(":/icon/install.png"))
@@ -180,7 +181,7 @@ class InstallWorker(QThread):
             
             self.progress_signal.emit("installing...", 0)
             self.detail_signal.emit("\033[1;96mStarting install...\033[0m")
-            cmd = f'cd {remote_target} && sh install.sh .'
+            cmd = f'cd {remote_target} && dos2unix install.sh && sh install.sh .'
             stdin, stdout, stderr = self.ssh_client.exec_command(cmd)
             for line in iter(lambda: stdout.readline(2048), ""):
                 if not line:
