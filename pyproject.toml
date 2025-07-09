@@ -3,7 +3,7 @@ name = "raspi-usb-sim"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Xiaochuan Lu",email = "xiaochuan.lu@joynext.com"}
+    {name = "Xiaochuan Lu",email = "xiaochuan_lu@yahoo.com"}
 ]
 readme = "README.md"
 [tool.poetry.dependencies]

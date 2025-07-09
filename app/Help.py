@@ -47,7 +47,7 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
         Form.setWindowTitle("About USB Tool")
         self.LB_Contact.setText("Contact: ")
-        self.LB_Name.setText("<a href='mailto:xiaochuan.lu@joynext.com'>Xiaochuan Lu</a> (SWTE)")
+        self.LB_Name.setText("<a href='mailto:xiaochuan_lu@yahoo.com'>Xiaochuan Lu</a>")
         self.textBrowser.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
@@ -59,12 +59,12 @@ class Ui_Form(object):
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\nThe USB Emulator is a tool developed by Software Test Entertainment. It is designed to simplify the testing of supported USB devices and enhance the team's media-device testing capabilities</p>\n"
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 
-        #### Precondition #<a href=\"https://git1.jnd.joynext.com/test-entertainment/raspi-usb-sim/-/blob/ssh/README.md\">Raspi USB Tool</a>
+        #### Precondition #<a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a>
         "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Precondition:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Prepare hardware (RaspberryPi zero W, USB Mico-B Cable (OTG), USB Mico-B Cable (Power), micoSD Card, etc.) for more details please read <a href=\"https://git1.jnd.joynext.com/test-entertainment/raspi-usb-sim/\">Raspi USB Tool</a> </p>\n"
+        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Prepare hardware (RaspberryPi zero W, USB Mico-B Cable (OTG), USB Mico-B Cable (Power), micoSD Card, etc.) for more details please read <a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a> </p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Plug in a fully prepared microSD card with the desired OS, necessary scripts, and installed packages</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">3.</span> Power Paspberry Pi Zero W by connecting its PWR port to a PC USB port or an external power supply (of output 5V). Hint: A solid green light indicates a proper connection</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">4.</span> Connect the Rasberry Pi device and the DUT through a USB Micro-B to USB A cable</p>\n"
+        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">4.</span> Connect the Rpi device and the DUT through a USB Micro-B to USB A cable</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">5.</span> Plug in a USB WiFi receiver/adapter to the test PC (if your computer cannot receive WiFi without an adapter)</p>\n"
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
         #### Configuration
@@ -85,16 +85,16 @@ class Ui_Form(object):
         #### Hint:
         "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Hints:</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Inputting value or sending a command to the SSHClent through <span style=\" font-weight:600;\">Command LineEdit</span> is also possible</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Once the <span style=\" font-weight:600;\">POWER OFF RASPI</span> in in command line drop-down has been sent, the raspberry device will be powered off and can only be powered on again by re-plugging USB Micro-B cable</p>\n"
+        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Once the <span style=\" font-weight:600;\">POWER OFF RASPI</span> in in command line drop-down has been sent, the Rpi device will be powered off and can only be powered on again by re-plugging USB Micro-B cable</p>\n"
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
         "</body></html>")
         self.textBrowser.setOpenExternalLinks(True) # Specifies whether QTextBrowser should automatically open links to external sources
         
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setup_ui(Form)
-    Form.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#     app = QtWidgets.QApplication(sys.argv)
+#     Form = QtWidgets.QWidget()
+#     ui = Ui_Form()
+#     ui.setup_ui(Form)
+#     Form.show()
+#     sys.exit(app.exec_())

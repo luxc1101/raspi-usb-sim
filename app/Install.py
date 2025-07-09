@@ -201,10 +201,10 @@ class InstallWorker(QThread):
         self._running = False
         self.terminate()
 
-if __name__ == "__main__":
-    dialogapp = QtWidgets.QApplication(sys.argv)
-    RaspiInstallation = QtWidgets.QDialog()
-    installationdialogui = Ui_RaspiInstallation()
-    installationdialogui.setup_ui(RaspiInstallation)
-    RaspiInstallation.show()
-    sys.exit(dialogapp.exec_())
+# if __name__ == "__main__":
+#     dialogapp = QtWidgets.QApplication(sys.argv)
+#     RaspiInstallation = QtWidgets.QDialog()
+#     installationdialogui = Ui_RaspiInstallation()
+#     installationdialogui.setup_ui(RaspiInstallation)
+#     RaspiInstallation.show()
+#     sys.exit(dialogapp.exec_())

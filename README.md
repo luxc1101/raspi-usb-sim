@@ -390,7 +390,7 @@ The USBTool can also be implemented in Robot Testframework for testautomation. T
 
 ### Keywords
 
-  resource: [example.robot](https://git1.jnd.joynext.com/test-entertainment/raspi-usb-sim/-/blob/master/testcases/resources/example.robot)
+  resource: [example.robot](https://github.com/luxc1101/raspi-usb-sim/blob/master/testcases/resource/example.robot)
   
   ```robotframework
   Connect SSH To Raspi USB SIM
