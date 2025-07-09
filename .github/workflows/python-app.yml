@@ -15,6 +15,7 @@ env:
   USBTOOL_INSTALL: 'usbtool_install'
   ZIP_NAME: 'usb-tool_${{ github.ref_name }}.zip'
   WIFI_CONFIG: '${{ github.workspace }}/wificonfig'
+  RELEASE_HELPER  : 'release_description_helper.py'
   PACKAGE_REGISTRY_URL: 'https://github.com/${{ github.repository }}/packages' # Adjust as needed
 
 jobs:
@@ -73,7 +74,7 @@ jobs:
 
       - name: Generate Release Notes
         run: |
-          $desc = poetry run python "$env:ROOT_DIR\release_description_helper.py" "${{ github.ref_name }}"
+          $desc = poetry run python "$env:RELEASE_HELPER" "${{ github.ref_name }}"
           echo "RELEASE_DESCRIPTION=$desc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
