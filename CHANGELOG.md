@@ -100,3 +100,8 @@
 - `feat`: add folder `pimount` contains all customized python libs for `mount_app` and `mount_robot`
 - `fix`: when click `CDM Send` button, GUI drop-down CMDline will remove default command
 - `docs`: update `README.md`
+
+#### version 1.1.3
+- `refactor`: replace folder `pimount` to `src`
+- `feat`: add button `Install USB Gadget`
+- `docs`: update `README.md`
