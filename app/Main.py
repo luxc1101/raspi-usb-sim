@@ -652,7 +652,7 @@ class Ui_MainWindow(QMainWindow):
                 if cmd == "sudo reboot" or cmd == "sudo halt":
                     self.thread_cmdexecution_update(cmd)
                     if cmd == "sudo halt":
-                        self.thread_trace_update(msg="please replug in power cable to repower raspberry pi device", color="orange")
+                        self.thread_trace_update(msg="To repower Rpi device, replug the cable please.", color="orange")
                     time.sleep(0.5)
                     self.terminate_threads(keepThreadID=[2])
 

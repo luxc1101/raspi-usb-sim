@@ -140,7 +140,7 @@ Therefore, you must first secure a USB WLAN-Stick, plug it in to your test PC an
 > **NOTE**:  
 >Once you have already configured the WiFi SSID and PSK in step [Operation System Installation](#operation-system-installation) and the WiFi is not changed (SSID, PSK) and still available, you can skip this step.
 
-Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into boots partition of SD card.
+Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
 
 <details>
   <summary>wpa_supplicant.conf</summary>
@@ -177,7 +177,7 @@ WiFi sources may be different, such as routers, hotspots, etc. Raspberry IP addr
 ##### Router
 >
 > **Hint**:  
-> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should be firstly written into boots partition of micoSD card.
+> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should be firstly written into bootfs partition of micoSD card.
 <details>
 
 - solution 1 (recommend)
@@ -215,7 +215,7 @@ WiFi sources may be different, such as routers, hotspots, etc. Raspberry IP addr
 ##### Mobile Hotspot
 >
 > **Hint**:  
-> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should firstly be written into boots partition of micoSD card.
+> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should firstly be written into bootfs partition of micoSD card.
 <details>
 
 - activate Hotspot with Band **2.4 GHz** through mobile hotspot device (e.g. Samsung Galaxy S21)
@@ -341,7 +341,7 @@ State Machine:
 - [x] WiFi with known SSID and Passport
 - [x] microSD card within correct OS, needed scripts and installed packages
 - [x] Rpi, USB micro-B to USB A Cabel x2, USB WiFi adapter (if needed)
-- [x] `wpa_supplicant.conf` and `ssh` are written into boots partition in microSD card, ONLY if WiFi has to be changed. (e.g. ssid="AMB-StreamWLAN")
+- [x] `wpa_supplicant.conf` and `ssh` are written into bootfs partition in microSD card, ONLY if WiFi has to be changed. (e.g. ssid="AMB-StreamWLAN")
 - [x] power Rpi up and connect Rpi to DUT, USB WiFi adapter is connected to PC (if needed)
 - [x] WiFi & SSH connection is establish
 - [x] `Config.json`, `device_proj.json` and `USBSimulator.exe` should be in **SAME** folder or root path
