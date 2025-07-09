@@ -128,7 +128,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.LB_User)
         
         self.LE_User = QtWidgets.QLineEdit(self.groupBox_SSH)
-        UserRegex = QtCore.QRegExp(r"[r][p][i]")
+        UserRegex = QtCore.QRegExp(r"[p][i]")
         self.User_validator = QtGui.QRegExpValidator(UserRegex, self.LE_Port)
         self.LE_User.setValidator(self.User_validator)
 

@@ -648,7 +648,7 @@ class Ui_MainWindow(QMainWindow):
             cmd = f"{self.translate_hotkey_to_command(hotkey=cmd)}"
             # Execute command
             if 'call' not in cmd: # normal command
-                self.thread_trace_update(f'raspberry:~ $ {cmd}', '#c69deb')
+                self.thread_trace_update(f'rpi:~ $ {cmd}', '#c69deb')
                 if cmd == "sudo reboot" or cmd == "sudo halt":
                     self.thread_cmdexecution_update(cmd)
                     if cmd == "sudo halt":

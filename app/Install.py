@@ -24,7 +24,7 @@ class Ui_RaspiInstallation(QMainWindow):
     def setup_ui(self, RaspiInstallation:QtWidgets.QDialog, ssh_client=None):
         self.ssh_client = ssh_client
         self.remote_path = "/home/pi/"  # Change this to desired remote path
-        RaspiInstallation.setWindowTitle("Install USB Gadget on Raspberry Pi")
+        RaspiInstallation.setWindowTitle("Install USB Gadget on Rpi")
         RaspiInstallation.resize(400, 200)
         RaspiInstallation.setWindowIcon(QtGui.QIcon(":/icon/install.png"))
         RaspiInstallation.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)

@@ -72,8 +72,8 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 - Select OS: `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**)
 - Choose SD card
 - Setting option
-  - Hostname: raspberrypi<?>.local # e.g. raspberrypi0.local
-  - Username: rpi
+  - Hostname: rpi<?>.local # e.g. rpi0.local
+  - Username: pi
   - pw: pass
   - WiFi:
     - SSID: <WiFi network name (ssid)>

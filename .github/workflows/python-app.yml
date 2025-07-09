@@ -6,7 +6,7 @@ name: Python USBTool CI
 on:
   push:
       tags:
-        - 'v*.*.*'   # Trigger on version tags like v1.0.0
+        - 'v*.*.*'
 
 permissions:
   contents: write
