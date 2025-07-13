@@ -155,8 +155,7 @@
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
-				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
-				{"dev": "CD/DVD USB drive", "img": "cd.img", "mnt": "/mnt/usb_cd"}
+				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
 			],
             "1": [],
             "type": {

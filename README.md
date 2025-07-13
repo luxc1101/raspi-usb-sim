@@ -403,3 +403,7 @@ The USBTool can also be implemented in Robot Testframework for testautomation. T
   ```
 
 ## Troubleshooting
+- [BUG: Wi-Fi config via Raspberry Pi Imager](https://github.com/raspberrypi/rpi-imager/issues/1067) 
+  - Solutions
+    - Using Old Rpi Imager [Version](https://github.com/raspberrypi/rpi-imager/releases) e.g. v1.8.4
+    - [Editing firstrun.sh in bootfs](https://github.com/raspberrypi/rpi-imager/issues/1067#issuecomment-2974335475)

@@ -102,6 +102,8 @@
 - `docs`: update `README.md`
 
 #### version 1.1.3
-- `refactor`: replace folder `pimount` to `src`
+- `refactor`: change folder name `pimount` to `src`
 - `feat`: add button `Install USB Gadget`
+- `feat`: remove `CD` from MSC Tab
+- `feat`: format `compliance` and `free` img as exfat filesystem
 - `docs`: update `README.md`

@@ -113,13 +113,13 @@ class FSCreator():
 
         if self._create_disk_image():
             if self.mount_target.img_name==self.fs_img.MIBCOM.value:
-                self._create_ntfs('SIMMIBNTFS')
+                self._create_exfat('SIMMIBCOM')
 
             elif self.mount_target.img_name==self.fs_img.GEICOM.value:
-                self._create_ntfs('SIMGEINTFS')
+                self._create_exfat('SIMGEICOM')
 
             elif self.mount_target.img_name==self.fs_img.USERCOM.value:
-                self._create_ntfs('SIMUSERNTFS')
+                self._create_exfat('SIMUSERCOM')
 
             elif self.mount_target.img_name==self.fs_img.EXT2.value:
                 self._create_ext('ext2', 'SIMEXT2')
@@ -149,7 +149,7 @@ class FSCreator():
                 self._create_hfsplus('HFSPLUS')
 
             elif self.mount_target.img_name==self.fs_img.FREE.value:
-                self._create_ntfs('FREE')
+                self._create_exfat('FREE')
 
             elif self.mount_target.img_name==self.fs_img.PARTITION.value:
                 self._create_partitions()

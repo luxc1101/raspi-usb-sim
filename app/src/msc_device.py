@@ -34,7 +34,13 @@ class MSC(ADevice):
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.EXFAT.value:
             return self._mount_fat()
-        elif self.mount_target.img_name == FilesystemImage.CD.value:
+        elif self.mount_target.img_name == FilesystemImage.MIBCOM.value:
+            return self._mount_fat()
+        elif self.mount_target.img_name == FilesystemImage.USERCOM.value:
+            return self._mount_fat()
+        elif self.mount_target.img_name == FilesystemImage.GEICOM.value:
+            return self._mount_fat()
+        elif self.mount_target.img_name == FilesystemImage.FREE.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.HFSPLUS.value:
             return self._mount_hfsplus()
@@ -154,6 +160,9 @@ class MSC(ADevice):
         os.system('sudo mount -o rw,users,sync,nofail {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 
     def _mount_fat(self):
+        '''
+        fat16, fat32, exfat, mibcom, usercom, geicom, free
+        '''
         os.system('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 
     def _mount_hfsplus(self):
