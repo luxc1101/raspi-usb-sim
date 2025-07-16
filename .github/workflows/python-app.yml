@@ -18,7 +18,7 @@ env:
   USBTOOL_INSTALL: 'usbtool_install'
   ZIP_NAME: 'usb-tool_${{ github.ref_name }}.zip'
   WIFI_CONFIG: '${{ github.workspace }}/wificonfig'
-  RELEASE_HELPER  : 'release_description_helper.py'
+  RELEASE_HELPER: 'release_description_helper.py'
   PACKAGE_REGISTRY_URL: 'https://github.com/${{ github.repository }}/packages' # Adjust as needed
 
 jobs:
