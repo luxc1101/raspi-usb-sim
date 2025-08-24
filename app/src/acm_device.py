@@ -20,7 +20,7 @@ class ACM(ADevice):
             ```
     '''
     def __init__(self, acm_decsriptor: DeviceDescriptors, acm_function: str) -> None:
-        self.acm_root = ADevice.USB_CONFIGFS_HOME
+        self.acm_root = self.USB_CONFIGFS_HOME
         self.acm_function = acm_function
         ACM.DESCRIPTOR = acm_decsriptor
         super().__init__()

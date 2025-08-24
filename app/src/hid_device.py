@@ -20,7 +20,7 @@ class HID(ADevice):
             ```
     '''
     def __init__(self, hid_decsriptor: DeviceDescriptors, hid_function: str) -> None:
-        self.hid_root = ADevice.USB_CONFIGFS_HOME
+        self.hid_root = self.USB_CONFIGFS_HOME
         self.hid_function = hid_function
         HID.DESCRIPTOR = hid_decsriptor
         super().__init__()

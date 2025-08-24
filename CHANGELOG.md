@@ -107,3 +107,6 @@
 - `feat`: remove `CD` from MSC Tab
 - `feat`: format `compliance` and `free` img as exfat filesystem
 - `docs`: update `README.md`
+
+#### version 1.1.4
+- `feat`: add `VFAT` filesystem in MSC device

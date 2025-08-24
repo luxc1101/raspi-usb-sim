@@ -20,7 +20,7 @@ class RNDIS(ADevice):
             ```
     '''
     def __init__(self, rndis_decsriptor: DeviceDescriptors, rndis_function: str) -> None:
-        self.rndis_root = ADevice.USB_CONFIGFS_HOME
+        self.rndis_root = self.USB_CONFIGFS_HOME
         self.rndis_function = rndis_function
         RNDIS.DESCRIPTOR = rndis_decsriptor
         super().__init__()

@@ -22,6 +22,7 @@ class FilesystemImage(Enum):
     EXT4        = 'ext4.img'
     FAT16       = 'fat16.img'
     FAT32       = 'fat32.img'
+    VFAT        = 'vfat.img'                        
     EXFAT       = 'exfat.img'
     HFSPLUS     = 'hfsplus.img'
     PARTITION   = 'part.img'
@@ -68,6 +69,10 @@ class FSCreator():
     def _create_fat(self, fat_size:int ,volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p  {}".format(self.mount_target.mnt_path))
         self.executor.execute_cmd("sudo mkfs.fat -F {} -n {} {}".format(fat_size, volume_name, self.mount_target.img_name))
+
+    def _create_vfat(self, volume_name:str):
+        self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
+        self.executor.execute_cmd("sudo mkfs.vfat -n {} {}".format(volume_name, self.mount_target.img_name))   
 
     def _create_exfat(self, volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
@@ -138,6 +143,9 @@ class FSCreator():
 
             elif self.mount_target.img_name==self.fs_img.FAT32.value:
                 self._create_fat(32, 'SIMFAT32')
+
+            elif self.mount_target.img_name==self.fs_img.VFAT.value:
+                self._create_vfat('SIMVFAT')
 
             elif self.mount_target.img_name==self.fs_img.EXFAT.value:
                 self._create_exfat('SIMEXFAT')

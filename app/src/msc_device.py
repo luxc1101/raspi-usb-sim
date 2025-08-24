@@ -32,6 +32,8 @@ class MSC(ADevice):
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.FAT32.value:
             return self._mount_fat()
+        elif self.mount_target.img_name == FilesystemImage.VFAT.value:
+            return self._mount_fat()                                                                                                  
         elif self.mount_target.img_name == FilesystemImage.EXFAT.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.MIBCOM.value:
@@ -161,7 +163,7 @@ class MSC(ADevice):
 
     def _mount_fat(self):
         '''
-        fat16, fat32, exfat, mibcom, usercom, geicom, free
+        fat16, fat32, vfat, exfat, mibcom, usercom, geicom, free
         '''
         os.system('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 

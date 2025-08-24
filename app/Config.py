@@ -109,7 +109,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         IPV4Regex = QtCore.QRegExp(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
         self.IP_validator = QtGui.QRegExpValidator(IPV4Regex, self.LE_IP)
         self.LE_IP.setValidator(self.IP_validator)
-        font = QtGui.QFont("Courier", 10)
+        font = QtGui.QFont("Courier New", 10)
         self.LE_IP.setFont(font)
         self.LE_IP.setInputMask("000.000.000.000;_")
         self.LE_IP.installEventFilter(self)
@@ -122,6 +122,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         PortRegex = QtCore.QRegExp(r"^[0-9][0-9]$")
         self.Port_validator = QtGui.QRegExpValidator(PortRegex, self.LE_Port)
         self.LE_Port.setValidator(self.Port_validator)
+        self.LE_Port.setFont(font)
 
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.LE_Port)
         self.LB_User = QtWidgets.QLabel(self.groupBox_SSH)
@@ -131,6 +132,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         UserRegex = QtCore.QRegExp(r"[p][i]")
         self.User_validator = QtGui.QRegExpValidator(UserRegex, self.LE_Port)
         self.LE_User.setValidator(self.User_validator)
+        self.LE_User.setFont(font)
 
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.LE_User)
         self.LB_Key = QtWidgets.QLabel(self.groupBox_SSH)
@@ -140,6 +142,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         KeyRegex = QtCore.QRegExp(r"^.+") # any string that has at least one characte
         self.Key_validator = QtGui.QRegExpValidator(KeyRegex, self.LE_Key)
         self.LE_Key.setValidator(self.Key_validator)
+        self.LE_Key.setFont(font)
 
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.LE_Key)
         self.LB_Log = QtWidgets.QLabel(self.groupBox_SSH)
@@ -149,6 +152,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         LogRegex = QtCore.QRegExp(r"^.*\.log$") # for any sequence of characters (including none) before the literal ".log"
         self.Log_validator = QtGui.QRegExpValidator(LogRegex, self.LE_LogPath)
         self.LE_LogPath.setValidator(self.Log_validator)
+        self.LE_LogPath.setFont(font)
 
         self.formLayout_2.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.LE_LogPath)
         self.gridLayout.addLayout(self.formLayout_2, 0, 0, 1, 1)
@@ -163,6 +167,7 @@ class Ui_RaspiSshConnection(QMainWindow):
 
         self.CB_ssid = ComboBox(self.groupBox_WiFi)
         self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.CB_ssid)
+        self.CB_ssid.setFont(font)
 
         self.LB_psk = QtWidgets.QLabel(self.groupBox_WiFi)
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.LB_psk)
@@ -171,6 +176,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         PSKRegex = QtCore.QRegExp("^\S{8,}$") #  any character but not a whitespace at least 8 times
         self.PSK_validator = QtGui.QRegExpValidator(PSKRegex, self.LE_psk)
         self.LE_psk.setValidator(self.PSK_validator)
+        self.LE_psk.setFont(font)
 
         self.LE_psk.setEchoMode(QtWidgets.QLineEdit.Password)
 

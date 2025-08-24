@@ -21,7 +21,7 @@ from PyQt5.QtCore import QDate, QEventLoop, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFrame, QLabel, QMainWindow, QMessageBox
 from QLed import QLed
 
-version = '1.1.3'
+version = '1.1.4'
 '''
 This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens), 
 handling both UI scaling and sharpness of icons/images. 
@@ -375,7 +375,7 @@ class Ui_MainWindow(QMainWindow):
     
     def _setup_statusbar(self):
         '''
-        setup status bar
+        Set up the status bar with version, date, and SSH status.
         '''
         self.statusBar = QtWidgets.QStatusBar(self)
         self.setStatusBar(self.statusBar)
@@ -1033,18 +1033,22 @@ class CmdExecution(QThread):
 
     def run(self):
         while self._running:
-            if self.cmd != '':
+            if self.cmd:
                 try:
-                    stdin, stdout, stderr = self.ssh.exec_command(self.cmd)
-                    self._read_stdout(stdin, stdout)
-                    self._read_stderr(stderr)
+                    self._execute_command(self.cmd)
                 except Exception as e:
                     self.output_signal.emit(f'ERROR: {e}')
                 finally:
+                    self.cmd = ''  # Reset command after execution
                     self._running = False  # Stop thread after command execution
     
     def set_command(self, command):
         self.cmd = command
+
+    def _execute_command(self, command):
+        stdin, stdout, stderr = self.ssh.exec_command(command)
+        self._read_stdout(stdin, stdout)
+        self._read_stderr(stderr)
 
     def _read_stdout(self, stdin, stdout):
         try:

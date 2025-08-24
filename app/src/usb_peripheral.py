@@ -7,7 +7,7 @@ class USBPeripheral(ADevice):
 
     def __init__(self, usb_device: ADevice = None) -> None:
         self.usb_device = usb_device
-        self.usb_root = ADevice.USB_CONFIGFS_HOME
+        self.usb_root = self.USB_CONFIGFS_HOME
         os.system('sudo modprobe libcomposite')
         super().__init__()
 
