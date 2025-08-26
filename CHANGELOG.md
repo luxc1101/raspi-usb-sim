@@ -110,3 +110,6 @@
 
 #### version 1.1.4
 - `feat`: add `VFAT` filesystem in MSC device
+
+#### version 1.1.5
+- `feat`: add `Corrupted` filesystem in MSC device

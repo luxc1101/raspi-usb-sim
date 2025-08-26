@@ -28,6 +28,8 @@ class MSC(ADevice):
             watchdog_service.start_watchdog_service()
 
     def create_the_functions(self):
+        if self.mount_target.img_name == FilesystemImage.CORRUPTED.value:
+            return self._mount_corrupted()
         if self.mount_target.img_name == FilesystemImage.FAT16.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.FAT32.value:
@@ -166,6 +168,9 @@ class MSC(ADevice):
         fat16, fat32, vfat, exfat, mibcom, usercom, geicom, free
         '''
         os.system('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
+    
+    def _mount_corrupted(self):
+        os.system('sudo mount -o rw,users,sync,nofail {} {} 2>&1'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 
     def _mount_hfsplus(self):
         os.system("sudo fsck.hfsplus -f {} > error 2>&1".format(self.mount_target.img_name))

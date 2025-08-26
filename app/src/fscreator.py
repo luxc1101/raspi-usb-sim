@@ -28,6 +28,7 @@ class FilesystemImage(Enum):
     PARTITION   = 'part.img'
     BTRFS       = 'btrfs.img'
     FREE        = 'free.img'
+    CORRUPTED   = 'corrupted.img' 
 
 @dataclass
 class MountTarget:
@@ -59,6 +60,16 @@ class FSCreator():
             return True
         return False
 
+    def _create_corrupted_image(self):
+        sys.stdout.write("going to create corrupted filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
+        sys.stdout.write("Creating......" + "\n")
+        if self.executor.execute_cmd("sudo dd bs=2MB if=/dev/urandom of=$HOME/{} count=32 2>&1".format(self.mount_target.img_name)):
+            return True
+        return False
+    
+    def _create_corrupted_partitions(self):
+        self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
+    
     def _create_ntfs(self, fs_label:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
         lpd = self.executor.read_popen("sudo losetup -f --show {}".format(self.mount_target.img_name))
@@ -115,52 +126,55 @@ class FSCreator():
             sys.stdout.write("Info: " + "partitions have no remote access please add test file into each USB drive partition!")
 
     def create_filesystem(self) -> None:
-
-        if self._create_disk_image():
-            if self.mount_target.img_name==self.fs_img.MIBCOM.value:
-                self._create_exfat('SIMMIBCOM')
-
-            elif self.mount_target.img_name==self.fs_img.GEICOM.value:
-                self._create_exfat('SIMGEICOM')
-
-            elif self.mount_target.img_name==self.fs_img.USERCOM.value:
-                self._create_exfat('SIMUSERCOM')
-
-            elif self.mount_target.img_name==self.fs_img.EXT2.value:
-                self._create_ext('ext2', 'SIMEXT2')
-
-            elif self.mount_target.img_name==self.fs_img.EXT3.value:
-                self._create_ext('ext3', 'SIMEXT3')
-
-            elif self.mount_target.img_name==self.fs_img.EXT4.value:
-                self._create_ext('ext4', 'SIMEXT4')
-
-            elif self.mount_target.img_name==self.fs_img.BTRFS.value:
-                self._create_btrfs('SIMBTRFS')
-
-            elif self.mount_target.img_name==self.fs_img.FAT16.value:
-                self._create_fat(16, 'SIMFAT16')
-
-            elif self.mount_target.img_name==self.fs_img.FAT32.value:
-                self._create_fat(32, 'SIMFAT32')
-
-            elif self.mount_target.img_name==self.fs_img.VFAT.value:
-                self._create_vfat('SIMVFAT')
-
-            elif self.mount_target.img_name==self.fs_img.EXFAT.value:
-                self._create_exfat('SIMEXFAT')
-
-            elif self.mount_target.img_name==self.fs_img.NTFS.value:
-                self._create_ntfs('SIMNTFS')
-
-            elif self.mount_target.img_name==self.fs_img.HFSPLUS.value:
-                self._create_hfsplus('HFSPLUS')
-
-            elif self.mount_target.img_name==self.fs_img.FREE.value:
-                self._create_exfat('FREE')
-
-            elif self.mount_target.img_name==self.fs_img.PARTITION.value:
-                self._create_partitions()
+        if self.mount_target.img_name==self.fs_img.CORRUPTED.value:
+            self._create_corrupted_image()
+            self._create_corrupted_partitions()
 
         else:
-            sys.stderr.write("create disk image for {} failed".format(self.mount_target.img_name))
+            if self._create_disk_image():
+                if self.mount_target.img_name==self.fs_img.MIBCOM.value:
+                    self._create_exfat('SIMMIBCOM')
+
+                elif self.mount_target.img_name==self.fs_img.GEICOM.value:
+                    self._create_exfat('SIMGEICOM')
+
+                elif self.mount_target.img_name==self.fs_img.USERCOM.value:
+                    self._create_exfat('SIMUSERCOM')
+
+                elif self.mount_target.img_name==self.fs_img.EXT2.value:
+                    self._create_ext('ext2', 'SIMEXT2')
+
+                elif self.mount_target.img_name==self.fs_img.EXT3.value:
+                    self._create_ext('ext3', 'SIMEXT3')
+
+                elif self.mount_target.img_name==self.fs_img.EXT4.value:
+                    self._create_ext('ext4', 'SIMEXT4')
+
+                elif self.mount_target.img_name==self.fs_img.BTRFS.value:
+                    self._create_btrfs('SIMBTRFS')
+
+                elif self.mount_target.img_name==self.fs_img.FAT16.value:
+                    self._create_fat(16, 'SIMFAT16')
+
+                elif self.mount_target.img_name==self.fs_img.FAT32.value:
+                    self._create_fat(32, 'SIMFAT32')
+
+                elif self.mount_target.img_name==self.fs_img.VFAT.value:
+                    self._create_vfat('SIMVFAT')
+
+                elif self.mount_target.img_name==self.fs_img.EXFAT.value:
+                    self._create_exfat('SIMEXFAT')
+
+                elif self.mount_target.img_name==self.fs_img.NTFS.value:
+                    self._create_ntfs('SIMNTFS')
+
+                elif self.mount_target.img_name==self.fs_img.HFSPLUS.value:
+                    self._create_hfsplus('HFSPLUS')
+
+                elif self.mount_target.img_name==self.fs_img.FREE.value:
+                    self._create_exfat('FREE')
+
+                elif self.mount_target.img_name==self.fs_img.PARTITION.value:
+                    self._create_partitions()
+            else:
+                sys.stderr.write("create disk image for {} failed".format(self.mount_target.img_name))

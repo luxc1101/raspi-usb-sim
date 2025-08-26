@@ -77,7 +77,8 @@
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
 				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
                 {"dev": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
+				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
+                {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
 			],
             "1": [],
             "type": {
@@ -97,7 +98,8 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"}
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
         }
     },
     "GEI":{
@@ -157,7 +159,8 @@
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
-				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
+				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
+                {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
 			],
             "1": [],
             "type": {
@@ -177,7 +180,8 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"}
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
         }
     },
     "User":{
@@ -252,7 +256,8 @@
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
 				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
                 {"dev": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
+				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
+                {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
 			],
             "1": [],
             "type": {
@@ -272,7 +277,8 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"}
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
         }
     }
 
