@@ -33,7 +33,7 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)    
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)       # use highdpi icons
 
 
-logging.basicConfig(filename="usbtool.log", format='%(asctime)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w', level=logging.DEBUG, encoding='utf-8')
+logging.basicConfig(filename="session.log", format='%(asctime)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w', level=logging.DEBUG, encoding='utf-8')
 
 
 class Ui_MainWindow(QMainWindow):
