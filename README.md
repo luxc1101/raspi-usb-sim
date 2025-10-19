@@ -17,6 +17,7 @@
       - [Preparing package installation and configuration for Rpi](#Preparing-package-installation-and-configuration-for-Rpi)
     - [GUI and Elements](#gui-and-elements)
   - [Checklist](#checklist)
+  - [Project Status](#project-status)
   - [USBTool in HADES Testautomation](#usbtool-in-hades-testautomation)
     - [Prerequisites](#prerequisites)
     - [Libraries](#libraries)
@@ -313,10 +314,10 @@ State Machine:
   - **Install USB Gadget**: USB tool installation and configuration for Rpi
   <!-- - **Delete**: delete filesystem image. -->
   - **Help**: quick user guaid.
-- **Project**
-  - MIB3 (Done)
-  - GEI (Progressing)
-  - User (Progressing)
+- **Project** (See [PROJECTS.md](PROJECTS.md) for details)
+  - MIB3 (✅ Complete)
+  - GEI (🚧 In Progress)
+  - User (🚧 In Progress)
   
 #### Device Tab
 
@@ -345,6 +346,14 @@ State Machine:
 - [x] power Rpi up and connect Rpi to DUT, USB WiFi adapter is connected to PC (if needed)
 - [x] WiFi & SSH connection is establish
 - [x] `Config.json`, `device_proj.json` and `USBSimulator.exe` should be in **SAME** folder or root path
+
+## Project Status
+
+The USBTool supports three projects with different device configurations. For detailed information about each project's status and what remains to be completed, see [PROJECTS.md](PROJECTS.md):
+
+- **MIB3**: ✅ Complete - Fully configured with all device types
+- **GEI**: 🚧 In Progress - Missing ECM devices and some filesystem types
+- **User**: 🚧 In Progress - Needs documentation and configuration refinement
 
 ## USBTool in Robot Testframework
 
