@@ -8,7 +8,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import Enum
-
+from .stdout_writer import StdoutWriter
 
 @dataclass
 class FilesystemImage(Enum):
@@ -52,17 +52,17 @@ class FSCreator():
         self.executor = CmdExecutor()
 
     def _create_disk_image(self) -> bool:
-        sys.stdout.write("going to create filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
+        StdoutWriter.write("going to create filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
         self.size = input("To create {} with input size (MB), may take a few minutes\n".format(self.mount_target.img_name))
-        sys.stdout.write("Creating......" + "\n")
+        StdoutWriter.write("Creating......" + "\n")
         block_size = 2
         if self.executor.execute_cmd("sudo dd bs={}MB if=/dev/zero of=$HOME/{} count={} 2>&1".format(block_size, self.mount_target.img_name, round(int(self.size)/block_size))):
             return True
         return False
 
     def _create_corrupted_image(self):
-        sys.stdout.write("going to create corrupted filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
-        sys.stdout.write("Creating......" + "\n")
+        StdoutWriter.write("going to create corrupted filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
+        StdoutWriter.write("Creating......" + "\n")
         if self.executor.execute_cmd("sudo dd bs=2MB if=/dev/urandom of=$HOME/{} count=32 2>&1".format(self.mount_target.img_name)):
             return True
         return False
@@ -112,18 +112,18 @@ class FSCreator():
             lpd = valid_lpds[0].split(':')[0]
             self.executor.execute_cmd("(echo n; echo p; echo 1; echo ''; echo '+{}M'; echo n; echo p; echo 2; echo ''; echo ''; echo w) | sudo fdisk {}".format(int(self.size)//2, lpd))
             lpd += "p1"
-            sys.stdout.write(f'loop device: {lpd}')
-            sys.stdout.write('mkfs NTFS')
+            StdoutWriter.write(f'loop device: {lpd}')
+            StdoutWriter.write('mkfs NTFS')
             self.executor.execute_cmd("sudo mkfs.ntfs -p 0 -S 0 -H 0 -L SIMPARNTFS -Q {}".format(lpd))
             self.executor.execute_cmd(f"sudo ntfsfix {lpd}")
             self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail {} /mnt/usb_part_ntfs".format(lpd))
             lpd = lpd[:-2]
             lpd += "p2"
-            sys.stdout.write(f'loop device: {lpd}')
-            sys.stdout.write('mkfs FAT32')
+            StdoutWriter.write(f'loop device: {lpd}')
+            StdoutWriter.write('mkfs FAT32')
             self.executor.execute_cmd("sudo mkfs.fat -F 32 -n SIMPARFAT32 {}".format(lpd)) #  the minimum size for a FAT32 volume is about 32.25M
             self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_fat32".format(lpd))
-            sys.stdout.write("Info: " + "partitions have no remote access please add test file into each USB drive partition!")
+            StdoutWriter.write("Info: " + "partitions have no remote access please add test file into each USB drive partition!")
 
     def create_filesystem(self) -> None:
         if self.mount_target.img_name==self.fs_img.CORRUPTED.value:

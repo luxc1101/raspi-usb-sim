@@ -51,7 +51,7 @@ class Ui_SSHHelper(object):
 
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-        self.textEdit.setMarkdown("## Raspi SSH Connection")
+        self.textEdit.setMarkdown("## Rpi SSH Connection")
         self.appendMarkdown("`==========================`  ")
         self.appendMarkdown("## SSH Config:")
         self.appendMarkdown("**IP**: Rpi host IP address, which could be checked in router, please check `readme.txt`")

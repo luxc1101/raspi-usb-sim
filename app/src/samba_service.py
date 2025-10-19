@@ -2,6 +2,7 @@ import os
 import sys
 
 from .fscreator import MountTarget
+from .stdout_writer import StdoutWriter
 
 
 class SambaService():
@@ -28,12 +29,12 @@ class SambaService():
         os.system('sudo systemctl stop smbd.service') 
 
     def _service_output(self):
-        sys.stdout.write("status of samba service-> \n")
-        sys.stdout.write("{}".format(os.popen("sudo systemctl status smbd.service | grep -E 'Loaded|Active|Status'").read()))
-        sys.stdout.write("Network access: ")
-        sys.stdout.write("Hostname and IP: {} {}\n".format(os.popen('hostname').read().split("\n")[0], os.popen('hostname -I').read().split("\n")[0]))
+        StdoutWriter.write("status of samba service-> \n")
+        StdoutWriter.write("{}".format(os.popen("sudo systemctl status smbd.service | grep -E 'Loaded|Active|Status'").read()))
+        StdoutWriter.write("Network access: ")
+        StdoutWriter.write("Hostname and IP: {} {}\n".format(os.popen('hostname').read().split("\n")[0], os.popen('hostname -I').read().split("\n")[0]))
         os.system('sudo chmod 777 {}'.format(self.target.mnt_path))
-        sys.stdout.write("list file in {}: \n".format(self.target.mnt_path))
+        StdoutWriter.write("list file in {}: \n".format(self.target.mnt_path))
         os.system(f"tree -L 3 {self.target.mnt_path}")
 
     def _getfsname_without_extension(self, image_name: str) -> str:

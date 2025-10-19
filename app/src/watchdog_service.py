@@ -2,7 +2,7 @@ import os
 import sys
 
 from .fscreator import MountTarget
-
+from .stdout_writer import StdoutWriter
 
 class WatchdogService():
     '''
@@ -26,6 +26,6 @@ class WatchdogService():
         os.system('sudo systemctl stop fswd')
 
     def _service_output(self):
-        sys.stdout.write("status of watchdog service-> \n")
+        StdoutWriter.write("status of watchdog service-> \n")
         os.system("sudo systemctl status fswd | grep -E 'Loaded|Active|CGroup|python'")
-        sys.stdout.write(self.target.mnt_path + " is unter watching, action timeout is 5s\n")
+        StdoutWriter.write(self.target.mnt_path + " is unter watching, action timeout is 5s\n")

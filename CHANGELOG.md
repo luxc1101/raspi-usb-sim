@@ -113,3 +113,6 @@
 
 #### version 1.1.5
 - `feat`: add `Corrupted` filesystem in MSC device
+
+#### version 1.1.6
+- `feat` add `StdoutWriter` class in `src`

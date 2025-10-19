@@ -21,7 +21,7 @@ from PyQt5.QtCore import QDate, QEventLoop, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFrame, QLabel, QMainWindow, QMessageBox
 from QLed import QLed
 
-version = '1.1.5'
+version = '1.1.6'
 '''
 This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens), 
 handling both UI scaling and sharpness of icons/images. 
