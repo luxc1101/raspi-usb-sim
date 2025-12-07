@@ -49,10 +49,7 @@ class MSC(ADevice):
         elif self.mount_target.img_name == FilesystemImage.HFSPLUS.value:
             return self._mount_hfsplus()
         elif self.mount_target.img_name == FilesystemImage.PARTITION.value:
-            loop_device = "lsblk -f | grep -E 'loop[0-9]p[12]|loop[0-9][0-9]p[12]'"
-            if "p1" not in os.popen(loop_device).read():
-                return self._mount_partitions()
-            return StdoutWriter.write("NTFS and FAT32 partitions already mounted\n")
+            return self._mount_partitions()
         else:
             return self._mount_others()
     
@@ -122,11 +119,13 @@ class MSC(ADevice):
         StdoutWriter.write("mount job finished!\n")
 
     def _umount_msc(self):
+        StdoutWriter.write("umount job starts\n")
         if self.mount_target.img_name == FilesystemImage.PARTITION.value:
             os.system("sudo umount /mnt/usb_part_ntfs > error 2>&1")
             os.system("sudo umount /mnt/usb_part_fat32 > error 2>&1")
         else:
             os.system("sudo umount {} > error 2>&1".format(self.mount_target.mnt_path))
+        StdoutWriter.write("umount job finished!\n")
 
     def _isSambaOn(self) -> bool:
         if self.samba == 2 and self.mount_target.img_name != FilesystemImage.PARTITION.value:
@@ -154,7 +153,7 @@ class MSC(ADevice):
         if self.mount_target.img_name == FilesystemImage.CORRUPTED.value:
             StdoutWriter.write("Corrupted filesystem\n")
         elif self.mount_target.img_name == FilesystemImage.PARTITION.value:
-            os.system("sudo lsblk -f | grep -E 'loop[0-9]p[12]|loop[0-9][0-9]p[12]'")
+            os.system("sudo lsblk -f | grep -E '.*(loop[0-9]p[12]|loop[0-9][0-9]p[12]).*mnt.*'")
         else:
             os.system("findmnt | grep -i {} | while read MP SOURCE FS OP; do echo MountPoint:$MP Source:$SOURCE FStype:$FS Option:$OP; done".format(self.mount_target.mnt_path))
             os.system("lsblk --fs -o NAME,FSTYPE,FSAVAIL,FSUSE%,MOUNTPOINT | grep -i {} | while read NAME FS FSAVAIL FSUSE MP; do echo Name:$NAME FStype:$FS FSavaiable:$FSAVAIL FSused:$FSUSE MountPoint:$MP; done".format(self.mount_target.mnt_path))
@@ -179,18 +178,17 @@ class MSC(ADevice):
         self._mount_others()
 
     def _mount_partitions(self):
-        os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
         lpds = os.popen("sudo losetup -a | grep 'part'").read().strip()
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:
             lpd = valid_lpds[0].split(':')[0]
             lpd += "p1"
-            StdoutWriter.write(f'loop device: {lpd}')
+            StdoutWriter.write(f'loop device: {lpd}\n')
             os.system(f"sudo ntfsfix {lpd}")
             os.system("sudo mount -o rw,users,sync,nofail {} /mnt/usb_part_ntfs".format(lpd))
             lpd = lpd[:-2]
             lpd += "p2"
-            StdoutWriter.write(f'loop device: {lpd}')
+            StdoutWriter.write(f'loop device: {lpd}\n')
             os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_fat32".format(lpd))
         else:
             sys.stderr.write(f'valid loop device is empty')
