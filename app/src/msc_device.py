@@ -119,13 +119,13 @@ class MSC(ADevice):
         StdoutWriter.write("mount job finished!\n")
 
     def _umount_msc(self):
-        StdoutWriter.write("umount job starts\n")
+        StdoutWriter.write("umount job ongoing\n")
         if self.mount_target.img_name == FilesystemImage.PARTITION.value:
             os.system("sudo umount /mnt/usb_part_ntfs > error 2>&1")
             os.system("sudo umount /mnt/usb_part_fat32 > error 2>&1")
         else:
             os.system("sudo umount {} > error 2>&1".format(self.mount_target.mnt_path))
-        StdoutWriter.write("umount job finished!\n")
+        StdoutWriter.write("umount job done\n")
 
     def _isSambaOn(self) -> bool:
         if self.samba == 2 and self.mount_target.img_name != FilesystemImage.PARTITION.value:
