@@ -403,7 +403,27 @@ The USBTool can also be implemented in Robot Testframework for testautomation. T
   ```
 
 ## Troubleshooting
-- [BUG: Wi-Fi config via Raspberry Pi Imager](https://github.com/raspberrypi/rpi-imager/issues/1067) 
-  - Solutions
-    - Using Old Rpi Imager [Version](https://github.com/raspberrypi/rpi-imager/releases) e.g. v1.8.4
-    - [Editing firstrun.sh in bootfs](https://github.com/raspberrypi/rpi-imager/issues/1067#issuecomment-2974335475)
+- Unclean file system
+  - if NTFS file system is removed from windows system but without safely removing before, then at next time after mounting the same NTFS filesystem those warnings will be shown on trace usbtool trace window.
+    ```text
+    WARN: The disk contains an unclean file system (0, 0).
+    WARN: The file system wasn't safely closed on Windows. Fixing.
+    ```
+
+- Shared folder will not be able to access xxx.xxx.xxx.xxx
+  - [AllowInsecureGuestAuth | Microsoft Learn](https://learn.microsoft.com/de-de/windows-hardware/customize/desktop/unattend/microsoft-windows-workstationservice-allowinsecureguestauth)
+
+    | Value           | Info           |
+    | -------------   | -------------  |
+    | 0 | SMB client rejects insecure guest logons.This is the default, and recommended value |
+    | 1 | SMB client allows insecure guest logons. |
+  - win + R → regedit → HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+    
+    "AllowInsecureGuestAuth"=dword:00000001
+    
+    <img src="image/AllowInsecureGuestAuth.png" width="400">
+  
+  - If there is no AllowInsecureGuestAuth file, please create AllowInsecureGuestAuth and assign value as a DWORD
+
+- [BUG: Wi-Fi config via Raspberry Pi Imager failed](https://github.com/raspberrypi/rpi-imager/issues/1067) 
+  - resolved in Raspberry Pi Imager version 1.9.5
