@@ -178,6 +178,7 @@ class MSC(ADevice):
         self._mount_others()
 
     def _mount_partitions(self):
+        os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
         lpds = os.popen("sudo losetup -a | grep 'part'").read().strip()
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:
