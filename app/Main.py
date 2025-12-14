@@ -21,7 +21,7 @@ from PyQt5.QtCore import QDate, QEventLoop, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFrame, QLabel, QMainWindow, QMessageBox
 from QLed import QLed
 
-version = '1.1.6'
+version = '1.1.7'
 '''
 This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens), 
 handling both UI scaling and sharpness of icons/images. 
@@ -309,7 +309,7 @@ class Ui_MainWindow(QMainWindow):
 
     def _setup_tabs(self):
         '''
-        setup tabs for MSC, ECM, HID and CDC
+        setup tabs for MSC, ECM, HID, CDC, and NCM
         '''
         self.tabWidget = QtWidgets.QTabWidget(self.centralW)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -330,6 +330,9 @@ class Ui_MainWindow(QMainWindow):
         
         self.CDC = TabContent()
         self.tabWidget.addTab(self.CDC, "Communication Device Class")
+
+        self.NCM = TabContent()
+        self.tabWidget.addTab(self.NCM, "Network Control Model")
 
         ### add all tabs into firstLayout
         self.firstLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
@@ -384,7 +387,8 @@ class Ui_MainWindow(QMainWindow):
         self.statusBar.setStyleSheet("QtWidgets.QStatusBar::item {border: none;}")
         self.statusMessage = QLabel()
         self.statusMessage.setText("SSH disconnected")
-        self.VersionQL = QLabel(f"Version: <b>{version}</b>")
+        self.VersionQL = QLabel(f'Version: <a href="https://github.com/luxc1101/raspi-usb-sim/releases"><b>{version}</b></a>')
+        self.VersionQL.setOpenExternalLinks(True)
         date = "Date: {}".format(QDate.currentDate().toString(Qt.ISODate))
         self.DataQL = QLabel(date)
         self.SSHLed = QLed(self, onColour=QLed.Green, shape=QLed.Circle)
@@ -532,10 +536,12 @@ class Ui_MainWindow(QMainWindow):
         self.ECM.comboBox_Device.clear()                        # clear ECM combobox
         self.HID.comboBox_Device.clear()                        # clear HID combobox
         self.CDC.comboBox_Device.clear()                        # clear CDC combobox
+        self.NCM.comboBox_Device.clear()                        # clear NCM combobox
         msc_supported = self.device_dict["MSC"]["0"]            # msc supported devices
         ecm_supported = self.device_dict["ECM"]["0"]            # ecm supported devices
         hid_supported = self.device_dict["HID"]["0"]            # hid supported devices
         cdc_supported = self.device_dict["CDC"]["0"]            # cdc supported devices
+        ncm_supported = self.device_dict["NCM"]["0"]            # ncm supported devices
         
         for id , dev in enumerate(msc_supported):
             self.msc_dict[dev["dev"]] = [dev["img"].split('.')[0],str(id)]
@@ -546,6 +552,8 @@ class Ui_MainWindow(QMainWindow):
             self.HID.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
         for _ , dev in enumerate(cdc_supported):
             self.CDC.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
+        for _ , dev in enumerate(ncm_supported):
+            self.NCM.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
 
     def color_message(self, message:str, color:str) -> str:
         '''
@@ -911,6 +919,7 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 1: ECM
         tabwidget 2: HID
         tabwidget 3: CDC
+        tabwidget 4: NCM
         '''
         cmd = 'call'
 
@@ -943,6 +952,15 @@ class Ui_MainWindow(QMainWindow):
                     self.create_messagebox(title="CDC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
                 self.paramdict["Cmd"] = f'CDC Unknown 0x{self.CDC.LE_VID.text()} 0x{self.CDC.LE_PID.text()}'
+
+        if self.tabWidget.currentIndex() == 4: # tab 4: NCM
+            if self.NCM.radioButton_sup.isChecked() and self.NCM.comboBox_Device.currentText() != '':
+                self.paramdict["Cmd"] = f'NCM {self.NCM.comboBox_Device.currentText()}'
+            else:
+                if len(self.NCM.LE_VID.text()) != 4 or len(self.NCM.LE_PID.text()) != 4:
+                    self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
+                    return
+                self.paramdict["Cmd"] = f'NCM Unknown 0x{self.NCM.LE_VID.text()} 0x{self.NCM.LE_PID.text()}'
 
         cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
         # print(cmd)

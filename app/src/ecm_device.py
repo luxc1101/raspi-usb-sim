@@ -2,6 +2,7 @@ import os
 
 from .a_device import ADevice
 from .device_data import DeviceDescriptors
+from .stdout_writer import StdoutWriter
 
 
 class ECM(ADevice):
@@ -46,7 +47,7 @@ class ECM(ADevice):
         os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.ecm_root))
         os.system("sudo bash -c 'ifconfig usb0 10.0.0.1 netmask 255.255.255.252 up'")
         os.system("sudo bash -c 'route add -net default gw 10.0.0.2'")
-        print("mount job finished!")
+        StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):
         return super().disable_the_gadget()

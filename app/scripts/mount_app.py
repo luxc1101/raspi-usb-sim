@@ -9,6 +9,7 @@ from src.ecm_device import ECM
 from src.hid_device import HID
 from src.msc_device import MSC
 from src.rndis_device import RNDIS
+from src.ncm_device import NCM
 from src.usb_peripheral import USBPeripheral
 
 paramdict = literal_eval(sys.argv[1])
@@ -88,6 +89,19 @@ class DeviceOperator():
             return True
         return False
     
+    def _isNCM(self) -> bool:
+        if self.simulator_action.split(' ')[0] == "NCM":
+            str_PIDVID = self.simulator_action.split(' ')[1:]
+            self.device_desc.idProduct = str_PIDVID[-1]
+            self.device_desc.idVendor = str_PIDVID[-2]
+            self.device_desc.bDeviceClass = 0xEF
+            self.device_desc.bDeviceSubClass = 0x02
+            self.device_desc.bDeviceProtocol = 0x01
+            self.device_desc.product = "Emulated NCM device"
+            self.device_desc.bmAttributes = 0x80
+            return True
+        return False
+    
     def _isEJECT(self) -> bool:
         if self.simulator_action == "EJECT":
             return True
@@ -118,6 +132,7 @@ class DeviceOperator():
         HID
         ECM
         CDC
+        NCM
         '''
         if self._isMSC():
             self.device_dict.fill_msc_dictionary()
@@ -142,6 +157,9 @@ class DeviceOperator():
 
         elif self._isAMC():
             self.device.usb_device = ACM(self.device_desc, DeviceFunction.acm.value)
+
+        elif self._isNCM():
+            self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
 
         elif self._isEJECT():
             self._eject_device()

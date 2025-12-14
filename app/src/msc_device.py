@@ -99,7 +99,7 @@ class MSC(ADevice):
         lpds = os.popen("sudo lsblk -f | grep '/mnt/usb_{}'".format(fs_img)).read().strip().split("\n")
         if lpds:
                 for lpd in lpds:
-                    StdoutWriter.write(lpd)
+                    StdoutWriter.write(lpd + "\n")
                     lpnum = lpd.split(' ')[0] # loop2
                     if fs_img == 'part':
                         lpnum = lpd.split(' ')[0][2:] # part is e.g. '|-loop2p1'
@@ -178,6 +178,7 @@ class MSC(ADevice):
         self._mount_others()
 
     def _mount_partitions(self):
+        os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
         lpds = os.popen("sudo losetup -a | grep 'part'").read().strip()
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:

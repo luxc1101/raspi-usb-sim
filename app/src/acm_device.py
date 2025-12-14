@@ -2,6 +2,7 @@ import os
 
 from .a_device import ADevice
 from .device_data import DeviceDescriptors
+from .stdout_writer import StdoutWriter
 
 
 class ACM(ADevice):
@@ -43,7 +44,7 @@ class ACM(ADevice):
         os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.acm_root))
         os.system('sudo bash -c \'echo "Hello from Pi" > /dev/ttyGS0\'')
         os.system("sudo systemctl is-active --quiet getty@ttyGS0.service || sudo systemctl start getty@ttyGS0.service")        
-        print("mount job finished!")
+        StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):
         return super().disable_the_gadget()

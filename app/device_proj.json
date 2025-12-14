@@ -46,6 +46,15 @@
                 "attribute": {}
             }
         },
+        "NCM": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ncm.usb0",
+                "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
+            }
+        },
         "TEST": {
             "0": [
                 {"dev": "TEST_SE0_NAK", "VID": "0x1a0a", "PID": "0x0101"},
@@ -133,6 +142,15 @@
             "type": {
                 "func": "acm.usb0",
                 "attribute": {}
+            }
+        },
+        "NCM": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ncm.usb0",
+                "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
             }
         },
         "TEST": {
@@ -223,6 +241,15 @@
             "type": {
                 "func": "acm.usb0",
                 "attribute": {}
+            }
+        },
+        "NCM": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ncm.usb0",
+                "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
             }
         },
         "TEST": {

@@ -2,6 +2,7 @@ import os
 
 from .a_device import ADevice
 from .device_data import DeviceDescriptors
+from .stdout_writer import StdoutWriter
 
 
 class HID(ADevice):
@@ -44,7 +45,7 @@ class HID(ADevice):
     def enable_the_gadget(self):
         udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
         os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.hid_root))
-        print("mount job finished!")
+        StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):
         return super().disable_the_gadget()

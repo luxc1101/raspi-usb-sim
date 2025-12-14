@@ -15,13 +15,13 @@ from src.device_dictcreator import DeviceDictCreator
 from src.ecm_device import ECM
 from src.hid_device import HID
 from src.msc_device import MSC
+from src.ncm_device import NCM
 from src.rndis_device import RNDIS
 from src.usb_peripheral import USBPeripheral
 
 deviceType = sys.argv[1]
 deviceArg0 = sys.argv[2]
 deviceArg1 = sys.argv[3]
-usbtype_list = ["HID", "CDC", "ECM", "MSC", "RNDIS"]
 
 '''
 A Python script saved in the /home/pi directory of a Raspberry Pi Zero W device, which will be executed in the new HADES to simulate a USB device
@@ -100,6 +100,18 @@ class DeviceOperator():
             self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
+    
+    def _isNCM(self) -> bool:
+        if deviceType == "NCM":
+            self.device_desc.idVendor = deviceArg0
+            self.device_desc.idProduct = deviceArg1
+            self.device_desc.bDeviceClass = 0xEF
+            self.device_desc.bDeviceSubClass = 0x02
+            self.device_desc.bDeviceProtocol = 0x01
+            self.device_desc.product = "Emulated NCM device"
+            self.device_desc.bmAttributes = 0x80
+            return True
+        return False
 
     def _isEJECT(self) -> bool:
         if deviceType == "EJECT":
@@ -122,6 +134,7 @@ class DeviceOperator():
         HID
         ECM
         CDC
+        NCM
         '''
         if self._isMSC():
             self.device_dict.fill_msc_dictionary_robot()
@@ -143,6 +156,9 @@ class DeviceOperator():
 
         elif self._isAMC():
             self.device.usb_device = ACM(self.device_desc, DeviceFunction.acm.value)
+
+        elif self._isNCM():
+            self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
 
         elif self._isEJECT():
             self._eject_device()
