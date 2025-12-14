@@ -131,9 +131,7 @@ unzip the downloaded packages, the downloaded release folder structure:
 
 ### Connections
 
-Before starting, it is important to know that the Raspberry Pi and the test PC need to be on the same wireless network. It is usually the latter that has troubles connecting to the wireless networks as most test rack PCs at JND do not have this capacity.
-
-Therefore, you must first secure a USB WLAN-Stick, plug it in to your test PC and connect to the desired 2.4 GHz WiFi network wirelessly.
+Before starting, it is important to know that the Raspberry Pi and the test PC need to be on the same wireless network. Therefore, you must first secure that PC is able to connect to the desired 2.4 GHz WiFi network wirelessly.
 
 #### Preparing the Rpi: Editing the WiFi Configuration File
 >
