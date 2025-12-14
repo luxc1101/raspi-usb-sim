@@ -1,4 +1,4 @@
-- [PRIAPOS](#priapos)
+- [USB Simulator](#usb-simulator)
   - [Big Picture](#big-picture)
   - [Preparation](#preparation)
   - [Quick Tutorial](#quick-tutorial)
@@ -32,7 +32,7 @@
 [mdversion-button]: downlaod
 [md-pypi]: https://pypi.org/project/Markdown/ -->
 
-# PRIAPOS
+# USB Simulator
 
 <img src="https://content.instructables.com/ORIG/F60/5H8G/KNHGQNWP/F605H8GKNHGQNWP.png?auto=webp&frame=1&width=810&fit=bounds&md=38489d1a10177d77d78f77287ad3bd0a" width="100" >
 
