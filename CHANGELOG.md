@@ -117,5 +117,5 @@
 #### version 1.1.6
 - `feat` add `StdoutWriter` class in `src`
 
-### version 1.1.7
+#### version 1.1.7
 - `feat` add `Network Control Model` usb device class
