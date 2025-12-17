@@ -878,7 +878,7 @@ class Ui_MainWindow(QMainWindow):
         update the max avaiable space for creating of filesystem block
         '''
         if self.ssh_isconnected:
-            _, stdout, _ = self.ssh.exec_command('df -Bm | grep -i "/dev/root"')
+            _, stdout, _ = self.ssh.exec_command('df -Bm --total | awk "END {print $4}"')
             out = stdout.read().decode('ascii', errors='ignore').strip()
             max_availspace = out.lstrip().split("M")[-2]
             self.LB_MaxSpace.setText(max_availspace.lstrip())
