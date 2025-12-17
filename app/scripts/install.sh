@@ -13,11 +13,13 @@ fi
 OVERLAY_NAME=dwc2 # an important component in embedded systems that need USB On-The-Go support. It allows the USB controller to function either as a host or a device, this driver is essential for using USB gadget functionality, enabling the Pi to act as a peripheral to another computer or to control USB peripherals in host mode.
 LIBCOMPOSITE=libcomposite
 BOOT_CONFIG=/boot/config.txt # configure the Raspberry Pi's boot behavior, It is essential for controlling how the Raspberry Pi behaves during startup and how it interacts with connected hardware.
+BOOT_CONFIG_=/boot/firmware/config.txt
 SWREQ=$1/requirements.txt # requirements list
 MODULES=/etc/modules # file in Linux systems is used to specify kernel modules that should be loaded at boot time ensures that the necessary modules are automatically loaded during the boot process.
 CONFIGFS=configfs # configfs is a ram-based filesystem and a filesystem-based manager of kernel objects, Linux USB gadget configured through configfs https://www.kernel.org/doc/Documentation/usb/gadget_configfs.txt
 CONFIGFS_MNT=/sys/kernel/config
 BOOT_CMDLINE=/boot/cmdline.txt
+BOOT_CMDLINE_=/boot/firmware/cmdline.txt
 SAMBA_CONF=/etc/samba/smb.conf
 PWD=$(pwd)
 FS_WATCHDOG_SER=fswd.service
@@ -37,22 +39,42 @@ Green='\033[1;92m'
 Red='\033[1;91m'
 C_off='\033[0m'
 
+# Check which boot config file exists and use the appropriate one
+if [ -f "$BOOT_CONFIG_" ]; then
+  BOOT_CONFIG_ACTIVE="$BOOT_CONFIG_"
+elif [ -f "$BOOT_CONFIG" ]; then
+  BOOT_CONFIG_ACTIVE="$BOOT_CONFIG"
+else
+  echo "${Red}Neither ${BOOT_CONFIG} nor ${BOOT_CONFIG_} found${C_off}"
+  exit 1
+fi
+
+# Check which boot cmdline file exists and use the appropriate one
+if [ -f "$BOOT_CMDLINE_" ]; then
+  BOOT_CMDLINE_ACTIVE="$BOOT_CMDLINE_"
+elif [ -f "$BOOT_CMDLINE" ]; then
+  BOOT_CMDLINE_ACTIVE="$BOOT_CMDLINE"
+else
+  echo "${Red}Neither ${BOOT_CMDLINE} nor ${BOOT_CMDLINE_} found${C_off}"
+  exit 1
+fi
+
 echo "PROGRESS:5"
 echo "${Cyan}apt-get update and upgrade${C_off}"
 sudo apt-get update && sudo apt-get upgrade -y
 echo "${Cyan}apt-get update and upgrade finished${C_off}"
 echo "PROGRESS:10"
 
-if grep -q "dtoverlay=${OVERLAY_NAME}" $BOOT_CONFIG; then
-  echo "${OVERLAY_NAME} already in ${BOOT_CONFIG}"
+if grep -q "dtoverlay=${OVERLAY_NAME}" $BOOT_CONFIG_ACTIVE; then
+  echo "${OVERLAY_NAME} already in ${BOOT_CONFIG_ACTIVE}"
 else
-  echo "dtoverlay=${OVERLAY_NAME}" | sudo tee -a $BOOT_CONFIG
+  echo "dtoverlay=${OVERLAY_NAME}" | sudo tee -a $BOOT_CONFIG_ACTIVE
 fi
 echo "PROGRESS:12"
-if grep -q "modules-load=${OVERLAY_NAME}" $BOOT_CMDLINE; then
-  echo "${OVERLAY_NAME} already in ${BOOT_CMDLINE}"
+if grep -q "modules-load=${OVERLAY_NAME}" $BOOT_CMDLINE_ACTIVE; then
+  echo "${OVERLAY_NAME} already in ${BOOT_CMDLINE_ACTIVE}"
 else
-  sudo sed -i "s/\(rootwait\)/\1 modules-load=${OVERLAY_NAME}/" $BOOT_CMDLINE
+  sudo sed -i "s/\(rootwait\)/\1 modules-load=${OVERLAY_NAME}/" $BOOT_CMDLINE_ACTIVE
 fi
 echo "PROGRESS:14"
 if grep -q "${OVERLAY_NAME}" $MODULES; then
