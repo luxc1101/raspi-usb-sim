@@ -65,11 +65,22 @@ sudo apt-get update && sudo apt-get upgrade -y
 echo "${Cyan}apt-get update and upgrade finished${C_off}"
 echo "PROGRESS:10"
 
-if grep -q "dtoverlay=${OVERLAY_NAME}" $BOOT_CONFIG_ACTIVE; then
-  echo "${OVERLAY_NAME} already in ${BOOT_CONFIG_ACTIVE}"
+
+# Check if [all] section exists
+if grep -q "^\[all\]" $BOOT_CONFIG_ACTIVE; then
+  # Add dtoverlay=dwc2 after [all] section if not already present
+  if ! sed -n '/^\[all\]/,/^\[.*\]/p' $BOOT_CONFIG_ACTIVE | grep -q "dtoverlay=${OVERLAY_NAME}"; then
+    sudo sed -i "/^\[all\]/a dtoverlay=${OVERLAY_NAME}" $BOOT_CONFIG_ACTIVE
+    echo "Added ${OVERLAY_NAME} to [all] section in ${BOOT_CONFIG_ACTIVE}"
+  else
+    echo "${OVERLAY_NAME} already present in [all] section of ${BOOT_CONFIG_ACTIVE}"
+  fi
 else
+  # No [all] section, append at end
   echo "dtoverlay=${OVERLAY_NAME}" | sudo tee -a $BOOT_CONFIG_ACTIVE
+  echo "Added ${OVERLAY_NAME} at end of ${BOOT_CONFIG_ACTIVE}"
 fi
+
 echo "PROGRESS:12"
 if grep -q "modules-load=${OVERLAY_NAME}" $BOOT_CMDLINE_ACTIVE; then
   echo "${OVERLAY_NAME} already in ${BOOT_CMDLINE_ACTIVE}"
