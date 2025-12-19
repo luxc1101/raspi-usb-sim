@@ -55,6 +55,15 @@
                 "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
             }
         },
+        "MTP": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ffs.mtp",
+                "attribute": {}
+            }
+        },
         "TEST": {
             "0": [
                 {"dev": "TEST_SE0_NAK", "VID": "0x1a0a", "PID": "0x0101"},
@@ -151,6 +160,15 @@
             "type": {
                 "func": "ncm.usb0",
                 "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
+            }
+        },
+        "MTP": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ffs.mtp",
+                "attribute": {}
             }
         },
         "TEST": {
@@ -250,6 +268,15 @@
             "type": {
                 "func": "ncm.usb0",
                 "attribute": {"ifname": "usb.0", "qmult": "5","HOST":"00:dc:c8:f7:75:14", "SELF": "00:dd:dc:eb:6d:a1"}
+            }
+        },
+        "MTP": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "ffs.mtp",
+                "attribute": {}
             }
         },
         "TEST": {
