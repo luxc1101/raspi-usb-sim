@@ -177,10 +177,10 @@ sudo find $SRC -type f -exec chmod 777 {} \;
 sudo chmod 777 $MOUNTFS_GUI_SCRIPT
 sudo chmod 777 $MOUNTFS_HADES_SCRIPT
 sudo chmod 777 $KB_DESCRIPTOR
-sudo chomod 777 $UMTPRESPONDER
+sudo chmod 777 $UMTPRESPONDER
 sudo chmod 777 $UMTPRESPONDER_CONF
 sudo mkdir -p /etc/umtprd || { echo "${Red}Creating /etc/umtprd directory failed${C_off}"; exit 1; }
-sudo cp $1/$UMTPRESPONDER_CONF /etc/umtprd/$UMTPRESPONDER_CONF || { echo "${Red}Copy-paste '$UMTPRESPONDER_CONF' failed${C_off}"; exit 1; }
+sudo cp $1/$UMTPRESPONDER_CONF /etc/umtprd/ || { echo "${Red}Copy-paste '$UMTPRESPONDER_CONF' failed${C_off}"; exit 1; }
 sudo cp $1/$UMTPRESPONDER /usr/bin/$UMTPRESPONDER || { echo "${Red}Copy-paste '$UMTPRESPONDER' failed${C_off}"; exit 1; }
 sudo cp -a $1/$SRC $DEFAULT_HOMEDIR_PI || { echo "${Red}Copy-paste '$SRC' failed${C_off}"; exit 1; }
 sudo cp $1/$MOUNTFS_GUI_SCRIPT $DEFAULT_HOMEDIR_PI ||  { echo "${Red}Copy-paste '$MOUNTFS_GUI_SCRIPT' failed${C_off}"; exit 1; }

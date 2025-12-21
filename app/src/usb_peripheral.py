@@ -48,3 +48,6 @@ class USBPeripheral(ADevice):
         os.system('func="$(ls /sys/kernel/config/usb_gadget/g1/functions/)" > error 2>&1 && sudo rmdir /sys/kernel/config/usb_gadget/g1/functions/$func > error 2>&1') # remove functions
         os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1/strings/0x409 > error 2>&1') # remove string dir in gadget
         os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1 > error 2>&1') # finally remove the while gadget
+        os.system('sudo pkill umtprd > error 2>&1')
+        os.system('sudo umount /dev/ffs-mtp > error 2>&1')
+        
