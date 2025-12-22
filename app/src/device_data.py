@@ -54,6 +54,7 @@ class DeviceFunction(Enum):
     mass_storage    = 'mass_storage.usb0'
     serial          = 'gser.usb0'
     ncm             = 'ncm.usb0'
+    mtp             = 'ffs.mtp'
 
 @dataclass
 class Color:

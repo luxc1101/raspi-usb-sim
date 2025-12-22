@@ -16,6 +16,7 @@ from src.ecm_device import ECM
 from src.hid_device import HID
 from src.msc_device import MSC
 from src.ncm_device import NCM
+from src.mtp_device import MTP
 from src.rndis_device import RNDIS
 from src.usb_peripheral import USBPeripheral
 
@@ -113,6 +114,18 @@ class DeviceOperator():
             return True
         return False
 
+    def _isMTP(self) -> bool:
+        if deviceType == "MTP":
+            self.device_desc.idVendor = deviceArg0
+            self.device_desc.idProduct = deviceArg1
+            self.device_desc.bDeviceClass = 0x06
+            self.device_desc.bDeviceSubClass = 0x01
+            self.device_desc.bDeviceProtocol = 0x01
+            self.device_desc.product = "Emulated MTP device"
+            self.device_desc.bmAttributes = 0x80
+            return True
+        return False
+
     def _isEJECT(self) -> bool:
         if deviceType == "EJECT":
             return True
@@ -135,6 +148,7 @@ class DeviceOperator():
         ECM
         CDC
         NCM
+        MTP
         '''
         if self._isMSC():
             self.device_dict.fill_msc_dictionary_robot()
@@ -159,6 +173,9 @@ class DeviceOperator():
 
         elif self._isNCM():
             self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
+
+        elif self._isMTP():
+            self.device.usb_device = MTP(self.device_desc, DeviceFunction.mtp.value)
 
         elif self._isEJECT():
             self._eject_device()

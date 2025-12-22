@@ -334,6 +334,9 @@ class Ui_MainWindow(QMainWindow):
         self.NCM = TabContent()
         self.tabWidget.addTab(self.NCM, "Network Control Model")
 
+        self.MTP = TabContent()
+        self.tabWidget.addTab(self.MTP, "Media Transfer Protocol")
+
         ### add all tabs into firstLayout
         self.firstLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
@@ -537,12 +540,14 @@ class Ui_MainWindow(QMainWindow):
         self.HID.comboBox_Device.clear()                        # clear HID combobox
         self.CDC.comboBox_Device.clear()                        # clear CDC combobox
         self.NCM.comboBox_Device.clear()                        # clear NCM combobox
+        self.MTP.comboBox_Device.clear()                        # clear MTP combobox
         msc_supported = self.device_dict["MSC"]["0"]            # msc supported devices
         ecm_supported = self.device_dict["ECM"]["0"]            # ecm supported devices
         hid_supported = self.device_dict["HID"]["0"]            # hid supported devices
         cdc_supported = self.device_dict["CDC"]["0"]            # cdc supported devices
         ncm_supported = self.device_dict["NCM"]["0"]            # ncm supported devices
-        
+        mtp_supported = self.device_dict["MTP"]["0"]            # mtp supported devices
+
         for id , dev in enumerate(msc_supported):
             self.msc_dict[dev["dev"]] = [dev["img"].split('.')[0],str(id)]
             self.comboBox_MSC.addItem(dev["dev"])
@@ -554,6 +559,8 @@ class Ui_MainWindow(QMainWindow):
             self.CDC.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
         for _ , dev in enumerate(ncm_supported):
             self.NCM.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
+        for _ , dev in enumerate(mtp_supported):
+            self.MTP.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
 
     def color_message(self, message:str, color:str) -> str:
         '''
@@ -920,6 +927,7 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 2: HID
         tabwidget 3: CDC
         tabwidget 4: NCM
+        tabwidget 5: MTP
         '''
         cmd = 'call'
 
@@ -961,6 +969,14 @@ class Ui_MainWindow(QMainWindow):
                     self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
                 self.paramdict["Cmd"] = f'NCM Unknown 0x{self.NCM.LE_VID.text()} 0x{self.NCM.LE_PID.text()}'
+        if self.tabWidget.currentIndex() == 5: # tab 5: MTP
+            if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
+                self.paramdict["Cmd"] = f'MTP {self.MTP.comboBox_Device.currentText()}'
+            else:
+                if len(self.MTP.LE_VID.text()) != 4 or len(self.MTP.LE_PID.text()) != 4:
+                    self.create_messagebox(title="MTP Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
+                    return
+                self.paramdict["Cmd"] = f'MTP Unknown 0x{self.MTP.LE_VID.text()} 0x{self.MTP.LE_PID.text()}'
 
         cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
         # print(cmd)
@@ -1059,18 +1075,24 @@ class CmdExecution(QThread):
                 finally:
                     self.cmd = ''  # Reset command after execution
                     self._running = False  # Stop thread after command execution
+
     
     def set_command(self, command):
         self.cmd = command
 
     def _execute_command(self, command):
-        stdin, stdout, stderr = self.ssh.exec_command(command)
+        stdin, stdout, stderr = self.ssh.exec_command(command, timeout=60)
         self._read_stdout(stdin, stdout)
         self._read_stderr(stderr)
 
     def _read_stdout(self, stdin, stdout):
         try:
+            if "mtp" in self.cmd.lower():
+                self.output_signal.emit("mount job finished!")
+                return  # skip mtp stdout reading to avoid blocking
             for stdline in iter(stdout.readline, ""):
+                if not self._running:
+                        break
                 self.output_signal.emit(stdline.strip())
                 if "going to create filesystem and partitions" in stdline:
                     self.output_signal.emit("Please input size (MB) through Slider or LineEdit and click Assign button (Btrfs can not less than 115 MB): ")
@@ -1080,7 +1102,11 @@ class CmdExecution(QThread):
 
     def _read_stderr(self, stderr):
         try:
+            if "mtp" in self.cmd.lower():
+                return  # skip mtp stderr reading to avoid blocking
             for errline in iter(stderr.readline, ""):
+                if not self._running:
+                    break
                 self.output_signal.emit(f'WARN: {errline.strip()}')
         except Exception as e:
             self.output_signal.emit(f'ERROR: {e}')
