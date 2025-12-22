@@ -1081,7 +1081,7 @@ class CmdExecution(QThread):
         self.cmd = command
 
     def _execute_command(self, command):
-        stdin, stdout, stderr = self.ssh.exec_command(command, timeout=30)
+        stdin, stdout, stderr = self.ssh.exec_command(command, timeout=60)
         self._read_stdout(stdin, stdout)
         self._read_stderr(stderr)
 

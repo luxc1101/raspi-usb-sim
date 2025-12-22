@@ -1,5 +1,5 @@
 import os
-
+import subprocess
 from .a_device import ADevice
 
 
@@ -40,14 +40,14 @@ class USBPeripheral(ADevice):
     
     @staticmethod
     def disable_the_gadget():
-        os.system('sudo systemctl is-active --quiet getty@ttyGS0.service > error 2>&1 && sudo systemctl stop getty@ttyGS0.service > error 2>&1')
-        os.system('sudo bash -c "echo '' > /sys/kernel/config/usb_gadget/g1/UDC" > error 2>&1') # disabling the gadget
-        os.system('func="$(ls /sys/kernel/config/usb_gadget/g1/functions/)" > error 2>&1 && sudo rm /sys/kernel/config/usb_gadget/g1/configs/c.1/$func > error 2>&1') # remove functions from configuration
-        os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1/strings/0x409 > error 2>&1') # remove string dir in the configuration
-        os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1 > error 2>&1') # remove the configurations
-        os.system('func="$(ls /sys/kernel/config/usb_gadget/g1/functions/)" > error 2>&1 && sudo rmdir /sys/kernel/config/usb_gadget/g1/functions/$func > error 2>&1') # remove functions
-        os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1/strings/0x409 > error 2>&1') # remove string dir in gadget
-        os.system('sudo rmdir /sys/kernel/config/usb_gadget/g1 > error 2>&1') # finally remove the while gadget
-        os.system('sudo pkill umtprd > error 2>&1')
-        os.system('sudo umount /dev/ffs-mtp > error 2>&1')
+        subprocess.run('sudo systemctl is-active --quiet getty@ttyGS0.service && sudo systemctl stop getty@ttyGS0.service', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run('sudo bash -c "echo '' > /sys/kernel/config/usb_gadget/g1/UDC"', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # disabling the gadget
+        subprocess.run('func="$(ls /sys/kernel/config/usb_gadget/g1/functions/)" && sudo rm /sys/kernel/config/usb_gadget/g1/configs/c.1/$func ', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # remove functions from configuration
+        subprocess.run('sudo rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1/strings/0x409', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # remove string dir in the configuration
+        subprocess.run('sudo rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # remove the configurations
+        subprocess.run('func="$(ls /sys/kernel/config/usb_gadget/g1/functions/)" && sudo rmdir /sys/kernel/config/usb_gadget/g1/functions/$func', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # remove functions
+        subprocess.run('sudo rmdir /sys/kernel/config/usb_gadget/g1/strings/0x409', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # remove string dir in gadget
+        subprocess.run('sudo rmdir /sys/kernel/config/usb_gadget/g1', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # finally remove the while gadget
+        subprocess.run('sudo pkill umtprd', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run('sudo umount /dev/ffs-mtp', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
