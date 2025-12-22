@@ -322,8 +322,8 @@ State Machine:
 - **Ethernet Adapter (ECM)**: mount ECM devices with specific VID and PID
 - **Human Interface Device (HID)**: mount HID devices with specific VID and PID
 - **Communication Device Class (CDC)**: mount CDC devices with specific VID and PID
-- **Network Control Model**: mount NCM devices with specific VID and PID
-- **Media Transfer Protocal**: mount MTP devices with specific VID and PID
+- **Network Control Model (NCM)**: mount NCM devices with specific VID and PID
+- **Media Transfer Protocal (MTP)**: mount MTP devices with specific VID and PID
 
 #### Trace
 
