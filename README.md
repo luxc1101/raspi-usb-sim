@@ -1,29 +1,5 @@
-- [USB Simulator](#usb-simulator)
-  - [Big Picture](#big-picture)
-  - [Preparation](#preparation)
-  - [Quick Tutorial](#quick-tutorial)
-    - [Operation System Installation](#operation-system-installation)
-      - [SD card format](#sd-card-format)
-      - [Rpi Imager (download)](#rpi-imager-download)
-    - [Download the released USBTool software](#download-the-released-usbtool-software)
-    - [Connections](#connections)
-      - [Preparing the Rpi: Editing the WiFi Configuration File](#preparing-the-rpi-editing-the-wifi-configuration-file)
-      - [Preparing the Rpi: Mounting and Connections](#preparing-the-rpi-mounting-and-connections)
-      - [Preparing the SSH Connection: IP, Port, SSID and Password](#preparing-the-ssh-connection-ip-port-ssid-and-password)
-        - [Router](#router)
-        - [Phone Hotspot](#phone-hotspot)
-    - [SSHClient Creation](#sshclient-creation)
-    - [Configuration](#configuration)
-      - [Preparing package installation and configuration for Rpi](#Preparing-package-installation-and-configuration-for-Rpi)
-    - [GUI and Elements](#gui-and-elements)
-  - [Checklist](#checklist)
-  - [USBTool in HADES Testautomation](#usbtool-in-hades-testautomation)
-    - [Prerequisites](#prerequisites)
-    - [Libraries](#libraries)
-    - [Variables](#variables)
-    - [Keywords](#keywords)
+[TOC]
 
-  - [Troubleshooting](#troubleshooting)
 
 <!-- 
 
@@ -138,24 +114,46 @@ Before starting, it is important to know that the Raspberry Pi and the test PC n
 > **NOTE**:  
 >Once you have already configured the WiFi SSID and PSK in step [Operation System Installation](#operation-system-installation) and the WiFi is not changed (SSID, PSK) and still available, you can skip this step.
 
-Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
-
 <details>
-  <summary>wpa_supplicant.conf</summary>
+  <summary>Change WiFi for old rpi OS e.g. bullseye</summary>
+  Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
 
-  ```
-  # Datei wpa_supplicant.conf in der Boot-Partition (Raspbian Stretch)
-  country=DE
-  update_config=1
-  ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-  network={
-  key_mgmt=WPA-PSK
-  ssid="<SSID>>"
-  psk="<password>"
-  }
-  ```
+  <details>
+    <summary>wpa_supplicant.conf</summary>
+  
+    # Datei wpa_supplicant.conf in der Boot-Partition (Raspbian Stretch)
+    country=DE
+    update_config=1
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    network={
+     key_mgmt=WPA-PSK
+     ssid="<SSID>>"
+     psk="<password>"
+    }
+
+  </details>
 </details>
 
+<details>
+  <summary>Change WiFi for new rpi OS e.g. bookworm/trixie</summary>
+  
+  scan availabel wifi list
+
+  ```shell
+  sudo iwlist scan | grep "<SSID>"
+  ```
+  list availbale WiFi metworks
+  
+  ```shell
+  nmcli dev wifi list
+  ```
+  Connect to new WiFi
+  
+  ```shell
+  sudo nmcli dev wifi connect "YourWiFiName" password "YourPassword"
+  ```
+</details>
+  
 #### Preparing the Rpi: Mounting and Connections
 
 Once the microSD card has been updated, remove it from the microSD card reader and mount it on the Rpi.
