@@ -45,7 +45,10 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 #### [Rpi Imager (download)](https://www.raspberrypi.com/software/)
 
 - Raspberry Pi Modell: Raspberry Pi Zero
-- Select OS: `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**)
+- Select OS: 
+  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**) (old rpi os)
+  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bookworm**) (recommand)
+  - `Raspberry Pi OS (32-bit) Lite` (**Trixie**) (latest OS, ssh connection somehow slow)
 - Choose SD card
 - Setting option
   - Hostname: rpi<?>.local # e.g. rpi0.local
