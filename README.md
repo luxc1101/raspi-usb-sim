@@ -46,9 +46,9 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 
 - Raspberry Pi Modell: Raspberry Pi Zero
 - Select OS: 
-  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**) (old rpi os)
+  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**) (old OS)
   - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bookworm**) (recommand)
-  - `Raspberry Pi OS (32-bit) Lite` (**Trixie**) (latest OS, ssh connection somehow slow)
+  - `Raspberry Pi OS (32-bit) Lite` (**trixie**) (latest OS, ssh connection somehow slow)
 - Choose SD card
 - Setting option
   - Hostname: rpi<?>.local # e.g. rpi0.local
@@ -119,6 +119,7 @@ Before starting, it is important to know that the Raspberry Pi and the test PC n
 
 <details>
   <summary>Change WiFi for old rpi OS e.g. bullseye</summary>
+  
   Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
 
   <details>
@@ -342,66 +343,10 @@ State Machine:
 - [x] WiFi with known SSID and Passport
 - [x] microSD card within correct OS, needed scripts and installed packages
 - [x] Rpi, USB micro-B to USB A Cabel x2, USB WiFi adapter (if needed)
-- [x] `wpa_supplicant.conf` and `ssh` are written into bootfs partition in microSD card, ONLY if WiFi has to be changed. (e.g. ssid="AMB-StreamWLAN")
+- [x] WiFi for rpi ssh connection is succefully configured
 - [x] power Rpi up and connect Rpi to DUT, USB WiFi adapter is connected to PC (if needed)
 - [x] WiFi & SSH connection is establish
-- [x] `Config.json`, `device_proj.json` and `USBSimulator.exe` should be in **SAME** folder or root path
-
-## USBTool in Robot Testframework
-
-The USBTool can also be implemented in Robot Testframework for testautomation. The [SSHLibrary](https://marketsquare.github.io/SSHLibrary/SSHLibrary.html) will enable to cotrol the USBTool through SSHClient.
-
-### Prerequisites
-
-- functional HADES
-- functional USBTool
-- fully intergreated DUT
-
-### Libraries
-
-- [SSHLibrary](https://marketsquare.github.io/SSHLibrary/SSHLibrary.html)
-- [Process](https://robotframework.org/robotframework/latest/libraries/Process.html)
-  
-### Variables
-
-  ```robotframework
-  ${USBTOOL_CONFIG}    testcases/resources/usbtool_config.json
-  ```
-
-<details>
-  <summary>Click to expand Config.json</summary>
-
-  ```json
-    {
-      "SSHConf": {
-        "_comment": "how to find IPAddress please go README.md",
-        "User": "pi",
-        "IPAddress": "000.000.000.000",
-        "Key": "raspberry",
-      },
-      "WiFi": {
-        "_comment": "ssid and password",
-        "ssid": "<ssid>",
-        "psk": "<password>"
-      }
-    }
-  ```
-
-</details>
-
-### Keywords
-
-  resource: [example.robot](https://github.com/luxc1101/raspi-usb-sim/blob/master/testcases/resource/example.robot)
-  
-  ```robotframework
-  Connect SSH To Raspi USB SIM
-  Reboot Raspi
-  Reboot Raspi And Reconnect
-  Mount Filesystem Raspi      ${Fs}
-  Remount Filesystem Raspi    ${Fs}
-  Unmount USB Device Raspi
-  Mount USB Device Raspi      ${DeviceType}    ${DeviceVID}    ${DevicePID}
-  ```
+- [x] `config` folder and `USBSimulator.exe` should be in **SAME** folder or root path
 
 ## Troubleshooting
 - Unclean file system
