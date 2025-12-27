@@ -89,6 +89,7 @@ if grep -q "modules-load=${OVERLAY_NAME}" $BOOT_CMDLINE_ACTIVE; then
   echo "${OVERLAY_NAME} already in ${BOOT_CMDLINE_ACTIVE}"
 else
   sudo sed -i "s/\(rootwait\)/\1 modules-load=${OVERLAY_NAME}/" $BOOT_CMDLINE_ACTIVE
+  echo "Added ${OVERLAY_NAME} to ${BOOT_CMDLINE_ACTIVE}"
 fi
 echo "PROGRESS:14"
 if grep -q "${OVERLAY_NAME}" $MODULES; then

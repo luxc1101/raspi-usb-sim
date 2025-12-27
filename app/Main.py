@@ -40,10 +40,10 @@ class Ui_MainWindow(QMainWindow):
     '''
     UI Main window
     '''
-    with open(os.path.join(os.getcwd(), "Config.json"),'r',encoding="utf8") as f:
+    with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
         setup_dict = json.load(f)
 
-    with open(os.path.join(os.getcwd(),"device_proj.json"),'r', encoding="utf8") as f:
+    with open(os.path.join(os.getcwd(),"./config/device_proj.json"),'r', encoding="utf8") as f:
         device_dict_proj = json.load(f)
 
     def __init__(self):
@@ -516,7 +516,7 @@ class Ui_MainWindow(QMainWindow):
         initialize raspberry device and save the latest loaded project name in `Config.json` 
         afterwards close app
         '''
-        with open(os.path.join(os.getcwd(), "Config.json"),'r',encoding="utf8") as f:
+        with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
             setup_dict = json.load(f)
 
         if self.ssh_isconnected:
@@ -524,7 +524,7 @@ class Ui_MainWindow(QMainWindow):
         for action in self.projectGroup.actions(): # last selected project name saved in Config.json
             if action.isChecked():
                 setup_dict["Project"] = action.text()
-                with open(os.path.join(os.getcwd(), "Config.json"), 'w') as f:
+                with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
                     json.dump(setup_dict, f)
                 break
         # subprocess.check_output('cmd /c "netsh wlan disconnect"', shell=True) # disconnect WiFi
@@ -732,9 +732,9 @@ class Ui_MainWindow(QMainWindow):
             self.exit_SSHClient()
 
         if self.ssh_isconnected:
+            self.thread_trace_update(f'Connected to {self.Param["IP"]}')
             self.update_max_space()
             self.check_imgexistence()
-            self.thread_trace_update(f'Connected to {self.Param["IP"]}')
             self.actionMount.setEnabled(True)
             self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
     

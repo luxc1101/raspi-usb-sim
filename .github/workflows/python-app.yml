@@ -13,6 +13,7 @@ permissions:
 
 env:
   APP_DIR: 'app'
+  CONFIG_DIR: 'config'
   ARTIFACTS_DIR: 'dist'
   ARTIFACTS_NAME: 'USBSimulator'
   USBTOOL_INSTALL: 'usbtool_install'
@@ -56,11 +57,10 @@ jobs:
         run: |
           cd $env:APP_DIR
           New-Item -Path "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -ItemType Directory -Force
-          Copy-Item "Config.json" -Destination "$env:ARTIFACTS_DIR"
-          Copy-Item "device_proj.json" -Destination "$env:ARTIFACTS_DIR"
+          Copy-Item "$env:CONFIG_DIR" -Destination "$env:ARTIFACTS_DIR" -Recurse -Force
           Copy-Item "$env:WIFI_CONFIG" -Destination "$env:ARTIFACTS_DIR" -Recurse -Force
           Copy-Item "src" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
-          Copy-Item "device_proj.json" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL"
+          Copy-Item "$env:CONFIG_DIR/device_proj.json" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL"
           Copy-Item "scripts/*" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
         shell: pwsh
 

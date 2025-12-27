@@ -207,7 +207,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.msg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
         
 
-        with open(os.path.join(os.getcwd(), "Config.json"),'r',encoding="utf8") as f:
+        with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
             self.setup_dict = json.load(f)
             f.close()
         
@@ -492,7 +492,7 @@ class Ui_RaspiSshConnection(QMainWindow):
                 QTimer.singleShot(1000, lambda : self.msg.done(0))
                 return self.msg.show()
         else:
-            with open(os.path.join(os.getcwd(), "Config.json"), 'w') as f:
+            with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
                 json.dump(self.setup_dict, f)
                 f.close()
             
