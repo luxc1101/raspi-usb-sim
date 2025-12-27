@@ -12,7 +12,15 @@
 
 <img src="https://content.instructables.com/ORIG/F60/5H8G/KNHGQNWP/F605H8GKNHGQNWP.png?auto=webp&frame=1&width=810&fit=bounds&md=38489d1a10177d77d78f77287ad3bd0a" width="100" >
 
-The idea aims to reduice the amount of work for USB sticks plug in & out during the testing. Raspberry Pi Zero can emulate USB devices (MSC, HID, Eth Adapter, etc). The tool can also automate tests via SSH communication. The PID/VID of the emulated USB devices can be easily adjusted as well.
+The idea aims to reduice the amount of work for USB sticks plug in & out during the testing. Raspberry Pi Zero can emulate USB devices: 
+ - MSC
+ - HID
+ - ECM
+ - CDC
+ - NCM
+ - MTP
+ 
+ The tool can also automate tests via SSH communication. The PID/VID of the emulated USB devices can be easily adjusted as well.
 
 ## Big Picture
 
@@ -72,36 +80,43 @@ unzip the downloaded packages, the downloaded release folder structure:
   
   ```
   .
-  |   Config.json
-  |   device_proj.json
-  |   USBSimulator.exe
-  |
-  +---usbtool_install
-  |   |   device_proj.json
-  |   |   fswd.service
-  |   |   fswd.sh
-  |   |   install.sh
-  |   |   kybd-descriptor.bin
-  |   |   mount_app.py
-  |   |   mount_robot.py
-  |   |   requirements.txt
-  |   |
-  |   \---src
-  |           acm_device.py
-  |           a_device.py
-  |           a_validator.py
-  |           device_data.py
-  |           device_dictcreator.py
-  |           ecm_device.py
-  |           fscreator.py
-  |           hid_device.py
-  |           msc_device.py
-  |           rndis_device.py
-  |           samba_service.py
-  |           usb_peripheral.py
-  |           watchdog_service.py
-  |
-  \---wificonfig
+  │   USBSimulator.exe
+  │
+  ├───config
+  │       Config.json
+  │       device_proj.json
+  │
+  ├───usbtool_install
+  │   │   device_proj.json
+  │   │   fswd.service
+  │   │   fswd.sh
+  │   │   install.sh
+  │   │   kybd-descriptor.bin
+  │   │   mount_app.py
+  │   │   mount_robot.py
+  │   │   requirements.txt
+  │   │   umtprd
+  │   │   umtprd.conf
+  │   │
+  │   └───src
+  │           acm_device.py
+  │           a_device.py
+  │           a_validator.py
+  │           device_data.py
+  │           device_dictcreator.py
+  │           ecm_device.py
+  │           fscreator.py
+  │           hid_device.py
+  │           msc_device.py
+  │           mtp_device.py
+  │           ncm_device.py
+  │           rndis_device.py
+  │           samba_service.py
+  │           stdout_writer.py
+  │           usb_peripheral.py
+  │           watchdog_service.py
+  │
+  └───wificonfig
           ssh
           wpa_supplicant.conf
   ```
