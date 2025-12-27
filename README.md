@@ -48,7 +48,7 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 #### SD card format
 
 - right click → format as FAT32
-- or in Raspberry Pi Imager → OS wählen → löschen (card as FAT32 format)
+- or in Raspberry Pi Imager app format SD card
 
 #### [Rpi Imager (download)](https://www.raspberrypi.com/software/)
 
@@ -61,7 +61,7 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 - Setting option
   - Hostname: rpi<?>.local # e.g. rpi0.local
   - Username: pi
-  - pw: pass
+  - PW: pass
   - WiFi:
     - SSID: <WiFi network name (ssid)>
     - PW: <password of ssid>
