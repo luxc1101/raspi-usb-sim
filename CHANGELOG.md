@@ -119,3 +119,7 @@
 
 #### version 1.1.7
 - `feat` add `Network Control Model` usb device class
+
+#### version 1.1.8
+- `feat` add `Media Transfer Protocol` usb device class
+- `refactor` install.sh script

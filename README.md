@@ -1,29 +1,5 @@
-- [USB Simulator](#usb-simulator)
-  - [Big Picture](#big-picture)
-  - [Preparation](#preparation)
-  - [Quick Tutorial](#quick-tutorial)
-    - [Operation System Installation](#operation-system-installation)
-      - [SD card format](#sd-card-format)
-      - [Rpi Imager (download)](#rpi-imager-download)
-    - [Download the released USBTool software](#download-the-released-usbtool-software)
-    - [Connections](#connections)
-      - [Preparing the Rpi: Editing the WiFi Configuration File](#preparing-the-rpi-editing-the-wifi-configuration-file)
-      - [Preparing the Rpi: Mounting and Connections](#preparing-the-rpi-mounting-and-connections)
-      - [Preparing the SSH Connection: IP, Port, SSID and Password](#preparing-the-ssh-connection-ip-port-ssid-and-password)
-        - [Router](#router)
-        - [Phone Hotspot](#phone-hotspot)
-    - [SSHClient Creation](#sshclient-creation)
-    - [Configuration](#configuration)
-      - [Preparing package installation and configuration for Rpi](#Preparing-package-installation-and-configuration-for-Rpi)
-    - [GUI and Elements](#gui-and-elements)
-  - [Checklist](#checklist)
-  - [USBTool in HADES Testautomation](#usbtool-in-hades-testautomation)
-    - [Prerequisites](#prerequisites)
-    - [Libraries](#libraries)
-    - [Variables](#variables)
-    - [Keywords](#keywords)
+[TOC]
 
-  - [Troubleshooting](#troubleshooting)
 
 <!-- 
 
@@ -69,7 +45,10 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
 #### [Rpi Imager (download)](https://www.raspberrypi.com/software/)
 
 - Raspberry Pi Modell: Raspberry Pi Zero
-- Select OS: `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**)
+- Select OS: 
+  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**) (old OS)
+  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bookworm**) (recommand)
+  - `Raspberry Pi OS (32-bit) Lite` (**trixie**) (latest OS, ssh connection somehow slow)
 - Choose SD card
 - Setting option
   - Hostname: rpi<?>.local # e.g. rpi0.local
@@ -138,24 +117,47 @@ Before starting, it is important to know that the Raspberry Pi and the test PC n
 > **NOTE**:  
 >Once you have already configured the WiFi SSID and PSK in step [Operation System Installation](#operation-system-installation) and the WiFi is not changed (SSID, PSK) and still available, you can skip this step.
 
-Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
-
 <details>
-  <summary>wpa_supplicant.conf</summary>
+  <summary>Change WiFi for old rpi OS e.g. bullseye</summary>
+  
+  Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
 
-  ```
-  # Datei wpa_supplicant.conf in der Boot-Partition (Raspbian Stretch)
-  country=DE
-  update_config=1
-  ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-  network={
-  key_mgmt=WPA-PSK
-  ssid="<SSID>>"
-  psk="<password>"
-  }
-  ```
+  <details>
+    <summary>wpa_supplicant.conf</summary>
+  
+    # Datei wpa_supplicant.conf in der Boot-Partition (Raspbian Stretch)
+    country=DE
+    update_config=1
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    network={
+     key_mgmt=WPA-PSK
+     ssid="<SSID>>"
+     psk="<password>"
+    }
+
+  </details>
 </details>
 
+<details>
+  <summary>Change WiFi for new rpi OS e.g. bookworm/trixie</summary>
+  
+  scan availabel wifi list
+
+  ```shell
+  sudo iwlist scan | grep "<SSID>"
+  ```
+  list availbale WiFi metworks
+  
+  ```shell
+  nmcli dev wifi list
+  ```
+  Connect to new WiFi
+  
+  ```shell
+  sudo nmcli dev wifi connect "YourWiFiName" password "YourPassword"
+  ```
+</details>
+  
 #### Preparing the Rpi: Mounting and Connections
 
 Once the microSD card has been updated, remove it from the microSD card reader and mount it on the Rpi.
@@ -322,6 +324,8 @@ State Machine:
 - **Ethernet Adapter (ECM)**: mount ECM devices with specific VID and PID
 - **Human Interface Device (HID)**: mount HID devices with specific VID and PID
 - **Communication Device Class (CDC)**: mount CDC devices with specific VID and PID
+- **Network Control Model (NCM)**: mount NCM devices with specific VID and PID
+- **Media Transfer Protocal (MTP)**: mount MTP devices with specific VID and PID
 
 #### Trace
 
@@ -339,66 +343,10 @@ State Machine:
 - [x] WiFi with known SSID and Passport
 - [x] microSD card within correct OS, needed scripts and installed packages
 - [x] Rpi, USB micro-B to USB A Cabel x2, USB WiFi adapter (if needed)
-- [x] `wpa_supplicant.conf` and `ssh` are written into bootfs partition in microSD card, ONLY if WiFi has to be changed. (e.g. ssid="AMB-StreamWLAN")
+- [x] WiFi for rpi ssh connection is succefully configured
 - [x] power Rpi up and connect Rpi to DUT, USB WiFi adapter is connected to PC (if needed)
 - [x] WiFi & SSH connection is establish
-- [x] `Config.json`, `device_proj.json` and `USBSimulator.exe` should be in **SAME** folder or root path
-
-## USBTool in Robot Testframework
-
-The USBTool can also be implemented in Robot Testframework for testautomation. The [SSHLibrary](https://marketsquare.github.io/SSHLibrary/SSHLibrary.html) will enable to cotrol the USBTool through SSHClient.
-
-### Prerequisites
-
-- functional HADES
-- functional USBTool
-- fully intergreated DUT
-
-### Libraries
-
-- [SSHLibrary](https://marketsquare.github.io/SSHLibrary/SSHLibrary.html)
-- [Process](https://robotframework.org/robotframework/latest/libraries/Process.html)
-  
-### Variables
-
-  ```robotframework
-  ${USBTOOL_CONFIG}    testcases/resources/usbtool_config.json
-  ```
-
-<details>
-  <summary>Click to expand Config.json</summary>
-
-  ```json
-    {
-      "SSHConf": {
-        "_comment": "how to find IPAddress please go README.md",
-        "User": "pi",
-        "IPAddress": "000.000.000.000",
-        "Key": "raspberry",
-      },
-      "WiFi": {
-        "_comment": "ssid and password",
-        "ssid": "<ssid>",
-        "psk": "<password>"
-      }
-    }
-  ```
-
-</details>
-
-### Keywords
-
-  resource: [example.robot](https://github.com/luxc1101/raspi-usb-sim/blob/master/testcases/resource/example.robot)
-  
-  ```robotframework
-  Connect SSH To Raspi USB SIM
-  Reboot Raspi
-  Reboot Raspi And Reconnect
-  Mount Filesystem Raspi      ${Fs}
-  Remount Filesystem Raspi    ${Fs}
-  Unmount USB Device Raspi
-  Mount USB Device Raspi      ${DeviceType}    ${DeviceVID}    ${DevicePID}
-  ```
+- [x] `config` folder and `USBSimulator.exe` should be in **SAME** folder or root path
 
 ## Troubleshooting
 - Unclean file system

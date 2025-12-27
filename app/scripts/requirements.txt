@@ -4,3 +4,4 @@ samba
 inotify-tools
 btrfs-progs
 tree
+git
