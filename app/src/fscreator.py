@@ -91,7 +91,7 @@ class FSCreator():
 
     def _create_hfsplus(self, volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
-        self.executor.execute_cmd("sudo mkfs.hfsplus {} -v {}".format(self.mount_target.img_name, volume_name))
+        self.executor.execute_cmd("sudo mkfs.hfsplus -v {} -J {}".format(volume_name, self.mount_target.img_name))
 
     def _create_ext(self, ext_type:str, fs_label:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))

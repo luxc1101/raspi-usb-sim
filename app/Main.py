@@ -309,7 +309,7 @@ class Ui_MainWindow(QMainWindow):
 
     def _setup_tabs(self):
         '''
-        setup tabs for MSC, ECM, HID, CDC, and NCM
+        setup tabs for MSC, ECM, HID, CDC, NCM, MTP
         '''
         self.tabWidget = QtWidgets.QTabWidget(self.centralW)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
