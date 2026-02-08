@@ -123,3 +123,6 @@
 #### version 1.1.8
 - `feat` add `Media Transfer Protocol` usb device class
 - `refactor` install.sh script
+
+#### version 1.1.9
+- `feat` add `USB Audio Class` usb device class

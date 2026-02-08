@@ -175,7 +175,7 @@ class MSC(ADevice):
 
     def _mount_hfsplus(self):
         os.system("sudo fsck.hfsplus -f {} > error 2>&1".format(self.mount_target.img_name))
-        self._mount_others()
+        os.system('sudo mount -t hfsplus -o rw,force,uid=1000,gid=1000,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 
     def _mount_partitions(self):
         os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
