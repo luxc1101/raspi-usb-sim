@@ -16,8 +16,9 @@ from src.ecm_device import ECM
 from src.hid_device import HID
 from src.msc_device import MSC
 from src.ncm_device import NCM
-from src.mtp_device import MTP
 from src.rndis_device import RNDIS
+from src.mtp_device import MTP
+from src.uac_device import UAC
 from src.usb_peripheral import USBPeripheral
 
 deviceType = sys.argv[1]
@@ -31,6 +32,8 @@ python mount_robot.py 'MSC' 'FAT32' '-'               # MSC device
 python mount_robot.py 'HID' '0x0000' '0xffff'         # HID device
 python mount_robot.py 'CDC' '0x0000' '0xffff'         # CDC device
 python mount_robot.py 'ECM' '0x0000' '0xffff'         # ECM device
+python mount_robot.py 'MTP' '0x0000' '0xffff'         # MTP device
+python mount_robot.py 'UAC' '0x0000' '0xffff'         # UAC device
 python mount_robot.py 'EJECT' '-' '-'                 # Eject device
 '''
 
@@ -81,7 +84,7 @@ class DeviceOperator():
         if deviceType == "ECM":
             self.device_desc.idVendor = deviceArg0
             self.device_desc.idProduct = deviceArg1
-            self.device_desc.bDeviceClass = 0xEF
+            self.device_desc.bDeviceClass = 0xFF
             self.device_desc.bDeviceSubClass = 0x04
             self.device_desc.bDeviceProtocol = 0x01
             self.device_desc.product = "Emulated ECM device"
@@ -106,14 +109,15 @@ class DeviceOperator():
         if deviceType == "NCM":
             self.device_desc.idVendor = deviceArg0
             self.device_desc.idProduct = deviceArg1
-            self.device_desc.bDeviceClass = 0xEF
-            self.device_desc.bDeviceSubClass = 0x02
+            self.device_desc.bDeviceClass = 0x0A
+            self.device_desc.bDeviceSubClass = 0x0D
             self.device_desc.bDeviceProtocol = 0x01
             self.device_desc.product = "Emulated NCM device"
             self.device_desc.bmAttributes = 0x80
+            self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
-
+    
     def _isMTP(self) -> bool:
         if deviceType == "MTP":
             self.device_desc.idVendor = deviceArg0
@@ -122,6 +126,18 @@ class DeviceOperator():
             self.device_desc.bDeviceSubClass = 0x01
             self.device_desc.bDeviceProtocol = 0x01
             self.device_desc.product = "Emulated MTP device"
+            self.device_desc.bmAttributes = 0x80
+            return True
+        return False
+    
+    def _isUAC(self) -> bool:
+        if deviceType == "UAC":
+            self.device_desc.idVendor = deviceArg0
+            self.device_desc.idProduct = deviceArg1
+            self.device_desc.bDeviceClass = 0x01
+            self.device_desc.bDeviceSubClass = 0x01
+            self.device_desc.bDeviceProtocol = 0x00
+            self.device_desc.product = "Emulated UAC device"
             self.device_desc.bmAttributes = 0x80
             return True
         return False
@@ -149,6 +165,7 @@ class DeviceOperator():
         CDC
         NCM
         MTP
+        UAC
         '''
         if self._isMSC():
             self.device_dict.fill_msc_dictionary_robot()
@@ -170,12 +187,15 @@ class DeviceOperator():
 
         elif self._isAMC():
             self.device.usb_device = ACM(self.device_desc, DeviceFunction.acm.value)
-
+        
         elif self._isNCM():
             self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
-
+        
         elif self._isMTP():
             self.device.usb_device = MTP(self.device_desc, DeviceFunction.mtp.value)
+
+        elif self._isUAC():
+            self.device.usb_device = UAC(self.device_desc, DeviceFunction.uac2.value)
 
         elif self._isEJECT():
             self._eject_device()

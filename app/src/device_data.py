@@ -34,12 +34,20 @@ class DeviceDescriptors:
     RNDIS_SUBCLASS: hex = 0x06
     RNDIS_PORTOCAL: hex = 0x00
     DEV_ADDR: str = "00:dd:dc:eb:6d:a1"
-    HOST_ADDR: str = "00:dc:c8:f7:75:14"
+    HOST_ADDR: str = "00:50:b6:19:ee:24"
     QUMLT: int = 5
 
     # CDC-ACM attributes
     CDC_PORT_NUM: int = 0
 
+    # UAC attributes
+    P_CHMARK: hex = 0x03      # playback channel mark, stereo (0x03 = left + right)
+    P_SRATE: int = 48000      # playback sampling rate
+    P_SSIZE: bytes = 2        # playback sample size (bytes) 2 bytes = 16 bits
+    
+    C_CHMARK: hex = 0x03      # capture channel mark, stereo (0x03 = left + right)
+    C_SRATE: int = 48000      # capture sampling rate
+    C_SSIZE: bytes = 2        # capture sample size (bytes) 2 bytes = 16 bits
 
 
 @dataclass
@@ -55,6 +63,8 @@ class DeviceFunction(Enum):
     serial          = 'gser.usb0'
     ncm             = 'ncm.usb0'
     mtp             = 'ffs.mtp'
+    uac1            = 'uac1.usb0'
+    uac2            = 'uac2.usb0'
 
 @dataclass
 class Color:

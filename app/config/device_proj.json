@@ -48,6 +48,7 @@
         },
         "NCM": {
             "0": [
+                {"dev": "Realtek RTL8156B USB 2.5G Ethernet Adapter", "VID": "0x0bda", "PID": "0x8156"}
             ],
             "1": [],
             "type": {
@@ -61,6 +62,15 @@
             "1": [],
             "type": {
                 "func": "ffs.mtp",
+                "attribute": {}
+            }
+        },
+        "UAC": {
+            "0": [
+            ],
+            "1": [],
+            "type": {
+                "func": "uac1.usb0",
                 "attribute": {}
             }
         },
@@ -89,7 +99,7 @@
 				{"dev": "ext4", "img": "ext4.img", "mnt": "/mnt/usb_ext4"},
 				{"dev": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
-				{"dev": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},														   
+                {"dev": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
@@ -105,24 +115,35 @@
             }
         },
         "Robot": {
-            "COMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
+            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
             "EXT4": {"name": "EXT4", "img": "ext4.img", "mnt": "/mnt/usb_ext4"},
             "FAT16": {"name": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
             "FAT32": {"name": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
-			"VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},																	
+            "VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},
             "NTFS": {"name": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
             "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
-            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
+            "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }
     },
     "GEI":{
         "ECM": {
             "0": [
+                {"dev": "D-Link DUB-E100 big", "VID": "0x2001", "PID": "0x3C05"},
+                {"dev": "D-Link DUB-E100 small", "VID": "0x2001", "PID": "0x1A02"},
+                {"dev": "Edimax EU-4207 big", "VID": "0x0B95", "PID" : "0x7720"},
+                {"dev": "Edimax EU-4208 small", "VID": "0x0B95", "PID" : "0x772B"},
+                {"dev": "Delock 61969 USB 2.0 Gigabit LAN Adapter", "VID": "0x0B95", "PID" : "0x1780"},
+                {"dev": "Digitus USB 3.0 Gigabit LAN Adapter", "VID": "0x0B95", "PID" : "0x1790"},
+                {"dev": "Digitus USB Typ-C Gigabit DN-3024", "VID": "0x0BDA", "PID" : "0x8153"},
+                {"dev": "D-Link DUB-1312", "VID": "0x2001", "PID" : "0x4A00"},
+                {"dev": "LogiLink UA0144B", "VID": "0x0BDA", "PID" : "0x8152"}
             ],
             "1": [
             ],
@@ -134,9 +155,9 @@
         },
         "HID": {
             "0": [
+                {"dev": "Keyboard", "VID": "0x413C", "PID": "0x2113"}
             ],
             "1": [
-                {"dev": "Keyboard", "VID": "0x413C", "PID": "0x2113"}
             ],
             "type": {
                 "func": "hid.usb0",
@@ -168,6 +189,16 @@
             "1": [],
             "type": {
                 "func": "ffs.mtp",
+                "attribute": {}
+            }
+        },
+        "UAC": {
+            "0": [
+                {"dev": "Jabra Evolve 65", "VID": "0x0b0e", "PID": "0x030c"}
+            ],
+            "1": [],
+            "type": {
+                "func": "uac1.usb0",
                 "attribute": {}
             }
         },
@@ -205,19 +236,21 @@
             }
         },
         "Robot": {
-            "COMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
+            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
             "EXT4": {"name": "EXT4", "img": "ext4.img", "mnt": "/mnt/usb_ext4"},
             "FAT16": {"name": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
             "FAT32": {"name": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
-			"VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},																	
+            "VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},
             "NTFS": {"name": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
             "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
-            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
+            "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }
     },
     "User":{
@@ -240,7 +273,7 @@
                 {"dev": "Keyboard", "VID": "0x413C", "PID": "0x2113"}
             ],
             "1": [
-                {"dev": "Keyboard", "VID": "0x413C", "PID": "0x2113"}
+                {"dev": "Unknown HID Device", "VID": "0x413C","PID": "0x2113"}
             ],
             "type": {
                 "func": "hid.usb0",
@@ -279,6 +312,16 @@
                 "attribute": {}
             }
         },
+        "UAC": {
+            "0": [
+                {"dev": "Jabra Evolve 65", "VID": "0x0b0e", "PID": "0x030c"}
+            ],
+            "1": [],
+            "type": {
+                "func": "uac1.usb0",
+                "attribute": {}
+            }
+        },
         "TEST": {
             "0": [
                 {"dev": "TEST_SE0_NAK", "VID": "0x1a0a", "PID": "0x0101"},
@@ -304,7 +347,7 @@
 				{"dev": "ext4", "img": "ext4.img", "mnt": "/mnt/usb_ext4"},
 				{"dev": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
-				{"dev": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},														   
+                {"dev": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
@@ -320,20 +363,21 @@
             }	
         },
         "Robot": {
-            "COMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
+            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
             "EXT4": {"name": "EXT4", "img": "ext4.img", "mnt": "/mnt/usb_ext4"},
             "FAT16": {"name": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
             "FAT32": {"name": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
-			"VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},																	
+            "VFAT": {"name": "VFAT", "img": "vfat.img", "mnt": "/mnt/usb_vfat"},
             "NTFS": {"name": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
             "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
-            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
+            "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
+            "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }
     }
-
 }

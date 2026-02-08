@@ -21,7 +21,7 @@ from PyQt5.QtCore import QDate, QEventLoop, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFrame, QLabel, QMainWindow, QMessageBox
 from QLed import QLed
 
-version = '1.1.8'
+version = '1.1.9'
 '''
 This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens), 
 handling both UI scaling and sharpness of icons/images. 
@@ -66,8 +66,9 @@ class Ui_MainWindow(QMainWindow):
             self.configui = Ui_RaspiSshConnection()
             self.configui.setup_ui(self.SSHConnectionWin)
             self.configui.SSHConnection_signal.connect(self.login_SSHClient)
+            self.SSHConnectionWin.setParent(self, self.SSHConnectionWin.windowFlags())                                                                                      
             self.SSHConnectionWin.open()        
-    
+
     def show_help_window(self):
         '''
         show info about this tool and quick user guide
@@ -309,7 +310,7 @@ class Ui_MainWindow(QMainWindow):
 
     def _setup_tabs(self):
         '''
-        setup tabs for MSC, ECM, HID, CDC, NCM, MTP
+        setup tabs for MSC, ECM, HID, CDC, NCM, MTP, UAC
         '''
         self.tabWidget = QtWidgets.QTabWidget(self.centralW)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -337,6 +338,8 @@ class Ui_MainWindow(QMainWindow):
         self.MTP = TabContent()
         self.tabWidget.addTab(self.MTP, "Media Transfer Protocol")
 
+        self.UAC = TabContent()
+        self.tabWidget.addTab(self.UAC, "USB Audio Class")                    
         ### add all tabs into firstLayout
         self.firstLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
@@ -541,13 +544,14 @@ class Ui_MainWindow(QMainWindow):
         self.CDC.comboBox_Device.clear()                        # clear CDC combobox
         self.NCM.comboBox_Device.clear()                        # clear NCM combobox
         self.MTP.comboBox_Device.clear()                        # clear MTP combobox
+        self.UAC.comboBox_Device.clear()                        # clear UAC combobox                                                                                      
         msc_supported = self.device_dict["MSC"]["0"]            # msc supported devices
         ecm_supported = self.device_dict["ECM"]["0"]            # ecm supported devices
         hid_supported = self.device_dict["HID"]["0"]            # hid supported devices
         cdc_supported = self.device_dict["CDC"]["0"]            # cdc supported devices
         ncm_supported = self.device_dict["NCM"]["0"]            # ncm supported devices
         mtp_supported = self.device_dict["MTP"]["0"]            # mtp supported devices
-
+        uac_supported = self.device_dict["UAC"]["0"]            # uac supported devices
         for id , dev in enumerate(msc_supported):
             self.msc_dict[dev["dev"]] = [dev["img"].split('.')[0],str(id)]
             self.comboBox_MSC.addItem(dev["dev"])
@@ -561,7 +565,8 @@ class Ui_MainWindow(QMainWindow):
             self.NCM.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
         for _ , dev in enumerate(mtp_supported):
             self.MTP.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
-
+        for _ , dev in enumerate(uac_supported):
+            self.UAC.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])                                              
     def color_message(self, message:str, color:str) -> str:
         '''
         return text with specific color
@@ -969,6 +974,7 @@ class Ui_MainWindow(QMainWindow):
                     self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
                 self.paramdict["Cmd"] = f'NCM Unknown 0x{self.NCM.LE_VID.text()} 0x{self.NCM.LE_PID.text()}'
+        
         if self.tabWidget.currentIndex() == 5: # tab 5: MTP
             if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
                 self.paramdict["Cmd"] = f'MTP {self.MTP.comboBox_Device.currentText()}'
@@ -978,6 +984,15 @@ class Ui_MainWindow(QMainWindow):
                     return
                 self.paramdict["Cmd"] = f'MTP Unknown 0x{self.MTP.LE_VID.text()} 0x{self.MTP.LE_PID.text()}'
 
+        if self.tabWidget.currentIndex() == 6: # tab 6: UAC
+            if self.UAC.radioButton_sup.isChecked() and self.UAC.comboBox_Device.currentText() != '':
+                self.paramdict["Cmd"] = f'UAC {self.UAC.comboBox_Device.currentText()}'
+            else:
+                if len(self.UAC.LE_VID.text()) != 4 or len(self.UAC.LE_PID.text()) != 4:
+                    self.create_messagebox(title="UAC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
+                    return
+                self.paramdict["Cmd"] = f'UAC Unknown 0x{self.UAC.LE_VID.text()} 0x{self.UAC.LE_PID.text()}'
+                                                                 
         cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
         # print(cmd)
         self.send_command_to_SSHClient(cmd)
