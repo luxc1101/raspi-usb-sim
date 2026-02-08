@@ -19,6 +19,7 @@ The idea aims to reduice the amount of work for USB sticks plug in & out during 
  - CDC
  - NCM
  - MTP
+ - UAC
  
  The tool can also automate tests via SSH communication. The PID/VID of the emulated USB devices can be easily adjusted as well.
 
@@ -113,6 +114,7 @@ unzip the downloaded packages, the downloaded release folder structure:
   │           rndis_device.py
   │           samba_service.py
   │           stdout_writer.py
+  │           uac_devcie.py
   │           usb_peripheral.py
   │           watchdog_service.py
   │
@@ -341,6 +343,7 @@ State Machine:
 - **Communication Device Class (CDC)**: mount CDC devices with specific VID and PID
 - **Network Control Model (NCM)**: mount NCM devices with specific VID and PID
 - **Media Transfer Protocal (MTP)**: mount MTP devices with specific VID and PID
+- **USB Audio Class (UAC)**: mount UAC devices with specific VID and PIP (stereo, 48kHz, 16bits) 
 
 #### Trace
 
