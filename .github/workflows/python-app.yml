@@ -5,8 +5,8 @@ name: Python USBTool CI
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+      tags:
+        - 'v*.*.*'
 
 permissions:
   contents: write
@@ -20,10 +20,10 @@ env:
   ZIP_NAME: 'usb-tool_${{ github.ref_name }}.zip'
   WIFI_CONFIG: '${{ github.workspace }}/wificonfig'
   RELEASE_HELPER: 'release_description_helper.py'
-  PACKAGE_REGISTRY_URL: 'https://github.com/${{ github.repository }}/packages'
+  PACKAGE_REGISTRY_URL: 'https://github.com/${{ github.repository }}/packages' # Adjust as needed
 
 jobs:
-  setup:
+  release-app:
     runs-on: windows-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -46,69 +46,13 @@ jobs:
           poetry install
         shell: pwsh
 
-      - name: Cache virtual environment
-        uses: actions/cache@v3
-        with:
-          path: ~/.venv
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
-
-      - name: Save workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: workspace
-          path: .
-
-  build:
-    runs-on: windows-latest
-    needs: setup
-    steps:
-      - name: Restore workspace
-        uses: actions/download-artifact@v4
-        with:
-          name: workspace
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10.11'
-
-      - name: Install Poetry
-        run: |
-          pip install poetry
-          poetry self add poetry-plugin-shell
-
-      - name: Restore Poetry virtual environment
-        uses: actions/cache@v3
-        with:
-          path: ~/.venv
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
-
       - name: Build with PyInstaller
         run: |
           cd $env:APP_DIR
           poetry run pyrcc5 ProQrc.qrc -o Icons.py
           poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=AppIcon.ico --log-level=DEBUG .\Main.py
         shell: pwsh
-
-      - name: Save build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: $env:APP_DIR
-
-  archive:
-    runs-on: windows-latest
-    needs: build
-    steps:
-      - name: Restore build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-
+      
       - name: Archive files
         run: |
           cd $env:APP_DIR
@@ -120,47 +64,22 @@ jobs:
           Copy-Item "scripts/*" -Destination "$env:ARTIFACTS_DIR\$env:USBTOOL_INSTALL" -Recurse -Force
         shell: pwsh
 
-      - name: Create ZIP archive
+      - name: Deploy to local folder and zip
         run: |
           cd $env:APP_DIR
           Compress-Archive -Path $env:ARTIFACTS_DIR -DestinationPath $env:ZIP_NAME
-        shell: pwsh
-
-      - name: Save archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: archive
-          path: $env:APP_DIR
-
-  release:
-    runs-on: windows-latest
-    needs: archive
-    steps:
-      - name: Restore archived artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: archive
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10.11'
-
-      - name: Install Poetry
-        run: |
-          pip install poetry
-          poetry self add poetry-plugin-shell
-
-      - name: Generate Release Notes
-        run: |
-          $desc = poetry run python "$env:RELEASE_HELPER" "${{ github.ref_name }}"
-          echo "RELEASE_DESCRIPTION=$desc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
       - name: Upload ZIP to GitHub Releases
         uses: actions/upload-artifact@v4
         with:
           path: ${{ env.APP_DIR }}/${{ env.ZIP_NAME }}
+
+      - name: Generate Release Notes
+        run: |
+          $desc = poetry run python "$env:RELEASE_HELPER" "${{ github.ref_name }}"
+          echo "RELEASE_DESCRIPTION=$desc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -170,4 +89,4 @@ jobs:
           body: ${{ env.RELEASE_DESCRIPTION }}
           files: ${{ env.APP_DIR }}/${{ env.ZIP_NAME }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
