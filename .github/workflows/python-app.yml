@@ -69,6 +69,16 @@ jobs:
         with:
           name: workspace
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.11'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry self add poetry-plugin-shell
+
       - name: Restore Poetry virtual environment
         uses: actions/cache@v3
         with:
@@ -130,6 +140,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: archive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.11'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry self add poetry-plugin-shell
 
       - name: Generate Release Notes
         run: |
