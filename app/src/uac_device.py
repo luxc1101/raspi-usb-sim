@@ -10,7 +10,7 @@ class UAC(ADevice):
     ### Reference
     + [How to config gadget](https://docs.kernel.org/usb/gadget_configfs.html)
 
-    + [Gadgets functions](https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-uac1)
+    + [Gadgets functions](https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-uac2)
         
         - Gadgets functions depends on Kernel version
         

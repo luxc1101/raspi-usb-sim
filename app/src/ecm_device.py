@@ -20,10 +20,10 @@ class ECM(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, ecm_decsriptor: DeviceDescriptors, ecm_function: str) -> None:
+    def __init__(self, ecm_descriptor: DeviceDescriptors, ecm_function: str) -> None:
         self.ecm_root = self.USB_CONFIGFS_HOME
         self.ecm_function = ecm_function
-        ECM.DESCRIPTOR = ecm_decsriptor
+        ECM.DESCRIPTOR = ecm_descriptor
         super().__init__()
 
     def create_the_gadgets(self):
