@@ -19,10 +19,10 @@ class MTP(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, mtp_decsriptor: DeviceDescriptors, mtp_function: str) -> None:
+    def __init__(self, mtp_descriptor: DeviceDescriptors, mtp_function: str) -> None:
         self.mtp_root = self.USB_CONFIGFS_HOME
         self.mtp_function = mtp_function
-        MTP.DESCRIPTOR = mtp_decsriptor
+        MTP.DESCRIPTOR = mtp_descriptor
         super().__init__()
 
     def create_the_gadgets(self):

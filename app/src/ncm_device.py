@@ -20,10 +20,10 @@ class NCM(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, ncm_decsriptor: DeviceDescriptors, ncm_function: str) -> None:
+    def __init__(self, ncm_descriptor: DeviceDescriptors, ncm_function: str) -> None:
         self.ncm_root = self.USB_CONFIGFS_HOME
         self.ncm_function = ncm_function
-        NCM.DESCRIPTOR = ncm_decsriptor
+        NCM.DESCRIPTOR = ncm_descriptor
         super().__init__()
 
     def create_the_gadgets(self):

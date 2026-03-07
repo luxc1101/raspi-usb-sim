@@ -15,7 +15,7 @@ from src.mtp_device import MTP
 from src.uac_device import UAC
 from src.usb_peripheral import USBPeripheral
 
-# paramdict = literal_eval(sys.argv[1])
+
 parser = argparse.ArgumentParser(description='Simulate a USB device on Rpi')
 parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE', 'REMOUNT', 'QUIT'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE, REMOUNT)')
 parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')

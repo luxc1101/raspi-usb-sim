@@ -20,10 +20,10 @@ class RNDIS(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, rndis_decsriptor: DeviceDescriptors, rndis_function: str) -> None:
+    def __init__(self, rndis_descriptor: DeviceDescriptors, rndis_function: str) -> None:
         self.rndis_root = self.USB_CONFIGFS_HOME
         self.rndis_function = rndis_function
-        RNDIS.DESCRIPTOR = rndis_decsriptor
+        RNDIS.DESCRIPTOR = rndis_descriptor
         super().__init__()
 
     def create_the_gadgets(self):

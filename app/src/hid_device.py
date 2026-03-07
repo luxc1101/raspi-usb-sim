@@ -20,10 +20,10 @@ class HID(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, hid_decsriptor: DeviceDescriptors, hid_function: str) -> None:
+    def __init__(self, hid_descriptor: DeviceDescriptors, hid_function: str) -> None:
         self.hid_root = self.USB_CONFIGFS_HOME
         self.hid_function = hid_function
-        HID.DESCRIPTOR = hid_decsriptor
+        HID.DESCRIPTOR = hid_descriptor
         super().__init__()
 
     def create_the_gadgets(self):
