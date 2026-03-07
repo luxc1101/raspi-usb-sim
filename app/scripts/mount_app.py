@@ -1,6 +1,7 @@
 import os
 import sys
-from ast import literal_eval
+import argparse
+# from ast import literal_eval
 
 from src.acm_device import ACM
 from src.device_data import DeviceDescriptors, DeviceFunction
@@ -14,28 +15,36 @@ from src.mtp_device import MTP
 from src.uac_device import UAC
 from src.usb_peripheral import USBPeripheral
 
-paramdict = literal_eval(sys.argv[1])
+# paramdict = literal_eval(sys.argv[1])
+parser = argparse.ArgumentParser(description='Simulate a USB device on Rpi')
+parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE', 'REMOUNT', 'QUIT'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE, REMOUNT)')
+parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')
+parser.add_argument('--pid', type=str, help='Product ID for the USB device')
+parser.add_argument('--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
+parser.add_argument('--samba', type=int, choices=[0, 2], default=0, help='Whether to configure samba service for MSC device (0 or 2)')
+parser.add_argument('--wado', type=int, choices=[0, 2], default=0, help='Whether to start watchdog for MSC device (0 or 2)')
+
 
 class DeviceOperator():
 
-    def __init__(self, parameter_dict):
-        self.paramdict = parameter_dict
-        self.simulator_action = str(self.paramdict["Cmd"])
+    def __init__(self):
+        self.args = parser.parse_args()
+        if self.args.type == "MSC" and not self.args.fs:
+            parser.error("--fs argument is required when --type is MSC")
         self.device_dict = DeviceDictCreator(os.path.join(os.getcwd(),"device_proj.json"))
         self.device_desc = DeviceDescriptors()
         self.device = USBPeripheral()
 
     
     def _isMSC(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "MSC":
+        if self.args.type == "MSC":
             return True
         return False
     
     def _isHID(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "HID":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "HID":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0x03
             self.device_desc.bDeviceSubClass = 0x02
             self.device_desc.bDeviceProtocol = 0x01
@@ -49,10 +58,9 @@ class DeviceOperator():
         return False
     
     def _isRNDIS(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "RNDIS":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "RNDIS":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0xEF
             self.device_desc.bDeviceSubClass = 0x04
             self.device_desc.bDeviceProtocol = 0x01
@@ -65,10 +73,9 @@ class DeviceOperator():
         return False
     
     def _isECM(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "ECM":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "ECM":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0xFF
             self.device_desc.bDeviceSubClass = 0x04
             self.device_desc.bDeviceProtocol = 0x01
@@ -78,10 +85,9 @@ class DeviceOperator():
         return False
     
     def _isAMC(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "CDC":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "CDC":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0x02
             self.device_desc.bDeviceSubClass = 0x00
             self.device_desc.bDeviceProtocol = 0x00
@@ -92,10 +98,9 @@ class DeviceOperator():
         return False
     
     def _isNCM(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "NCM":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "NCM":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0x0A
             self.device_desc.bDeviceSubClass = 0x0D
             self.device_desc.bDeviceProtocol = 0x01
@@ -106,10 +111,9 @@ class DeviceOperator():
         return False
     
     def _isMTP(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "MTP":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "MTP":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0x06
             self.device_desc.bDeviceSubClass = 0x01
             self.device_desc.bDeviceProtocol = 0x01
@@ -119,10 +123,9 @@ class DeviceOperator():
         return False
     
     def _isUAC(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "UAC":
-            str_PIDVID = self.simulator_action.split(' ')[1:]
-            self.device_desc.idProduct = str_PIDVID[-1]
-            self.device_desc.idVendor = str_PIDVID[-2]
+        if self.args.type == "UAC":
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.idVendor = self.args.vid
             self.device_desc.bDeviceClass = 0x01
             self.device_desc.bDeviceSubClass = 0x01
             self.device_desc.product = "Emulated UAC device"
@@ -131,22 +134,22 @@ class DeviceOperator():
         return False
 
     def _isEJECT(self) -> bool:
-        if self.simulator_action == "EJECT":
+        if self.args.type == "EJECT":
             return True
         return False
     
     def _isDELETE(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "DELETE":
+        if self.args.type == "DELETE":
             return True
         return False
     
     def _isQUIT(self) -> bool:
-        if self.simulator_action == "QUIT":
+        if self.args.type == "QUIT":
             return True
         return False
     
     def _isREMOUNT(self) -> bool:
-        if self.simulator_action.split(' ')[0] == "REMOUNT":
+        if self.args.type == "REMOUNT":
             return True
         return False
 
@@ -167,12 +170,12 @@ class DeviceOperator():
         if self._isMSC():
             self.device_dict.fill_msc_dictionary()
             self.msc_dict = self.device_dict.msc_dict
-            img_name = self.msc_dict[self.simulator_action.split("MSC ")[-1]]['img'].lower()
-            mnt_path = self.msc_dict[self.simulator_action.split("MSC ")[-1]]['mnt']
+            img_name = self.msc_dict[self.args.fs]['img'].lower()
+            mnt_path = self.msc_dict[self.args.fs]['mnt']
             msc_device = MSC(img_name, 
                             mnt_path, 
-                            samba=int(self.paramdict["Samba"]), 
-                            watchdog=int(self.paramdict["WaDo"]))
+                            samba=int(self.args.samba), 
+                            watchdog=int(self.args.wado))
             msc_device.enable_the_gadget()
             return
         
@@ -204,17 +207,17 @@ class DeviceOperator():
         elif self._isREMOUNT():
             self.device_dict.fill_msc_dictionary()
             self.msc_dict = self.device_dict.msc_dict
-            img_name = self.msc_dict[self.simulator_action.split("REMOUNT ")[-1]]['img'].lower()
-            mnt_path = self.msc_dict[self.simulator_action.split("REMOUNT ")[-1]]['mnt']
+            img_name = self.msc_dict[self.args.fs]['img'].lower()
+            mnt_path = self.msc_dict[self.args.fs]['mnt']
             msc_device = MSC(img_name, 
                             mnt_path, 
-                            samba=int(self.paramdict["Samba"]), 
-                            watchdog=int(self.paramdict["WaDo"]))
+                            samba=int(self.args.samba), 
+                            watchdog=int(self.args.wado))
             msc_device.remount_msc()
             return
 
         elif self._isDELETE():
-            fs_image = self.simulator_action.split(' ')[-1]
+            fs_image = self.args.fs
             MSC.delete_img(fs_image)
             return
         
@@ -229,5 +232,5 @@ class DeviceOperator():
         self.device.enable_the_gadget()
  
 if __name__ == "__main__":
-    device_operator = DeviceOperator(paramdict)
+    device_operator = DeviceOperator()
     device_operator.operate_device()

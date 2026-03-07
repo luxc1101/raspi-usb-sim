@@ -8,6 +8,7 @@
 ##########################
 import os
 import sys
+import argparse
 
 from src.acm_device import ACM
 from src.device_data import Color, DeviceDescriptors, DeviceFunction
@@ -21,38 +22,47 @@ from src.mtp_device import MTP
 from src.uac_device import UAC
 from src.usb_peripheral import USBPeripheral
 
-deviceType = sys.argv[1]
-deviceArg0 = sys.argv[2]
-deviceArg1 = sys.argv[3]
+
+parser = argparse.ArgumentParser(description='Simulate a USB device on Rpi')
+parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE)')
+parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')
+parser.add_argument('--pid', type=str, help='Product ID for the USB device')
+parser.add_argument('--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
+
 
 '''
 A Python script saved in the /home/pi directory of a Raspberry Pi Zero W device, which will be executed in the new HADES to simulate a USB device
 
-python mount_robot.py 'MSC' 'FAT32' '-'               # MSC device
-python mount_robot.py 'HID' '0x0000' '0xffff'         # HID device
-python mount_robot.py 'CDC' '0x0000' '0xffff'         # CDC device
-python mount_robot.py 'ECM' '0x0000' '0xffff'         # ECM device
-python mount_robot.py 'MTP' '0x0000' '0xffff'         # MTP device
-python mount_robot.py 'UAC' '0x0000' '0xffff'         # UAC device
-python mount_robot.py 'EJECT' '-' '-'                 # Eject device
+# New usage with --type, --vid, --pid, and --fs arguments:
+python mount_robot.py --type MSC --fs FAT32                     # MSC device
+python mount_robot.py --type HID --vid 0x1234 --pid 0x5678     # HID device  
+python mount_robot.py --type CDC --vid 0x1234 --pid 0x5678     # CDC device
+python mount_robot.py --type ECM --vid 0x1234 --pid 0x5678     # ECM device
+python mount_robot.py --type MTP --vid 0x1234 --pid 0x5678     # MTP device
+python mount_robot.py --type UAC --vid 0x1234 --pid 0x5678     # UAC device
+python mount_robot.py --type EJECT                              # Eject device
+python mount_robot.py --type DELETE --fs image_name             # Delete image
 '''
 
 class DeviceOperator():
 
     def __init__(self):
+        self.args = parser.parse_args()
+        if self.args.type == "MSC" and not self.args.fs:
+            parser.error("--fs argument is required when --type is MSC")
         self.device_dict = DeviceDictCreator(os.path.join(os.getcwd(),"device_proj.json"))
         self.device_desc = DeviceDescriptors()
         self.device = USBPeripheral()
 
     def _isMSC(self) -> bool:
-        if deviceType == "MSC":
+        if self.args.type == "MSC":
             return True
         return False
 
     def _isHID(self) -> bool:
-        if deviceType == "HID":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "HID":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0x03
             self.device_desc.bDeviceSubClass = 0x02
             self.device_desc.bDeviceProtocol = 0x01
@@ -66,9 +76,9 @@ class DeviceOperator():
         return False
 
     def _isRNDIS(self) -> bool:
-        if deviceType == "RNDIS":             
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "RNDIS":             
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0xEF
             self.device_desc.bDeviceSubClass = 0x04
             self.device_desc.bDeviceProtocol = 0x01
@@ -81,9 +91,9 @@ class DeviceOperator():
         return False
 
     def _isECM(self) -> bool:
-        if deviceType == "ECM":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "ECM":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0xFF
             self.device_desc.bDeviceSubClass = 0x04
             self.device_desc.bDeviceProtocol = 0x01
@@ -93,9 +103,9 @@ class DeviceOperator():
         return False
     
     def _isAMC(self) -> bool:
-        if deviceType == "CDC":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "CDC":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0x02
             self.device_desc.bDeviceSubClass = 0x00
             self.device_desc.bDeviceProtocol = 0x00
@@ -106,9 +116,9 @@ class DeviceOperator():
         return False
     
     def _isNCM(self) -> bool:
-        if deviceType == "NCM":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "NCM":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0x0A
             self.device_desc.bDeviceSubClass = 0x0D
             self.device_desc.bDeviceProtocol = 0x01
@@ -119,9 +129,9 @@ class DeviceOperator():
         return False
     
     def _isMTP(self) -> bool:
-        if deviceType == "MTP":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "MTP":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0x06
             self.device_desc.bDeviceSubClass = 0x01
             self.device_desc.bDeviceProtocol = 0x01
@@ -131,9 +141,9 @@ class DeviceOperator():
         return False
     
     def _isUAC(self) -> bool:
-        if deviceType == "UAC":
-            self.device_desc.idVendor = deviceArg0
-            self.device_desc.idProduct = deviceArg1
+        if self.args.type == "UAC":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0x01
             self.device_desc.bDeviceSubClass = 0x01
             self.device_desc.bDeviceProtocol = 0x00
@@ -143,12 +153,12 @@ class DeviceOperator():
         return False
 
     def _isEJECT(self) -> bool:
-        if deviceType == "EJECT":
+        if self.args.type == "EJECT":
             return True
         return False
     
     def _isDELETE(self) -> bool:
-        if deviceType == "DELETE":
+        if self.args.type == "DELETE":
             return True
         return False
 
@@ -170,8 +180,9 @@ class DeviceOperator():
         if self._isMSC():
             self.device_dict.fill_msc_dictionary_robot()
             self.msc_dict = self.device_dict.msc_dict
-            img_name = self.msc_dict[deviceArg0]['img'].lower()
-            mnt_path = self.msc_dict[deviceArg0]['mnt']
+            fs_type = self.args.fs
+            img_name = self.msc_dict[fs_type]['img'].lower()
+            mnt_path = self.msc_dict[fs_type]['mnt']
             msc_device = MSC(img_name, mnt_path, samba=0, watchdog=0)
             msc_device.enable_the_gadget()
             return
@@ -202,12 +213,12 @@ class DeviceOperator():
             return
         
         elif self._isDELETE():
-            fs_image = deviceArg0
+            fs_image = self.args.fs
             MSC.delete_img(fs_image)
             return
 
         else:
-            sys.stderr.write(f"{Color.Red}{deviceType} is not supported!{Color.C_off}")
+            sys.stderr.write(f"{Color.Red}{self.args.type} is not supported!{Color.C_off}")
             return
 
         self.device.create_the_gadgets()

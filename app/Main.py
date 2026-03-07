@@ -52,7 +52,7 @@ class Ui_MainWindow(QMainWindow):
         self.ssh = SSHClient()                                               # create new ssh client
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())       # Set policy to use when connecting to servers without a known host key.
         self.ssh_isconnected = False                                         # flag: SSHClient is not connected
-        self.paramdict = {"WaDo": 0, "Samba": 0, "Cmd": ""}                  # default parameter dictionary, which will be sent to SSHClient
+        self.paramdict = {"WaDo": 0, "Samba": 0, "Type": "", "FS": "", "VID": "", "PID": ""}                  # default parameter dictionary, which will be sent to SSHClient
         self.logger = logging.getLogger(__name__)                            # create a logger
         self.msc_dict = {"":["None",""]}                                     # defualt case when the combobox MSC is empty
         self.setup_ui()
@@ -667,7 +667,7 @@ class Ui_MainWindow(QMainWindow):
                 return
             cmd = f"{self.translate_hotkey_to_command(hotkey=cmd)}"
             # Execute command
-            if 'call' not in cmd: # normal command
+            if 'hidden' not in cmd: # normal command
                 self.thread_trace_update(f'rpi:~ $ {cmd}', '#c69deb')
                 if cmd == "sudo reboot" or cmd == "sudo halt":
                     self.thread_cmdexecution_update(cmd)
@@ -676,8 +676,8 @@ class Ui_MainWindow(QMainWindow):
                     time.sleep(0.5)
                     self.terminate_threads(keepThreadID=[2])
 
-            if 'call' in cmd: # special command
-                cmd = cmd.split('call')[-1]  
+            if 'hidden' in cmd: # special command
+                cmd = cmd.split('hidden')[-1]  
 
             self.thread_cmdexecution_update(cmd)
 
@@ -698,16 +698,21 @@ class Ui_MainWindow(QMainWindow):
             if hotkey == "REMOUNT FILESYSTEM": # remount current filesystem
                 self.actionMount.setEnabled(False)
                 self.actionEject.setEnabled(True)
-                self.paramdict["Cmd"] = f"{self.cmd_dic[hotkey]} {self.comboBox_MSC.currentText()}"
-                newcmd = 'call' + 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
+                self.paramdict["Type"] = self.cmd_dic[hotkey]
+                self.paramdict["FS"] = self.comboBox_MSC.currentText()
                 self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=True)
+                newcmd = f'call python -u mount_app.py \
+                --type "{self.paramdict["Type"]}" \
+                --fs "{self.paramdict["FS"]}" \
+                --samba {self.paramdict["Samba"]} \
+                --wado {self.paramdict["WaDo"]}'
                 return newcmd
             elif hotkey == 'EJECT + QUIT': # eject the mounted device
-                self.paramdict["Cmd"] = f"{self.cmd_dic[hotkey]}"
+                self.paramdict["Type"] = self.cmd_dic[hotkey]
                 self.actionEject.setEnabled(False)
-                self.actionMount.setEnabled(True)                                                                             
-                newcmd = 'call' + 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
+                self.actionMount.setEnabled(True)
                 self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
+                newcmd = f'call python -u mount_app.py --type "{self.paramdict["Type"]}"'
                 return newcmd 
             elif hotkey == "REBOOT" or hotkey == "POWER OFF RASPI": # reboot or power off raspi device
                 return self.cmd_dic[hotkey]
@@ -835,9 +840,12 @@ class Ui_MainWindow(QMainWindow):
         '''
         delete image file of current filesytem in combobox
         '''
-        cmd = 'call'
-        self.paramdict["Cmd"] = f"DELETE {self.msc_dict[self.comboBox_MSC.currentText()][0]}"
-        cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
+        cmd = 'hidden'
+        self.paramdict["Type"] = "DELETE"
+        self.paramdict["FS"] = f"{self.msc_dict[self.comboBox_MSC.currentText()][0]}"
+        cmd += f'python -u mount_app.py \
+                --type "{self.paramdict["Type"]}" \
+                --fs "{self.paramdict["FS"]}"'
         result = self.create_messagebox(title='Delete Filesystem', msgtext=f'ready to delete {self.msc_dict[self.comboBox_MSC.currentText()][0]} file system?', msgtype='w', iconimg='delete.png')
         if result == QtWidgets.QMessageBox.Ok:
             self.send_command_to_SSHClient(cmd)
@@ -934,70 +942,108 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 4: NCM
         tabwidget 5: MTP
         '''
-        cmd = 'call'
+        cmd = 'hidden'
 
-        if self.tabWidget.currentIndex() == 0: # tab 0: MSC 
-            self.paramdict["Cmd"] = f"MSC {self.comboBox_MSC.currentText()}" # MSC FAT32
+        if self.tabWidget.currentIndex() == 0: # tab 0: MSC
+            self.paramdict["Type"] = "MSC"
+            self.paramdict["FS"] = self.comboBox_MSC.currentText()
+            self.paramdict["VID"] = ''
+            self.paramdict["PID"] = ''
+            cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --fs "{self.paramdict["FS"]}" --samba {self.paramdict["Samba"]} --wado {self.paramdict["WaDo"]}'
         
         if self.tabWidget.currentIndex() == 1: # tab 1: ECM
             if self.ECM.radioButton_sup.isChecked() and self.ECM.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'ECM {self.ECM.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "ECM"
+                self.paramdict["VID"] = self.ECM.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.ECM.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.ECM.LE_VID.text()) != 4 or len(self.ECM.LE_PID.text()) != 4:
                     self.create_messagebox(title="ECM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'ECM Unknown 0x{self.ECM.LE_VID.text()} 0x{self.ECM.LE_PID.text()}'
+                self.paramdict["Type"] = "ECM"
+                self.paramdict["VID"] = f'0x{self.ECM.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.ECM.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 2: # tab 2: HID
             if self.HID.radioButton_sup.isChecked() and self.HID.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'HID {self.HID.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "HID"
+                self.paramdict["VID"] = self.HID.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.HID.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.HID.LE_VID.text()) != 4 or len(self.HID.LE_PID.text()) != 4:
                     self.create_messagebox(title="HID Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'HID Unknown 0x{self.HID.LE_VID.text()} 0x{self.HID.LE_PID.text()}'
+                self.paramdict["Type"] = "HID"
+                self.paramdict["VID"] = f'0x{self.HID.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.HID.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 3: # tab 3: CDC
             if self.CDC.radioButton_sup.isChecked() and self.CDC.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'CDC {self.CDC.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "CDC"
+                self.paramdict["VID"] = self.CDC.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.CDC.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.CDC.LE_VID.text()) != 4 or len(self.CDC.LE_PID.text()) != 4:
                     self.create_messagebox(title="CDC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'CDC Unknown 0x{self.CDC.LE_VID.text()} 0x{self.CDC.LE_PID.text()}'
+                self.paramdict["Type"] = "CDC"
+                self.paramdict["VID"] = f'0x{self.CDC.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.CDC.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 4: # tab 4: NCM
             if self.NCM.radioButton_sup.isChecked() and self.NCM.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'NCM {self.NCM.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "NCM"
+                self.paramdict["VID"] = self.NCM.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.NCM.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.NCM.LE_VID.text()) != 4 or len(self.NCM.LE_PID.text()) != 4:
                     self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'NCM Unknown 0x{self.NCM.LE_VID.text()} 0x{self.NCM.LE_PID.text()}'
+                self.paramdict["Type"] = "NCM"
+                self.paramdict["VID"] = f'0x{self.NCM.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.NCM.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
         
         if self.tabWidget.currentIndex() == 5: # tab 5: MTP
             if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'MTP {self.MTP.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "MTP"
+                self.paramdict["VID"] = self.MTP.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.MTP.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.MTP.LE_VID.text()) != 4 or len(self.MTP.LE_PID.text()) != 4:
                     self.create_messagebox(title="MTP Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'MTP Unknown 0x{self.MTP.LE_VID.text()} 0x{self.MTP.LE_PID.text()}'
+                self.paramdict["Type"] = "MTP"
+                self.paramdict["VID"] = f'0x{self.MTP.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.MTP.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 6: # tab 6: UAC
             if self.UAC.radioButton_sup.isChecked() and self.UAC.comboBox_Device.currentText() != '':
-                self.paramdict["Cmd"] = f'UAC {self.UAC.comboBox_Device.currentText()}'
+                self.paramdict["Type"] = "UAC"
+                self.paramdict["VID"] = self.UAC.comboBox_Device.currentText().split()[-2]
+                self.paramdict["PID"] = self.UAC.comboBox_Device.currentText().split()[-1]
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
             else:
                 if len(self.UAC.LE_VID.text()) != 4 or len(self.UAC.LE_PID.text()) != 4:
                     self.create_messagebox(title="UAC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
                     return
-                self.paramdict["Cmd"] = f'UAC Unknown 0x{self.UAC.LE_VID.text()} 0x{self.UAC.LE_PID.text()}'
+                self.paramdict["Type"] = "UAC"
+                self.paramdict["VID"] = f'0x{self.UAC.LE_VID.text()}'
+                self.paramdict["PID"] = f'0x{self.UAC.LE_PID.text()}'
+                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
                                                                  
-        cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
-        # print(cmd)
+        print(cmd)
         self.send_command_to_SSHClient(cmd)
-        self.thread_trace_update(self.paramdict["Cmd"], '#c69deb')
-
+        self.thread_trace_update(f'{self.paramdict["Type"]} {self.paramdict["VID"]} {self.paramdict["PID"]}', '#c69deb')
         loop = QEventLoop()
         self.actionEject.setEnabled(False)
         self.actionMount.setEnabled(False)
@@ -1014,9 +1060,9 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject the current mounted drive device
         '''
-        cmd = 'call'
-        self.paramdict["Cmd"] = "EJECT"
-        cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
+        cmd = 'hidden'
+        self.paramdict["Type"] = "EJECT"
+        cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
         self.send_command_to_SSHClient(cmd)
         loop = QEventLoop()
         self.actionEject.setEnabled(False)
@@ -1026,7 +1072,6 @@ class Ui_MainWindow(QMainWindow):
         self.actionMount.setEnabled(True)
         if self.tabWidget.currentIndex() == 0: # MSC
             # self.update_mscspace_value("unknow")
-            
             self.terminate_threads(keepThreadID=[0,1,2])
         self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
 
@@ -1035,9 +1080,9 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject current mounted device and stop sharedfolder and watchdog for Mainwindow closeEvent()
         '''
-        cmd = 'call'
-        self.paramdict["Cmd"] = "QUIT"
-        cmd += 'python -u mount_app.py' + ' ' + '"' + str(self.paramdict) + '"'
+        cmd = 'hidden'
+        self.paramdict["Type"] = "QUIT"
+        cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
         # print(cmd)
         self.send_command_to_SSHClient(cmd) 
         time.sleep(1)
