@@ -126,3 +126,6 @@
 
 #### version 1.1.9
 - `feat` add `USB Audio Class` usb device class
+
+#### version 1.2.0
+- `refactor` using `argparse` in mount_app.py & mount_robot.py
