@@ -129,3 +129,4 @@
 
 #### version 1.2.0
 - `refactor` using `argparse` in mount_app.py & mount_robot.py
+- `feat` add `--input` in `mount_robot.py` for HID keyboard to simulate char typing

@@ -28,6 +28,7 @@ parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'E
 parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')
 parser.add_argument('--pid', type=str, help='Product ID for the USB device')
 parser.add_argument('--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
+parser.add_argument('--input', type=str, default='swte', help='Input string for HID keyboard device (e.g., "hello world"). Only valid if --type is HID')
 
 
 '''
@@ -35,7 +36,7 @@ A Python script saved in the /home/pi directory of a Raspberry Pi Zero W device,
 
 # New usage with --type, --vid, --pid, and --fs arguments:
 python mount_robot.py --type MSC --fs FAT32                     # MSC device
-python mount_robot.py --type HID --vid 0x1234 --pid 0x5678     # HID device  
+python mount_robot.py --type HID --vid 0x1234 --pid 0x5678 --input "hello world"       # HID device  
 python mount_robot.py --type CDC --vid 0x1234 --pid 0x5678     # CDC device
 python mount_robot.py --type ECM --vid 0x1234 --pid 0x5678     # ECM device
 python mount_robot.py --type MTP --vid 0x1234 --pid 0x5678     # MTP device
@@ -188,7 +189,7 @@ class DeviceOperator():
             return
 
         elif self._isHID():
-            self.device.usb_device = HID(self.device_desc, DeviceFunction.hid.value)
+            self.device.usb_device = HID(self.device_desc, DeviceFunction.hid.value, input_string=self.args.input)
 
         elif self._isRNDIS():
             self.device.usb_device = RNDIS(self.device_desc, DeviceFunction.rndis.value)
