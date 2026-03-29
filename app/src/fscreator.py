@@ -14,7 +14,7 @@ from .stdout_writer import StdoutWriter
 class FilesystemImage(Enum):
     CD          = 'cd.img'
     USERCOM     = 'user_compliance.img'
-    GEICOM      = 'gei_compliance.img'
+    ARCCOM      = 'arc_compliance.img'
     MIBCOM      = 'mib_compliance.img'
     NTFS        = 'ntfs.img'
     EXT2        = 'ext2.img'
@@ -91,7 +91,7 @@ class FSCreator():
 
     def _create_hfsplus(self, volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
-        self.executor.execute_cmd("sudo mkfs.hfsplus -v {} -J {}".format(volume_name, self.mount_target.img_name))
+        self.executor.execute_cmd("sudo mkfs.hfsplus -v {} {}".format(volume_name, self.mount_target.img_name))
 
     def _create_ext(self, ext_type:str, fs_label:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
@@ -103,8 +103,8 @@ class FSCreator():
         self.executor.execute_cmd("sudo mkfs.btrfs -L {} {}".format(fs_label, self.mount_target.img_name))
 
     def _create_partitions(self):
-        self.executor.execute_cmd("sudo mkdir -p /mnt/usb_part_ntfs")
-        self.executor.execute_cmd("sudo mkdir -p /mnt/usb_part_fat32")
+        self.executor.execute_cmd("sudo mkdir -p /mnt/usb_part_1")
+        self.executor.execute_cmd("sudo mkdir -p /mnt/usb_part_2")
         self.executor.execute_cmd("sudo losetup -fP {}".format(self.mount_target.img_name))
         lpds = self.executor.read_popen("sudo losetup -a | grep 'part'")
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
@@ -113,16 +113,15 @@ class FSCreator():
             self.executor.execute_cmd("(echo n; echo p; echo 1; echo ''; echo '+{}M'; echo n; echo p; echo 2; echo ''; echo ''; echo w) | sudo fdisk {}".format(int(self.size)//2, lpd))
             lpd += "p1"
             StdoutWriter.write(f'loop device: {lpd}')
-            StdoutWriter.write('mkfs NTFS')
-            self.executor.execute_cmd("sudo mkfs.ntfs -p 0 -S 0 -H 0 -L SIMPARNTFS -Q {}".format(lpd))
-            self.executor.execute_cmd(f"sudo ntfsfix {lpd}")
-            self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail {} /mnt/usb_part_ntfs".format(lpd))
+            StdoutWriter.write('mkfs FAT32 partition 1')
+            self.executor.execute_cmd("sudo mkfs.fat -F 32 -n SIMPART1 {}".format(lpd))
+            # self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_1".format(lpd))
             lpd = lpd[:-2]
             lpd += "p2"
             StdoutWriter.write(f'loop device: {lpd}')
-            StdoutWriter.write('mkfs FAT32')
-            self.executor.execute_cmd("sudo mkfs.fat -F 32 -n SIMPARFAT32 {}".format(lpd)) #  the minimum size for a FAT32 volume is about 32.25M
-            self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_fat32".format(lpd))
+            StdoutWriter.write('mkfs FAT32 partition 2')
+            self.executor.execute_cmd("sudo mkfs.fat -F 32 -n SIMPART2 {}".format(lpd)) #  the minimum size for a FAT32 volume is about 32.25M
+            # self.executor.execute_cmd("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_2".format(lpd))
             StdoutWriter.write("Info: " + "partitions have no remote access please add test file into each USB drive partition!")
 
     def create_filesystem(self) -> None:
@@ -135,8 +134,8 @@ class FSCreator():
                 if self.mount_target.img_name==self.fs_img.MIBCOM.value:
                     self._create_exfat('SIMMIBCOM')
 
-                elif self.mount_target.img_name==self.fs_img.GEICOM.value:
-                    self._create_exfat('SIMGEICOM')
+                elif self.mount_target.img_name==self.fs_img.ARCCOM.value:
+                    self._create_exfat('SIMARCCOM')
 
                 elif self.mount_target.img_name==self.fs_img.USERCOM.value:
                     self._create_exfat('SIMUSERCOM')

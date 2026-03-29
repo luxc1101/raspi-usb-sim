@@ -412,20 +412,20 @@ class Ui_MainWindow(QMainWindow):
         self.projectGroup = QtWidgets.QActionGroup(self.menuProjects)
         self.projectGroup.setExclusive(True)
         self.mib_proj_action = QtWidgets.QAction("MIB3", self.menuProjects, checkable=True, checked=False)
-        self.gei_proj_action = QtWidgets.QAction("GEI", self.menuProjects, checkable=True, checked=False)
+        self.arc_proj_action = QtWidgets.QAction("ARC", self.menuProjects, checkable=True, checked=False)
         self.user_proj_action = QtWidgets.QAction("User", self.menuProjects, checkable=True, checked=False)
         self.menuProjects.addAction(self.mib_proj_action)
-        self.menuProjects.addAction(self.gei_proj_action)
+        self.menuProjects.addAction(self.arc_proj_action)
         self.menuProjects.addAction(self.user_proj_action)
         self.projectGroup.addAction(self.mib_proj_action)
-        self.projectGroup.addAction(self.gei_proj_action)
+        self.projectGroup.addAction(self.arc_proj_action)
         self.projectGroup.addAction(self.user_proj_action)
         for action in self.projectGroup.actions():
             if self.setup_dict["Project"] == action.text():
                 action.setChecked(True)
                 break
         self.mib_proj_action.triggered.connect(lambda: self.load_device_dict_by_project(self.mib_proj_action.text()))
-        self.gei_proj_action.triggered.connect(lambda: self.load_device_dict_by_project(self.gei_proj_action.text()))
+        self.arc_proj_action.triggered.connect(lambda: self.load_device_dict_by_project(self.arc_proj_action.text()))
         self.user_proj_action.triggered.connect(lambda: self.load_device_dict_by_project(self.user_proj_action.text()))
 
         self.load_device_dict_by_project(projectkey=self.setup_dict["Project"])
@@ -1041,7 +1041,7 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["PID"] = f'0x{self.UAC.LE_PID.text()}'
                 cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
                                                                  
-        print(cmd)
+        # print(cmd)
         self.send_command_to_SSHClient(cmd)
         self.thread_trace_update(f'{self.paramdict["Type"]} {self.paramdict["VID"]} {self.paramdict["PID"]}', '#c69deb')
         loop = QEventLoop()

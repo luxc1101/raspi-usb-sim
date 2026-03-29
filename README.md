@@ -332,7 +332,7 @@ State Machine:
   - **Help**: quick user guaid.
 - **Project**
   - MIB3 (Done)
-  - GEI (Progressing)
+  - ARC (Progressing)
   - User (Progressing)
   
 #### Device Tab
