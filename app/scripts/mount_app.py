@@ -180,7 +180,7 @@ class DeviceOperator():
             return
         
         elif self._isHID():
-            self.device.usb_device = HID(self.device_desc, DeviceFunction.hid.value)
+            self.device.usb_device = HID(self.device_desc, DeviceFunction.hid.value, enable=0, input_string="")
 
         elif self._isRNDIS():
             self.device.usb_device = RNDIS(self.device_desc, DeviceFunction.rndis.value)

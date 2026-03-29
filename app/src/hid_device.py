@@ -22,9 +22,10 @@ class HID(ADevice):
             uname -r
             ```
     '''
-    def __init__(self, hid_descriptor: DeviceDescriptors, hid_function: str, input_string: str) -> None:
+    def __init__(self, hid_descriptor: DeviceDescriptors, hid_function: str, enable: int, input_string: str) -> None:
         self.hid_root = self.USB_CONFIGFS_HOME
         self.hid_function = hid_function
+        self.input_enabled = enable
         self.input_string = input_string
         HID.DESCRIPTOR = hid_descriptor
         super().__init__()
@@ -50,8 +51,9 @@ class HID(ADevice):
         os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.hid_root))
         os.system("sudo chmod 777 /dev/hidg0")  
         StdoutWriter.write("mount job finished!\n")
-        StdoutWriter.write(f"typing '{self.input_string}'\n")
-        self.type_string()
+        if self.input_enabled==1:
+            StdoutWriter.write(f"typing '{self.input_string}'\n")
+            self.type_string()
 
     def disable_the_gadget(self):
         return super().disable_the_gadget()

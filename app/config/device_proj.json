@@ -103,7 +103,7 @@
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
-				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
                 {"dev": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
 				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
                 {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
@@ -115,7 +115,7 @@
             }
         },
         "Robot": {
-            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "ARCCOMPLIANCE": {"name": "ARC Compliance Media", "img": "arc_compliance.img", "mnt": "/mnt/usb_arc_compliance"},
             "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
@@ -127,12 +127,12 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
             "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
             "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }
     },
-    "GEI":{
+    "ARC":{
         "ECM": {
             "0": [
                 {"dev": "D-Link DUB-E100 big", "VID": "0x2001", "PID": "0x3C05"},
@@ -221,7 +221,7 @@
         },
         "MSC": {
 			"0": [
-				{"dev": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+				{"dev": "ARC Compliance Media", "img": "arc_compliance.img", "mnt": "/mnt/usb_arc_compliance"},
 				{"dev": "FAT16", "img": "fat16.img", "mnt": "/mnt/usb_fat16"},
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
@@ -236,7 +236,7 @@
             }
         },
         "Robot": {
-            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "ARCCOMPLIANCE": {"name": "ARC Compliance Media", "img": "arc_compliance.img", "mnt": "/mnt/usb_arc_compliance"},
             "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
@@ -248,7 +248,7 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
             "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
             "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }
@@ -351,7 +351,7 @@
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
 				{"dev": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
-				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+				{"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
                 {"dev": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
 				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
                 {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
@@ -363,7 +363,7 @@
             }	
         },
         "Robot": {
-            "ARCCOMPLIANCE": {"name": "GEI Compliance Media", "img": "gei_compliance.img", "mnt": "/mnt/usb_gei_compliance"},
+            "ARCCOMPLIANCE": {"name": "ARC Compliance Media", "img": "arc_compliance.img", "mnt": "/mnt/usb_arc_compliance"},
             "MIBCOMPLIANCE": {"name": "MIB Compliance Media", "img": "mib_compliance.img", "mnt": "/mnt/usb_mib_compliance"},
             "EXT2": {"name": "EXT2", "img": "ext2.img", "mnt": "/mnt/usb_ext2"},
             "EXT3": {"name": "EXT3", "img": "ext3.img", "mnt": "/mnt/usb_ext3"},
@@ -375,7 +375,7 @@
             "EXFAT": {"name": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
             "HFSPLUS": {"name": "HFSPlus", "img": "hfsplus.img", "mnt": "/mnt/usb_hfsplus"},
             "BTRFS": {"name": "Btrfs", "img": "btrfs.img", "mnt": "/mnt/usb_btrfs"},
-            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part_fat32"},
+            "PARTITION": {"name": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
             "CORRUPTED": {"name": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"},
             "FREE": {"name": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"}
         }

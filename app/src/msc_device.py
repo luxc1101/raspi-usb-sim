@@ -42,7 +42,7 @@ class MSC(ADevice):
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.USERCOM.value:
             return self._mount_fat()
-        elif self.mount_target.img_name == FilesystemImage.GEICOM.value:
+        elif self.mount_target.img_name == FilesystemImage.ARCCOM.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.FREE.value:
             return self._mount_fat()
@@ -121,8 +121,8 @@ class MSC(ADevice):
     def _umount_msc(self):
         StdoutWriter.write("umount job ongoing\n")
         if self.mount_target.img_name == FilesystemImage.PARTITION.value:
-            os.system("sudo umount /mnt/usb_part_ntfs > error 2>&1")
-            os.system("sudo umount /mnt/usb_part_fat32 > error 2>&1")
+            os.system("sudo umount /mnt/usb_part_1 > error 2>&1")
+            os.system("sudo umount /mnt/usb_part_2 > error 2>&1")
         else:
             os.system("sudo umount {} > error 2>&1".format(self.mount_target.mnt_path))
         StdoutWriter.write("umount job done\n")
@@ -166,7 +166,7 @@ class MSC(ADevice):
 
     def _mount_fat(self):
         '''
-        fat16, fat32, vfat, exfat, mibcom, usercom, geicom, free
+        fat16, fat32, vfat, exfat, mibcom, usercom, arccom, free
         '''
         os.system('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
     
@@ -178,18 +178,19 @@ class MSC(ADevice):
         os.system('sudo mount -t hfsplus -o rw,force,uid=1000,gid=1000,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
 
     def _mount_partitions(self):
-        os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
         lpds = os.popen("sudo losetup -a | grep 'part'").read().strip()
+        if not lpds:
+            os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
+            return self._mount_partitions()
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:
             lpd = valid_lpds[0].split(':')[0]
             lpd += "p1"
             StdoutWriter.write(f'loop device: {lpd}\n')
-            os.system(f"sudo ntfsfix {lpd}")
-            os.system("sudo mount -o rw,users,sync,nofail {} /mnt/usb_part_ntfs".format(lpd))
+            os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_1".format(lpd))
             lpd = lpd[:-2]
             lpd += "p2"
             StdoutWriter.write(f'loop device: {lpd}\n')
-            os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_fat32".format(lpd))
+            os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_2".format(lpd))
         else:
-            sys.stderr.write(f'valid loop device is empty')
+            sys.stderr.write(f'valid loop device is empty\n')
