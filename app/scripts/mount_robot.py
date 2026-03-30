@@ -121,7 +121,7 @@ class DeviceOperator():
         if self.args.type == "NCM":
             self.device_desc.idVendor = self.args.vid
             self.device_desc.idProduct = self.args.pid
-            self.device_desc.bDeviceClass = 0x0A
+            self.device_desc.bDeviceClass = 0x02
             self.device_desc.bDeviceSubClass = 0x0D
             self.device_desc.bDeviceProtocol = 0x01
             self.device_desc.product = "Emulated NCM device"
