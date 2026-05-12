@@ -92,6 +92,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.DialoghelpWin.show()
 
     def setup_ui(self, RaspiSshConnection:QtWidgets.QDialog):
+        self._dialog = RaspiSshConnection
         RaspiSshConnection.resize(300, 280)
         RaspiSshConnection.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
         RaspiSshConnection.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
@@ -371,7 +372,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         '''
         ssid = self.CB_ssid.currentText() # read ssid frome Combobox 
         psk = self.LE_psk.text() # read psk frome LineEditor 
-        wifimsg = QMessageBox(RaspiSshConnection)
+        wifimsg = QMessageBox(self._dialog)
         wifimsg.setWindowTitle("Configuration")
         wifimsg.setStandardButtons(QMessageBox.NoButton)
         wifimsg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
