@@ -667,7 +667,7 @@ class Ui_MainWindow(QMainWindow):
                 return
             cmd = f"{self.translate_hotkey_to_command(hotkey=cmd)}"
             # Execute command
-            if 'hidden' not in cmd: # normal command
+            if 'call' not in cmd: # normal command
                 self.thread_trace_update(f'rpi:~ $ {cmd}', '#c69deb')
                 if cmd == "sudo reboot" or cmd == "sudo halt":
                     self.thread_cmdexecution_update(cmd)
@@ -676,8 +676,8 @@ class Ui_MainWindow(QMainWindow):
                     time.sleep(0.5)
                     self.terminate_threads(keepThreadID=[2])
 
-            if 'hidden' in cmd: # special command
-                cmd = cmd.split('hidden')[-1]  
+            if 'call' in cmd: # special command
+                cmd = cmd.split('call')[-1]  
 
             self.thread_cmdexecution_update(cmd)
 
@@ -840,7 +840,7 @@ class Ui_MainWindow(QMainWindow):
         '''
         delete image file of current filesytem in combobox
         '''
-        cmd = 'hidden'
+        cmd = 'call'
         self.paramdict["Type"] = "DELETE"
         self.paramdict["FS"] = f"{self.msc_dict[self.comboBox_MSC.currentText()][0]}"
         cmd += f'python -u mount_app.py \
@@ -942,7 +942,7 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 4: NCM
         tabwidget 5: MTP
         '''
-        cmd = 'hidden'
+        cmd = 'call'
 
         if self.tabWidget.currentIndex() == 0: # tab 0: MSC
             self.paramdict["Type"] = "MSC"
@@ -1060,7 +1060,7 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject the current mounted drive device
         '''
-        cmd = 'hidden'
+        cmd = 'call'
         self.paramdict["Type"] = "EJECT"
         cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
         self.send_command_to_SSHClient(cmd)
@@ -1080,7 +1080,7 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject current mounted device and stop sharedfolder and watchdog for Mainwindow closeEvent()
         '''
-        cmd = 'hidden'
+        cmd = 'call'
         self.paramdict["Type"] = "QUIT"
         cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
         # print(cmd)

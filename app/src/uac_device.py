@@ -34,22 +34,23 @@ class UAC(ADevice):
         return super().create_the_configurations()
 
     def create_the_functions(self):
-        os.system("sudo mkdir -p {}/g1/functions/{}".format(self.uac_root, self.uac_function)) # add a function e.g. UAC (USB Audio Class)
+        function_root = os.path.join(self.uac_root, "g1/functions", self.uac_function)
+        os.system(f"sudo mkdir -p {function_root}") # add a function e.g. UAC (USB Audio Class)
         # playback host --> pi
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/p_chmask'".format(UAC.DESCRIPTOR.P_CHMARK, self.uac_root, self.uac_function)) # set the playback channel mask
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/p_srate'".format(UAC.DESCRIPTOR.P_SRATE, self.uac_root, self.uac_function)) # set the playback sampling rate
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/p_ssize'".format(UAC.DESCRIPTOR.P_SSIZE, self.uac_root, self.uac_function)) # set the playback sample size (bytes)
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.P_CHMARK} > {function_root}/p_chmask'") # set the playback channel mask
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.P_SRATE} > {function_root}/p_srate'") # set the playback sampling rate
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.P_SSIZE} > {function_root}/p_ssize'") # set the playback sample size (bytes)
         # capture pi --> host
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/c_chmask'".format(UAC.DESCRIPTOR.C_CHMARK, self.uac_root, self.uac_function)) # set the capture channel mask
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/c_srate'".format(UAC.DESCRIPTOR.C_SRATE, self.uac_root, self.uac_function)) # set the capture sampling rate
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/c_ssize'".format(UAC.DESCRIPTOR.C_SSIZE, self.uac_root, self.uac_function)) # set the capture sample size (bytes)
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.C_CHMARK} > {function_root}/c_chmask'") # set the capture channel mask
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.C_SRATE} > {function_root}/c_srate'") # set the capture sampling rate
+        os.system(f"sudo bash -c 'echo {UAC.DESCRIPTOR.C_SSIZE} > {function_root}/c_ssize'") # set the capture sample size (bytes)
         
-        os.system("sudo ln -s {}/g1/functions/{} {}/g1/configs/c.1".format(self.uac_root, self.uac_function, self.uac_root)) # put the function into the configuration by creating a symlink
+        os.system(f"sudo ln -s {function_root} {self.uac_root}/g1/configs/c.1") # put the function into the configuration by creating a symlink
 
     # mount the gadget
     def enable_the_gadget(self):
         udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
-        os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.uac_root))
+        os.system(f"sudo bash -c 'echo {udcname} > {self.uac_root}/g1/UDC'")
         StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):
