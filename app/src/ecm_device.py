@@ -34,17 +34,18 @@ class ECM(ADevice):
         return super().create_the_configurations()
 
     def create_the_functions(self):
-        os.system("sudo mkdir -p {}/g1/functions/{}".format(self.ecm_root, self.ecm_function)) # add a function e.g. hid (Human Interface Device)
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/dev_addr'".format(ECM.DESCRIPTOR.DEV_ADDR, self.ecm_root, self.ecm_function)) 
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/host_addr'".format(ECM.DESCRIPTOR.HOST_ADDR, self.ecm_root, self.ecm_function)) 
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/qmult'".format(ECM.DESCRIPTOR.QUMLT, self.ecm_root, self.ecm_function))
+        function_root = os.path.join(self.ecm_root, "g1/functions", self.ecm_function)
+        os.system(f"sudo mkdir -p {function_root}") # add a function e.g. hid (Human Interface Device)
+        os.system(f"sudo bash -c 'echo {ECM.DESCRIPTOR.DEV_ADDR} > {function_root}/dev_addr'") 
+        os.system(f"sudo bash -c 'echo {ECM.DESCRIPTOR.HOST_ADDR} > {function_root}/host_addr'") 
+        os.system(f"sudo bash -c 'echo {ECM.DESCRIPTOR.QUMLT} > {function_root}/qmult'") 
 
-        os.system("sudo ln -s {}/g1/functions/{} {}/g1/configs/c.1".format(self.ecm_root, self.ecm_function, self.ecm_root)) # put the function into the configuration by creating a symlink
+        os.system(f"sudo ln -s {function_root} {self.ecm_root}/g1/configs/c.1") # put the function into the configuration by creating a symlink
 
     # mount the gadget
     def enable_the_gadget(self):
         udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
-        os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.ecm_root))
+        os.system(f"sudo bash -c 'echo {udcname} > {self.ecm_root}/g1/UDC'")
         os.system("sudo bash -c 'ifconfig usb0 10.0.0.1 netmask 255.255.255.252 up'")
         os.system("sudo bash -c 'route add -net default gw 10.0.0.2'")
         StdoutWriter.write("mount job finished!\n")

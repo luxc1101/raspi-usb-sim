@@ -33,8 +33,9 @@ class MTP(ADevice):
         return super().create_the_configurations()
 
     def create_the_functions(self):
-        os.system("sudo mkdir -p {}/g1/functions/{}".format(self.mtp_root, self.mtp_function)) # add a function e.g. hid (Human Interface Device)
-        os.system("sudo ln -s {}/g1/functions/{} {}/g1/configs/c.1".format(self.mtp_root, self.mtp_function, self.mtp_root)) # put the function into the configuration by creating a symlink
+        function_root = os.path.join(self.mtp_root, "g1/functions", self.mtp_function)
+        os.system(f"sudo mkdir -p {function_root}") # add a function e.g. hid (Human Interface Device)
+        os.system(f"sudo ln -s {function_root} {self.mtp_root}/g1/configs/c.1") # put the function into the configuration by creating a symlink
 
     # mount the gadget
     def enable_the_gadget(self):
@@ -43,7 +44,7 @@ class MTP(ADevice):
         os.system("sudo umtprd &") # start the umtprd service
         os.system("sudo sleep 1") # wait for umtprd to start
         udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
-        os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.mtp_root))
+        os.system(f"sudo bash -c 'echo {udcname} > {self.mtp_root}/g1/UDC'")
         StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):

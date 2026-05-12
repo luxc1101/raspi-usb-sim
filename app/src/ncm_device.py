@@ -34,17 +34,18 @@ class NCM(ADevice):
         return super().create_the_configurations()
 
     def create_the_functions(self):
-        os.system("sudo mkdir -p {}/g1/functions/{}".format(self.ncm_root, self.ncm_function)) # add a function e.g. hid (Human Interface Device)
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/dev_addr'".format(NCM.DESCRIPTOR.DEV_ADDR, self.ncm_root, self.ncm_function)) 
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/host_addr'".format(NCM.DESCRIPTOR.HOST_ADDR, self.ncm_root, self.ncm_function)) 
-        os.system("sudo bash -c 'echo {} > {}/g1/functions/{}/qmult'".format(NCM.DESCRIPTOR.QUMLT, self.ncm_root, self.ncm_function))
+        function_root = os.path.join(self.ncm_root, "g1/functions", self.ncm_function)
+        os.system(f"sudo mkdir -p {function_root}") # add a function e.g. hid (Human Interface Device)
+        os.system(f"sudo bash -c 'echo {NCM.DESCRIPTOR.DEV_ADDR} > {function_root}/dev_addr'") 
+        os.system(f"sudo bash -c 'echo {NCM.DESCRIPTOR.HOST_ADDR} > {function_root}/host_addr'") 
+        os.system(f"sudo bash -c 'echo {NCM.DESCRIPTOR.QUMLT} > {function_root}/qmult'")
 
-        os.system("sudo ln -s {}/g1/functions/{} {}/g1/configs/c.1".format(self.ncm_root, self.ncm_function, self.ncm_root)) # put the function into the configuration by creating a symlink
+        os.system(f"sudo ln -s {self.ncm_root}/g1/functions/{self.ncm_function} {self.ncm_root}/g1/configs/c.1") # put the function into the configuration by creating a symlink
 
     # mount the gadget
     def enable_the_gadget(self):
         udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
-        os.system("sudo bash -c 'echo {} > {}/g1/UDC'".format(udcname, self.ncm_root))
+        os.system(f"sudo bash -c 'echo {udcname} > {self.ncm_root}/g1/UDC'")
         os.system("sudo bash -c 'ifconfig usb0 10.0.0.1 netmask 255.255.255.252 up'")
         os.system("sudo bash -c 'route add -net default gw 10.0.0.2'")
         StdoutWriter.write("mount job finished!\n")
