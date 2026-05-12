@@ -226,6 +226,7 @@
 				{"dev": "FAT32", "img": "fat32.img", "mnt": "/mnt/usb_fat32"},
 				{"dev": "NTFS", "img": "ntfs.img", "mnt": "/mnt/usb_ntfs"},
 				{"dev": "exFAT", "img": "exfat.img", "mnt": "/mnt/usb_exfat"},
+                {"dev": "Partition", "img": "part.img", "mnt": "/mnt/usb_part"},
 				{"dev": "Free Partition", "img": "free.img", "mnt": "/mnt/usb_free"},
                 {"dev": "Corrupted", "img": "corrupted.img", "mnt": "/mnt/usb_corrupted"}
 			],
