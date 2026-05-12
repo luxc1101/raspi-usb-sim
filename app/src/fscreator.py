@@ -110,7 +110,8 @@ class FSCreator():
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:
             lpd = valid_lpds[0].split(':')[0]
-            self.executor.execute_cmd("(echo n; echo p; echo 1; echo ''; echo '+{}M'; echo n; echo p; echo 2; echo ''; echo ''; echo w) | sudo fdisk {}".format(int(self.size)//2, lpd))
+            # echo t echo 0b --> change echo partition type to W95 FAT32, windows or linux can therefore recognize the partitions
+            self.executor.execute_cmd("(echo n; echo p; echo 1; echo ''; echo '+{}M'; echo t; echo 0b; echo n; echo p; echo 2; echo ''; echo ''; echo t; echo 2; echo 0b; echo w) | sudo fdisk {}".format(int(self.size)//2, lpd))
             lpd += "p1"
             StdoutWriter.write(f'loop device: {lpd}')
             StdoutWriter.write('mkfs FAT32 partition 1')
