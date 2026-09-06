@@ -24,7 +24,7 @@ class DeviceDescriptors:
     bmAttributes: hex = 0x00       # Configuration characteristics (D7: Reserved (set to one), D6: Self-powered, D5: Remote Wakeup, D4...0: Reserved (reset to zero)) 
     
     # HID attributes
-    HID_PROTOCAL: int = 0
+    HID_PROTOCOL: int = 0
     HID_DESCRIPTOR: str = ''
     HID_REPORT_LENGTH: int = 0
     HID_SUBCLASS: int = 0
@@ -32,7 +32,7 @@ class DeviceDescriptors:
     # Ethernet Adapter attributes
     RNDIS_CLASS: hex = 0x02
     RNDIS_SUBCLASS: hex = 0x06
-    RNDIS_PORTOCAL: hex = 0x00
+    RNDIS_PROTOCOL: hex = 0x00
     DEV_ADDR: str = "00:dd:dc:eb:6d:a1"
     HOST_ADDR: str = "00:50:b6:19:ee:24"
     QUMLT: int = 5

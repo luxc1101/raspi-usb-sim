@@ -29,7 +29,6 @@ class RNDIS(ADevice):
     def create_the_gadgets(self):
         return super().create_the_gadgets()
     
-
     def create_the_configurations(self):
         return super().create_the_configurations()
 
@@ -41,7 +40,7 @@ class RNDIS(ADevice):
         os.system(f"sudo bash -c 'echo {RNDIS.DESCRIPTOR.QUMLT} > {function_root}/qmult'")
         os.system(f"sudo bash -c 'echo {RNDIS.DESCRIPTOR.RNDIS_CLASS} > {function_root}/class'")
         os.system(f"sudo bash -c 'echo {RNDIS.DESCRIPTOR.RNDIS_SUBCLASS} > {function_root}/subclass'")
-        os.system(f"sudo bash -c 'echo {RNDIS.DESCRIPTOR.RNDIS_PORTOCAL} > {function_root}/protocol'")
+        os.system(f"sudo bash -c 'echo {RNDIS.DESCRIPTOR.RNDIS_PROTOCOL} > {function_root}/protocol'")
 
         os.system(f"sudo ln -s {self.rndis_root}/g1/functions/{self.rndis_function} {self.rndis_root}/g1/configs/c.1") # put the function into the configuration by creating a symlink
 

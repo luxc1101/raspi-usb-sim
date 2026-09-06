@@ -33,14 +33,13 @@ class HID(ADevice):
     def create_the_gadgets(self):
         return super().create_the_gadgets()
     
-
     def create_the_configurations(self):
         return super().create_the_configurations()
 
     def create_the_functions(self):
         function_root = os.path.join(self.hid_root, "g1/functions", self.hid_function)
         os.system(f"sudo mkdir -p {function_root}") # add a function e.g. hid (Human Interface Device)
-        os.system(f"sudo bash -c 'echo {HID.DESCRIPTOR.HID_PROTOCAL} > {function_root}/protocol'") # set the HID protocol
+        os.system(f"sudo bash -c 'echo {HID.DESCRIPTOR.HID_PROTOCOL} > {function_root}/protocol'") # set the HID protocol
         os.system(f"sudo bash -c 'echo {HID.DESCRIPTOR.HID_SUBCLASS} > {function_root}/subclass'") # set the device subclass
         os.system(f"sudo bash -c 'echo {HID.DESCRIPTOR.HID_REPORT_LENGTH} > {function_root}/report_length'") # set the byte length of HID reports
         os.system(f"sudo bash -c 'cat {HID.DESCRIPTOR.HID_DESCRIPTOR} > {function_root}/report_desc'") # write the binary blob of the report descriptor to report_desc; see HID class spec

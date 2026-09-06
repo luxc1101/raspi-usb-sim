@@ -29,7 +29,6 @@ class NCM(ADevice):
     def create_the_gadgets(self):
         return super().create_the_gadgets()
     
-
     def create_the_configurations(self):
         return super().create_the_configurations()
 

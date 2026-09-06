@@ -20,11 +20,12 @@ from src.ncm_device import NCM
 from src.rndis_device import RNDIS
 from src.mtp_device import MTP
 from src.uac_device import UAC
+from src.uachid_device import UACHID
 from src.usb_peripheral import USBPeripheral
 
 
 parser = argparse.ArgumentParser(description='Simulate a USB device on Rpi')
-parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE)')
+parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'MULTI', 'EJECT', 'DELETE'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE)')
 parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')
 parser.add_argument('--pid', type=str, help='Product ID for the USB device')
 parser.add_argument('--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
@@ -42,6 +43,7 @@ python mount_robot.py --type CDC --vid 0x1234 --pid 0x5678     # CDC device
 python mount_robot.py --type ECM --vid 0x1234 --pid 0x5678     # ECM device
 python mount_robot.py --type MTP --vid 0x1234 --pid 0x5678     # MTP device
 python mount_robot.py --type UAC --vid 0x1234 --pid 0x5678     # UAC device
+python mount_robot.py --type MULTI --vid 0x1234 --pid 0x5678     # MULTI device
 python mount_robot.py --type EJECT                              # Eject device
 python mount_robot.py --type DELETE --fs image_name             # Delete image
 '''
@@ -70,7 +72,7 @@ class DeviceOperator():
             self.device_desc.bDeviceProtocol = 0x01
             self.device_desc.product = "Emulated HID device"
             self.device_desc.bmAttributes = 0x80
-            self.device_desc.HID_PROTOCAL = 1
+            self.device_desc.HID_PROTOCOL = 1
             self.device_desc.HID_SUBCLASS = 1
             self.device_desc.HID_DESCRIPTOR = "kybd-descriptor.bin"
             self.device_desc.HID_REPORT_LENGTH = 8
@@ -88,7 +90,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             self.device_desc.RNDIS_CLASS = 0xEF
             self.device_desc.RNDIS_SUBCLASS = 0x04
-            self.device_desc.RNDIS_PORTOCAL = 0x01
+            self.device_desc.RNDIS_PROTOCOL = 0x01
             return True
         return False
 
@@ -153,6 +155,22 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
+    
+    def _isMULTI(self) -> bool:
+        if self.args.type == "MULTI":
+            self.device_desc.idVendor = self.args.vid
+            self.device_desc.idProduct = self.args.pid
+            self.device_desc.bDeviceClass = 0xEF
+            self.device_desc.bDeviceSubClass = 0x02
+            self.device_desc.bDeviceProtocol = 0x01
+            self.device_desc.product = "Emulated UAC+HID device"
+            self.device_desc.bmAttributes = 0x80
+            self.device_desc.HID_PROTOCOL = 1
+            self.device_desc.HID_SUBCLASS = 1
+            self.device_desc.HID_DESCRIPTOR = "kybd-descriptor.bin"
+            self.device_desc.HID_REPORT_LENGTH = 8
+            return True
+        return False
 
     def _isEJECT(self) -> bool:
         if self.args.type == "EJECT":
@@ -178,6 +196,7 @@ class DeviceOperator():
         NCM
         MTP
         UAC
+        MULTI
         '''
         if self._isMSC():
             self.device_dict.fill_msc_dictionary_robot()
@@ -209,6 +228,9 @@ class DeviceOperator():
 
         elif self._isUAC():
             self.device.usb_device = UAC(self.device_desc, DeviceFunction.uac2.value)
+
+        elif self._isMULTI():
+            self.device.usb_device = UACHID(self.device_desc, DeviceFunction.uac2.value, DeviceFunction.hid.value)
 
         elif self._isEJECT():
             self._eject_device()
