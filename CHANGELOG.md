@@ -131,3 +131,6 @@
 - `refactor` using `argparse` in mount_app.py & mount_robot.py
 - `feat` add `--input` in `mount_robot.py` for HID keyboard to simulate char typing
 - `refactor` rename `GEI` to `ARC` in everywhere
+
+### version 1.2.1
+- `feat` add device type `MULTI` in `mount_robot.py` as device with multiple interfaces (uac + hid)
