@@ -1,10 +1,9 @@
 import os
 import sys
 import argparse
-# from ast import literal_eval
 
 from src.acm_device import ACM
-from src.device_data import DeviceDescriptors, DeviceFunction
+from src.device_data import Color, DeviceDescriptors, DeviceFunction
 from src.device_dictcreator import DeviceDictCreator
 from src.ecm_device import ECM
 from src.hid_device import HID
@@ -26,6 +25,22 @@ parser.add_argument('--wado', type=int, choices=[0, 2], default=0, help='Whether
 
 
 class DeviceOperator():
+    """Dispatch CLI requests to USB gadget and mass-storage operations.
+
+    Supports MSC, HID, CDC, ECM, NCM, MTP, and UAC gadget setup, along with
+    eject, remount, delete, and quit actions.
+
+    Usage examples::
+
+        python mount_app.py --type MSC --fs FAT32
+        python mount_app.py --type HID --vid 0x1234 --pid 0x5678
+        python mount_app.py --type REMOUNT --fs FAT32
+        python mount_app.py --type EJECT
+
+    MSC requires ``--fs``.
+    For MSC, ``--samba 2`` and ``--wado 2`` enable.
+    Samba and watchdog service configuration, respectively.
+    """
 
     def __init__(self):
         self.args = parser.parse_args()
@@ -35,12 +50,12 @@ class DeviceOperator():
         self.device_desc = DeviceDescriptors()
         self.device = USBPeripheral()
 
-    
+
     def _isMSC(self) -> bool:
         if self.args.type == "MSC":
             return True
         return False
-    
+
     def _isHID(self) -> bool:
         if self.args.type == "HID":
             self.device_desc.idProduct = self.args.pid
@@ -56,7 +71,7 @@ class DeviceOperator():
             self.device_desc.HID_REPORT_LENGTH = 8
             return True
         return False
-    
+
     def _isRNDIS(self) -> bool:
         if self.args.type == "RNDIS":
             self.device_desc.idProduct = self.args.pid
@@ -71,7 +86,7 @@ class DeviceOperator():
             self.device_desc.RNDIS_PORTOCAL = 0x01
             return True
         return False
-    
+
     def _isECM(self) -> bool:
         if self.args.type == "ECM":
             self.device_desc.idProduct = self.args.pid
@@ -83,7 +98,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
-    
+
     def _isAMC(self) -> bool:
         if self.args.type == "CDC":
             self.device_desc.idProduct = self.args.pid
@@ -96,7 +111,7 @@ class DeviceOperator():
             self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
-    
+
     def _isNCM(self) -> bool:
         if self.args.type == "NCM":
             self.device_desc.idProduct = self.args.pid
@@ -109,7 +124,7 @@ class DeviceOperator():
             self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
-    
+
     def _isMTP(self) -> bool:
         if self.args.type == "MTP":
             self.device_desc.idProduct = self.args.pid
@@ -121,7 +136,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
-    
+
     def _isUAC(self) -> bool:
         if self.args.type == "UAC":
             self.device_desc.idProduct = self.args.pid
@@ -137,17 +152,17 @@ class DeviceOperator():
         if self.args.type == "EJECT":
             return True
         return False
-    
+
     def _isDELETE(self) -> bool:
         if self.args.type == "DELETE":
             return True
         return False
-    
+
     def _isQUIT(self) -> bool:
         if self.args.type == "QUIT":
             return True
         return False
-    
+
     def _isREMOUNT(self) -> bool:
         if self.args.type == "REMOUNT":
             return True
@@ -172,13 +187,13 @@ class DeviceOperator():
             self.msc_dict = self.device_dict.msc_dict
             img_name = self.msc_dict[self.args.fs]['img'].lower()
             mnt_path = self.msc_dict[self.args.fs]['mnt']
-            msc_device = MSC(img_name, 
-                            mnt_path, 
-                            samba=int(self.args.samba), 
+            msc_device = MSC(img_name,
+                            mnt_path,
+                            samba=int(self.args.samba),
                             watchdog=int(self.args.wado))
             msc_device.enable_the_gadget()
             return
-        
+
         elif self._isHID():
             self.device.usb_device = HID(self.device_desc, DeviceFunction.hid.value, enable=0, input_string="")
 
@@ -190,7 +205,7 @@ class DeviceOperator():
 
         elif self._isAMC():
             self.device.usb_device = ACM(self.device_desc, DeviceFunction.acm.value)
-        
+
         elif self._isNCM():
             self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
 
@@ -203,15 +218,15 @@ class DeviceOperator():
         elif self._isEJECT():
             self._eject_device()
             return
-        
+
         elif self._isREMOUNT():
             self.device_dict.fill_msc_dictionary()
             self.msc_dict = self.device_dict.msc_dict
             img_name = self.msc_dict[self.args.fs]['img'].lower()
             mnt_path = self.msc_dict[self.args.fs]['mnt']
-            msc_device = MSC(img_name, 
-                            mnt_path, 
-                            samba=int(self.args.samba), 
+            msc_device = MSC(img_name,
+                            mnt_path,
+                            samba=int(self.args.samba),
                             watchdog=int(self.args.wado))
             msc_device.remount_msc()
             return
@@ -220,17 +235,21 @@ class DeviceOperator():
             fs_image = self.args.fs
             MSC.delete_img(fs_image)
             return
-        
+
         elif self._isQUIT():
             MSC.eject_msc()
             USBPeripheral.disable_the_gadget()
             return
-        
+
+        else:
+            sys.stderr.write(f"{Color.Red}{self.args.type} is not supported!{Color.C_off}")
+            return
+
         self.device.create_the_gadgets()
         self.device.create_the_configurations()
         self.device.create_the_functions()
         self.device.enable_the_gadget()
- 
+
 if __name__ == "__main__":
     device_operator = DeviceOperator()
     device_operator.operate_device()

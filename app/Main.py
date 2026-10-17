@@ -23,8 +23,8 @@ from QLed import QLed
 
 version = '1.2.1'
 '''
-This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens), 
-handling both UI scaling and sharpness of icons/images. 
+This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens),
+handling both UI scaling and sharpness of icons/images.
 '''
 os.environ["QT_ENABLE_HIGHDPI_SCALING"]   = "1"
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
@@ -66,8 +66,8 @@ class Ui_MainWindow(QMainWindow):
             self.configui = Ui_RaspiSshConnection()
             self.configui.setup_ui(self.SSHConnectionWin)
             self.configui.SSHConnection_signal.connect(self.login_SSHClient)
-            self.SSHConnectionWin.setParent(self, self.SSHConnectionWin.windowFlags())                                                                                      
-            self.SSHConnectionWin.open()        
+            self.SSHConnectionWin.setParent(self, self.SSHConnectionWin.windowFlags())
+            self.SSHConnectionWin.open()
 
     def show_help_window(self):
         '''
@@ -77,7 +77,7 @@ class Ui_MainWindow(QMainWindow):
         self.ui = Ui_Form()
         self.ui.setup_ui(self.Helpwin)
         self.Helpwin.show()
-    
+
     def show_installation_window(self):
         '''
         show installation window to install USB Gadget on Raspberry Pi
@@ -89,7 +89,7 @@ class Ui_MainWindow(QMainWindow):
 
     def setup_ui(self):
         '''
-        create and layout QWidgets 
+        create and layout QWidgets
         '''
         self.resize(330, 550)
         self.setWindowIcon(QtGui.QIcon(":/icon/AppIcon.png"))
@@ -119,10 +119,10 @@ class Ui_MainWindow(QMainWindow):
         # threads[2] thread SSHClient heartbeat monitor
         self.threads[2] = SSHStatusMonitor(parent=None, ssh_client=self.ssh)
         self.threads[2].connection_status_signal.connect(self.update_SSHClient_connectedstate)
-        # threads[3] thread 
+        # threads[3] thread
         self.threads[3] = FSavaiableMonitor(parent=None, ssh_client=self.ssh)
         self.threads[3].fs_available_status_signal.connect(self.update_mscspace_value)
-        self.thread_sshclientstatus_update() # start threads[2] SSHClient hearbeat thread at the beginning 
+        self.thread_sshclientstatus_update() # start threads[2] SSHClient hearbeat thread at the beginning
 
     def _setup_menu_and_toolbar(self):
         '''
@@ -171,7 +171,7 @@ class Ui_MainWindow(QMainWindow):
         self.mainToolBar.addAction(self.actionInstall)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.actionHelp)
-    
+
     def _setup_actionicon(self, action_text: str, icon_map: str) -> QtWidgets.QAction:
         action = QtWidgets.QAction(self)
         action.setText(action_text)
@@ -265,7 +265,7 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setToolTip("Slider to assign disc space for creating of filesystem")
         self.LB_MinSapce = QLabel(f"{self.horizontalSlider.minimum()}")
-        self.LB_MaxSpace = QLabel(f"N/A") # not available 
+        self.LB_MaxSpace = QLabel(f"N/A") # not available
         self.horizontalLayout_spaceslider.addWidget(self.LB_MinSapce)
         self.horizontalLayout_spaceslider.addWidget(self.horizontalSlider)
         self.horizontalLayout_spaceslider.addWidget(self.LB_MaxSpace)
@@ -325,10 +325,10 @@ class Ui_MainWindow(QMainWindow):
 
         self.ECM = TabContent()
         self.tabWidget.addTab(self.ECM, "Ethernet Adapter")
-        
+
         self.HID = TabContent()
         self.tabWidget.addTab(self.HID, "Human Interface Device")
-        
+
         self.CDC = TabContent()
         self.tabWidget.addTab(self.CDC, "Communication Device Class")
 
@@ -339,7 +339,7 @@ class Ui_MainWindow(QMainWindow):
         self.tabWidget.addTab(self.MTP, "Media Transfer Protocol")
 
         self.UAC = TabContent()
-        self.tabWidget.addTab(self.UAC, "USB Audio Class")                    
+        self.tabWidget.addTab(self.UAC, "USB Audio Class")
         ### add all tabs into firstLayout
         self.firstLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
@@ -381,7 +381,7 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
         self.firstLayout.addWidget(self.groupBox_trace, 2, 0, 1, 1)
         self.setCentralWidget(self.centralW)
-    
+
     def _setup_statusbar(self):
         '''
         Set up the status bar with version, date, and SSH status.
@@ -429,7 +429,7 @@ class Ui_MainWindow(QMainWindow):
         self.user_proj_action.triggered.connect(lambda: self.load_device_dict_by_project(self.user_proj_action.text()))
 
         self.load_device_dict_by_project(projectkey=self.setup_dict["Project"])
-    
+
     def _connect_signals(self):
         '''
         connect signals to slots
@@ -452,7 +452,7 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalSlider.valueChanged.connect(self.slider_value_changed)
         self.LE_CurrentValue.textChanged.connect(self.sync_slider_value_by_LE)
         self.B_SpaceOK.clicked.connect(self.assign_fs_block_space)
-        self.actionInstall.triggered.connect(self.show_installation_window) 
+        self.actionInstall.triggered.connect(self.show_installation_window)
 
     ####################
     #   Functions      #
@@ -475,9 +475,9 @@ class Ui_MainWindow(QMainWindow):
         if msgtype == "i":
             msg.setIcon(QMessageBox.Information)
         elif msgtype == "w":
-            msg.setIcon(QMessageBox.Warning) 
+            msg.setIcon(QMessageBox.Warning)
         elif msgtype == "e":
-            msg.setIcon(QMessageBox.Critical) 
+            msg.setIcon(QMessageBox.Critical)
         return msg.exec()
 
     def init_QWidgets_state_SSHDisconnected(self):
@@ -504,7 +504,7 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalSlider.setEnabled(False)
         self.B_SpaceOK.setEnabled(False)
         self.actionInstall.setEnabled(False)        # QAction
-    
+
     def enable_QWdigets_status_SSHConnected(self):
         '''
         permanent enabled QWidgets if SSHClient is connected
@@ -513,10 +513,10 @@ class Ui_MainWindow(QMainWindow):
         self.LE_SendCmd.setEnabled(True)           # QLineEdit
         self.B_SendCmd.setEnabled(True)            # QPushButton
         self.actionInstall.setEnabled(True)        # QAction
-    
+
     def closeEvent(self, event):
         '''
-        initialize raspberry device and save the latest loaded project name in `Config.json` 
+        initialize raspberry device and save the latest loaded project name in `Config.json`
         afterwards close app
         '''
         with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
@@ -532,7 +532,7 @@ class Ui_MainWindow(QMainWindow):
                 break
         # subprocess.check_output('cmd /c "netsh wlan disconnect"', shell=True) # disconnect WiFi
         event.accept()
-    
+
     def load_device_dict_by_project(self, projectkey):
         '''
         reload devices when project is changed
@@ -544,7 +544,7 @@ class Ui_MainWindow(QMainWindow):
         self.CDC.comboBox_Device.clear()                        # clear CDC combobox
         self.NCM.comboBox_Device.clear()                        # clear NCM combobox
         self.MTP.comboBox_Device.clear()                        # clear MTP combobox
-        self.UAC.comboBox_Device.clear()                        # clear UAC combobox                                                                                      
+        self.UAC.comboBox_Device.clear()                        # clear UAC combobox
         msc_supported = self.device_dict["MSC"]["0"]            # msc supported devices
         ecm_supported = self.device_dict["ECM"]["0"]            # ecm supported devices
         hid_supported = self.device_dict["HID"]["0"]            # hid supported devices
@@ -566,7 +566,7 @@ class Ui_MainWindow(QMainWindow):
         for _ , dev in enumerate(mtp_supported):
             self.MTP.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
         for _ , dev in enumerate(uac_supported):
-            self.UAC.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])                                              
+            self.UAC.comboBox_Device.addItem(dev["dev"] + ':' + ' ' + dev["VID"] + ' ' + dev["PID"])
     def color_message(self, message:str, color:str) -> str:
         '''
         return text with specific color
@@ -603,7 +603,7 @@ class Ui_MainWindow(QMainWindow):
         '''
         if not self.threads[2].isRunning():
             self.threads[2].start()
-    
+
     def thread_fsavaiablestatus_update(self, fsname):
         '''
         start the fsavaiable status monitor thread
@@ -632,7 +632,7 @@ class Ui_MainWindow(QMainWindow):
 
     def slider_value_changed(self):
         '''
-        sync LineEdit value by slider value 
+        sync LineEdit value by slider value
         '''
         self.LE_CurrentValue.setText(f"{self.horizontalSlider.value()}")
 
@@ -677,7 +677,7 @@ class Ui_MainWindow(QMainWindow):
                     self.terminate_threads(keepThreadID=[2])
 
             if 'call' in cmd: # special command
-                cmd = cmd.split('call')[-1]  
+                cmd = cmd.split('call')[-1]
 
             self.thread_cmdexecution_update(cmd)
 
@@ -689,7 +689,7 @@ class Ui_MainWindow(QMainWindow):
                 self.CB_SendCmd.removeItem(self.CB_SendCmd.count()-1)
             self.LE_SendCmd.clear()
             self.CB_SendCmd.setCurrentIndex(0)
-            
+
     def translate_hotkey_to_command(self, hotkey):
         '''
         translate the hotkey to command and return the translated command
@@ -713,7 +713,7 @@ class Ui_MainWindow(QMainWindow):
                 self.actionMount.setEnabled(True)
                 self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
                 newcmd = f'call python -u mount_app.py --type "{self.paramdict["Type"]}"'
-                return newcmd 
+                return newcmd
             elif hotkey == "REBOOT" or hotkey == "POWER OFF RASPI": # reboot or power off raspi device
                 return self.cmd_dic[hotkey]
         return hotkey
@@ -747,10 +747,10 @@ class Ui_MainWindow(QMainWindow):
             self.check_imgexistence()
             self.actionMount.setEnabled(True)
             self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
-    
+
     def terminate_threads(self, keepThreadID = None):
         '''
-        terminate the running thread, except for specific ID threads all running threads will be terminated 
+        terminate the running thread, except for specific ID threads all running threads will be terminated
         '''
         if keepThreadID == None:
             for key, thread in self.threads.items():
@@ -824,8 +824,8 @@ class Ui_MainWindow(QMainWindow):
                 self.check_imgexistence()
                 self.update_max_space()
                 self.TB_DeleteFS.setEnabled(False)
-                return 
-            elif tabID !=0: # disable any tab in ECM HID CDC 
+                return
+            elif tabID !=0: # disable any tab in ECM HID CDC
                 return self.tabWidget.setTabEnabled(tabID, False)
 
         else: # unmounted
@@ -860,7 +860,7 @@ class Ui_MainWindow(QMainWindow):
         clean all log in QTextExit but NOT the Putty.log
         '''
         self.textEdit_trace.clear()
-    
+
     def update_trace(self, msg:str):
         '''
         line by line append trace messsage to QTextEdit
@@ -872,7 +872,7 @@ class Ui_MainWindow(QMainWindow):
 
     def update_cmdexecution(self, output):
         '''
-        update the stdin, stdout, stderr form ssh execution 
+        update the stdin, stdout, stderr form ssh execution
         '''
         if "ERROR" in output:
             self.thread_trace_update(f'{output}', 'red')
@@ -892,7 +892,7 @@ class Ui_MainWindow(QMainWindow):
         self.PB_MscSpace.setValue(int(fsstatus["FSused"]))
         self.PB_MscSpace.setFormat('available: {}% ({} MB free) {}'.format(100-fsstatus["FSused"], fsstatus["FSavail"], fsstatus["Note"]))
         return
-    
+
     def update_max_space(self):
         '''
         update the max avaiable space for creating of filesystem block
@@ -909,7 +909,7 @@ class Ui_MainWindow(QMainWindow):
 
     def check_imgexistence(self):
         '''
-        check if current filesystem *.img file exits 
+        check if current filesystem *.img file exits
         '''
         if self.ssh_isconnected:
             _, stdout, _ = self.ssh.exec_command('ls')
@@ -950,7 +950,7 @@ class Ui_MainWindow(QMainWindow):
             self.paramdict["VID"] = ''
             self.paramdict["PID"] = ''
             cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --fs "{self.paramdict["FS"]}" --samba {self.paramdict["Samba"]} --wado {self.paramdict["WaDo"]}'
-        
+
         if self.tabWidget.currentIndex() == 1: # tab 1: ECM
             if self.ECM.radioButton_sup.isChecked() and self.ECM.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "ECM"
@@ -1010,7 +1010,7 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["VID"] = f'0x{self.NCM.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.NCM.LE_PID.text()}'
                 cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
-        
+
         if self.tabWidget.currentIndex() == 5: # tab 5: MTP
             if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "MTP"
@@ -1040,7 +1040,7 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["VID"] = f'0x{self.UAC.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.UAC.LE_PID.text()}'
                 cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
-                                                                 
+
         # print(cmd)
         self.send_command_to_SSHClient(cmd)
         self.thread_trace_update(f'{self.paramdict["Type"]} {self.paramdict["VID"]} {self.paramdict["PID"]}', '#c69deb')
@@ -1084,13 +1084,13 @@ class Ui_MainWindow(QMainWindow):
         self.paramdict["Type"] = "QUIT"
         cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
         # print(cmd)
-        self.send_command_to_SSHClient(cmd) 
+        self.send_command_to_SSHClient(cmd)
         time.sleep(1)
 
 
 #############################################################
 #                   Thread Class                            #
-#############################################################                                                 
+#############################################################
 class TraceThread(QThread):
     '''
     read data from log file and send data to trace window of Main window class
@@ -1106,7 +1106,7 @@ class TraceThread(QThread):
             if len(self.msgs) != 0:
                 msg = self.msgs.pop(0)
                 self.trace_signal.emit(msg)
-            
+
     def set_message(self, message):
         self.msgs.append(message)
 
@@ -1136,7 +1136,7 @@ class CmdExecution(QThread):
                     self.cmd = ''  # Reset command after execution
                     self._running = False  # Stop thread after command execution
 
-    
+
     def set_command(self, command):
         self.cmd = command
 
@@ -1170,7 +1170,7 @@ class CmdExecution(QThread):
                 self.output_signal.emit(f'WARN: {errline.strip()}')
         except Exception as e:
             self.output_signal.emit(f'ERROR: {e}')
-    
+
     def _get_user_size_input(self, stdin):
         while self._running:  # Keep prompting while the thread is running
             if self.cmd.isdigit():
@@ -1178,7 +1178,7 @@ class CmdExecution(QThread):
                 stdin.write(f'{size}\n')
                 stdin.flush()
                 break
-    
+
     def stop(self):
         self._running = False
         self.terminate()
@@ -1199,7 +1199,7 @@ class SSHStatusMonitor(QThread):
             status = self.check_connection()
             self.connection_status_signal.emit(status)
             time.sleep(0.5)
-    
+
     def check_connection(self):
         transport = self.ssh_client.get_transport()
         if transport and transport.is_active():
@@ -1209,7 +1209,7 @@ class SSHStatusMonitor(QThread):
     def stop(self):
         self._running = False
         self.terminate()
-    
+
 class FSavaiableMonitor(QThread):
     '''
     monitor the mounted mount point free space
@@ -1220,16 +1220,16 @@ class FSavaiableMonitor(QThread):
         self._running = False
         self.ssh = ssh_client
         self.fs_name = ''
-    
+
     def run(self):
         while self._running:
             self._read_fsused(fs_name=self.fs_name)
             time.sleep(7)
-    
+
     def _read_fsused(self, fs_name):
         try:
-            # _, stdout, _ = self.ssh.exec_command(f'lsblk --fs -o FSAVAIL,FSUSE%,MOUNTPOINT | grep -i "/mnt/usb_{fs_name}"') 
-            _, stdout, _ = self.ssh.exec_command(f'df -Bm | grep -i "/mnt/usb_{fs_name}"') 
+            # _, stdout, _ = self.ssh.exec_command(f'lsblk --fs -o FSAVAIL,FSUSE%,MOUNTPOINT | grep -i "/mnt/usb_{fs_name}"')
+            _, stdout, _ = self.ssh.exec_command(f'df -Bm | grep -i "/mnt/usb_{fs_name}"')
             out = str(stdout.read().decode('ascii', errors='ignore').strip())
             if "part" not in out:
                 FSused = int(out.split(' ')[-2].split("%")[0])
@@ -1249,10 +1249,10 @@ class FSavaiableMonitor(QThread):
         except:
             fs_spacedict = {"FSused": "unknown", "FSavail": "unknown", "Note": ""}
             self.fs_available_status_signal.emit(fs_spacedict)
-    
+
     def set_fsname(self, fsname):
         self.fs_name = fsname
-    
+
     def stop(self):
         self._running = False
         fs_spacedict = {"FSused": "unknown", "FSavail": "unknown", "Note": ""}
@@ -1264,7 +1264,7 @@ class FSavaiableMonitor(QThread):
 #############################################################
 class TabContent(QtWidgets.QWidget):
     '''
-    create tab content for Tab ECM  HID and CDC 
+    create tab content for Tab ECM  HID and CDC
     '''
     def __init__(self):
         super(TabContent, self).__init__()
@@ -1290,7 +1290,7 @@ class TabContent(QtWidgets.QWidget):
         self.radioButton_sup.setText("supported")
         self.verticalLayout_sup.addWidget(self.radioButton_sup)
         self.radioButton_sup.toggled.connect(self.radio_button_toggled_event)
-        
+
         self.horizontalLayout_sup = QtWidgets.QHBoxLayout()
         self.horizontalLayout_sup.setSpacing(5)
 
@@ -1303,8 +1303,8 @@ class TabContent(QtWidgets.QWidget):
         sizePolicy.setHeightForWidth(self.label_DeviceInfo.sizePolicy().hasHeightForWidth())
         self.label_DeviceInfo.setSizePolicy(sizePolicy)
         self.horizontalLayout_sup.addWidget(self.label_DeviceInfo)
-        
-        # create device comboBox 
+
+        # create device comboBox
         self.comboBox_Device = QtWidgets.QComboBox(self)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(1)
@@ -1349,7 +1349,7 @@ class TabContent(QtWidgets.QWidget):
         sizePolicy.setHeightForWidth(self.LB_VID.sizePolicy().hasHeightForWidth())
         self.LB_VID.setSizePolicy(sizePolicy)
         self.horizontalLayout_cus.addWidget(self.LB_VID)
-        
+
         self.LE_VID = QtWidgets.QLineEdit(self)
         self.PIDVID_validator = QtGui.QRegExpValidator(PIDVIDRegex, self.LE_VID)
         self.LE_VID.setValidator(self.PIDVID_validator)
@@ -1372,7 +1372,7 @@ class TabContent(QtWidgets.QWidget):
         sizePolicy.setHeightForWidth(self.LB_PID.sizePolicy().hasHeightForWidth())
         self.LB_PID.setSizePolicy(sizePolicy)
         self.horizontalLayout_cus.addWidget(self.LB_PID)
-        
+
         self.LE_PID = QtWidgets.QLineEdit(self)
         self.PIDVID_validator = QtGui.QRegExpValidator(PIDVIDRegex, self.LE_PID)
         self.LE_PID.setValidator(self.PIDVID_validator)
@@ -1388,7 +1388,7 @@ class TabContent(QtWidgets.QWidget):
         self.LE_PID.setToolTip("Give 16-bit product number (Hexadecimal)")
 
         self.horizontalLayout_cus.addWidget(self.LE_PID)
-        
+
         self.verticalLayout_cus.addLayout(self.horizontalLayout_cus)
         self.horizontalLayout.addLayout(self.verticalLayout_cus)
 

@@ -1,4 +1,4 @@
-import os
+import subprocess
 
 from .a_device import ADevice
 from .device_data import DeviceDescriptors
@@ -7,22 +7,21 @@ from .uac_device import UAC
 from .hid_device import HID
 
 class UACHID(ADevice):
-    '''
-    ### Reference
-    + [How to config gadget](https://docs.kernel.org/usb/gadget_configfs.html)
+    """Configure a composite USB gadget with UAC2 audio and HID functions.
 
-    + [Gadgets functions UAC](https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-uac2)
+    Creates both functions under the gadget's configfs configuration and
+    binds the composite gadget to an available UDC.
 
-    + [Gadgets functions HID](https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-hid)
-        
-        - Gadgets functions depends on Kernel version
-        
-        - How to check kernel version:
+    Args:
+        uachid_descriptor: Shared USB, audio, and HID descriptor values.
+        uac_function: Configfs function name for the UAC2 audio interface.
+        hid_function: Configfs function name for the HID interface.
 
-            ```
-            uname -r
-            ```
-    '''
+    References:
+        https://docs.kernel.org/usb/gadget_configfs.html
+        https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-uac2
+        https://www.kernel.org/doc/Documentation/ABI/testing/configfs-usb-gadget-hid
+    """
     def __init__(self, uachid_descriptor: DeviceDescriptors, uac_function: str, hid_function: str) -> None:
         self.uachid_root = self.USB_CONFIGFS_HOME
         self.uac_function = uac_function
@@ -32,7 +31,7 @@ class UACHID(ADevice):
 
     def create_the_gadgets(self):
         return super().create_the_gadgets()
-    
+
     def create_the_configurations(self):
         return super().create_the_configurations()
 
@@ -52,8 +51,8 @@ class UACHID(ADevice):
 
     # mount the gadget
     def enable_the_gadget(self):
-        udcname = os.popen("ls /sys/class/udc").read().split("\n")[0] # read udcname
-        os.system(f"sudo bash -c 'echo {udcname} > {self.uachid_root}/g1/UDC'")
+        udcname = subprocess.run('ls /sys/class/udc', shell=True, capture_output=True, text=True, check=True).stdout.splitlines()[0] # read udcname
+        self._write_sysfs(f'{self.uachid_root}/g1/UDC', udcname)
         StdoutWriter.write("mount job finished!\n")
 
     def disable_the_gadget(self):

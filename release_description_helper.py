@@ -5,8 +5,17 @@ import markdown
 
 changelog_path = "CHANGELOG.md"
 
-def find_version_in_changelog(changelog_path, version):
-    # Read the content of the markdown file
+def find_version_in_changelog(changelog_path, version) -> str | None:
+    """Return changelog text from the requested version heading onward.
+
+    Args:
+        changelog_path: Path to the Markdown changelog file.
+        version: Version label expected after the ``#### `` heading prefix.
+
+    Returns:
+        The matching heading and all following text, or ``None`` if the file
+        or heading cannot be found.
+    """
     try:
         with open(changelog_path, 'r', encoding='utf-8') as file:
             changelog_content = file.readlines()
@@ -20,7 +29,7 @@ def find_version_in_changelog(changelog_path, version):
     for index, line in enumerate(changelog_content):
         if re.search(pattern, line):  # Case-sensitive search
             start_index = index
-            break  
+            break
 
     if start_index is None:
         print(f"Pattern '{version}' not found in the changelog.")
@@ -32,7 +41,15 @@ def find_version_in_changelog(changelog_path, version):
 
     return section_text
 
-def convert_markdown_to_html(markdown_text):
+def convert_markdown_to_html(markdown_text) -> str:
+    """Convert Markdown text to a compact HTML string.
+
+    Args:
+        markdown_text: Markdown source to convert.
+
+    Returns:
+        The rendered HTML with newline characters removed.
+    """
     html = markdown.markdown(markdown_text)
 
     html_content = '\n' +  html.replace('\n', '').replace('\r', '')

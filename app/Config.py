@@ -68,7 +68,7 @@ class Ui_SSHHelper(object):
         self.appendMarkdown("**Apply**: validate the input if all inputs are OK, save the current parameter on configuration dialog and validate the input")
         self.appendMarkdown("**Cancel**: close the Rpi SSH Connection without saving parameter")
         self.appendMarkdown("**Connect**: connect WiFi and try to build SSH Client connection")
-    
+
     def appendMarkdown(self, new_markdown):
         '''
         append new markdown line content
@@ -104,7 +104,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.formLayout_2 = QtWidgets.QFormLayout()
         self.LB_IP = QtWidgets.QLabel(self.groupBox_SSH)
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.LB_IP)
-        
+
         self.LE_IP = QtWidgets.QLineEdit(self.groupBox_SSH)
         # https://www.oreilly.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html
         IPV4Regex = QtCore.QRegExp(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
@@ -118,7 +118,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.LE_IP)
         self.LB_Port = QtWidgets.QLabel(self.groupBox_SSH)
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.LB_Port)
-        
+
         self.LE_Port = QtWidgets.QLineEdit(self.groupBox_SSH)
         PortRegex = QtCore.QRegExp(r"^[0-9][0-9]$")
         self.Port_validator = QtGui.QRegExpValidator(PortRegex, self.LE_Port)
@@ -128,7 +128,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.LE_Port)
         self.LB_User = QtWidgets.QLabel(self.groupBox_SSH)
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.LB_User)
-        
+
         self.LE_User = QtWidgets.QLineEdit(self.groupBox_SSH)
         UserRegex = QtCore.QRegExp(r"[p][i]")
         self.User_validator = QtGui.QRegExpValidator(UserRegex, self.LE_Port)
@@ -138,7 +138,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.LE_User)
         self.LB_Key = QtWidgets.QLabel(self.groupBox_SSH)
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.LB_Key)
-        
+
         self.LE_Key = QtWidgets.QLineEdit(self.groupBox_SSH)
         KeyRegex = QtCore.QRegExp(r"^.+") # any string that has at least one characte
         self.Key_validator = QtGui.QRegExpValidator(KeyRegex, self.LE_Key)
@@ -149,7 +149,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.LB_Log = QtWidgets.QLabel(self.groupBox_SSH)
         self.formLayout_2.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.LB_Log)
         self.LE_LogPath = QtWidgets.QLineEdit(self.groupBox_SSH)
-        
+
         LogRegex = QtCore.QRegExp(r"^.*\.log$") # for any sequence of characters (including none) before the literal ".log"
         self.Log_validator = QtGui.QRegExpValidator(LogRegex, self.LE_LogPath)
         self.LE_LogPath.setValidator(self.Log_validator)
@@ -173,7 +173,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.LB_psk = QtWidgets.QLabel(self.groupBox_WiFi)
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.LB_psk)
         self.LE_psk = QtWidgets.QLineEdit(self.groupBox_WiFi)
-        
+
         PSKRegex = QtCore.QRegExp("^\S{8,}$") #  any character but not a whitespace at least 8 times
         self.PSK_validator = QtGui.QRegExpValidator(PSKRegex, self.LE_psk)
         self.LE_psk.setValidator(self.PSK_validator)
@@ -183,7 +183,7 @@ class Ui_RaspiSshConnection(QMainWindow):
 
         # Action for toggling the visibility of the password
         self.toggleAction = QtWidgets.QAction(self)
-        self.toggleAction.setIcon(QtGui.QIcon(':/icon/eye.png')) 
+        self.toggleAction.setIcon(QtGui.QIcon(':/icon/eye.png'))
         self.toggleAction.setCheckable(True)
         self.LE_psk.addAction(self.toggleAction, QtWidgets.QLineEdit.TrailingPosition)
         self.toggleAction.triggered.connect(self.toggle_PW_visibility)
@@ -206,12 +206,12 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.msg.setWindowTitle("SSH Connection")
         self.msg.setStandardButtons(QMessageBox.NoButton)
         self.msg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
-        
+
 
         with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
             self.setup_dict = json.load(f)
             f.close()
-        
+
         RaspiSshConnection.setWindowTitle("Rpi SSH Connection")
         self.groupBox_SSH.setTitle("SSH Config")
         self.LB_IP.setText("IP Address")
@@ -245,7 +245,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.buttonBox_Conf.accepted.connect(RaspiSshConnection.accept) # type: ignore
         self.buttonBox_Conf.rejected.connect(RaspiSshConnection.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(RaspiSshConnection)
- 
+
         self.find_ssid() # find visable ssid
         # self.B_ImgPath.clicked.connect(self.OCfolder)
         self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.save_param_validate_input_connect_wifi)
@@ -268,7 +268,7 @@ class Ui_RaspiSshConnection(QMainWindow):
                 cursor_position = self.LE_IP.cursorPosition()
                 ip_text = self.LE_IP.displayText()
 
-                if cursor_position>0 and ip_text[cursor_position - 1].isdigit():                                     
+                if cursor_position>0 and ip_text[cursor_position - 1].isdigit():
                     new_ip_text = ip_text[:cursor_position-1] + "_" + ip_text[cursor_position:]
                     self.LE_IP.setText(new_ip_text)
                     self.LE_IP.setCursorPosition(cursor_position - 1)  # Move cursor left
@@ -288,7 +288,7 @@ class Ui_RaspiSshConnection(QMainWindow):
     def find_ssid(self):
         '''
         find visiable WiFi networkname and add ssid into combobox
-        if the ssid, which was saved in config.json, is visiable, this ssid will be move up to the first index 
+        if the ssid, which was saved in config.json, is visiable, this ssid will be move up to the first index
         '''
         try:
             WiFivisible = subprocess.check_output('netsh wlan show networks', shell=True).decode('ascii', errors='ignore').strip()
@@ -297,7 +297,7 @@ class Ui_RaspiSshConnection(QMainWindow):
             if len(SSIDlist) != 0:
                 for SSID in SSIDlist:
                     if SSID.split(':')[-1][1:]:
-                        self.CB_ssid.addItem(SSID.split(':')[-1][1:]) # add detected ssid to combobox 
+                        self.CB_ssid.addItem(SSID.split(':')[-1][1:]) # add detected ssid to combobox
                 index = self.CB_ssid.findText(self.setup_dict["WiFi"]["ssid"]) # get index of specific ssid return the index or -1 (not find)
                 if index > 0 : # if index > 0
                     item_text = self.CB_ssid.itemText(index) # get ssid by index
@@ -309,7 +309,7 @@ class Ui_RaspiSshConnection(QMainWindow):
             self.msg.setText(f"{e} Please check WiFi setup on your PC!")
             QTimer.singleShot(3000, lambda : self.msg.done(0))
             self.msg.show()
-            
+
     def create_wifi_profile_xml(self, ssid, password) -> None:
         '''
         create wifi profile xml file
@@ -370,22 +370,22 @@ class Ui_RaspiSshConnection(QMainWindow):
         '''
         connect specific wifi network by ssid and password
         '''
-        ssid = self.CB_ssid.currentText() # read ssid frome Combobox 
-        psk = self.LE_psk.text() # read psk frome LineEditor 
+        ssid = self.CB_ssid.currentText() # read ssid frome Combobox
+        psk = self.LE_psk.text() # read psk frome LineEditor
         wifimsg = QMessageBox(self._dialog)
         wifimsg.setWindowTitle("Configuration")
         wifimsg.setStandardButtons(QMessageBox.NoButton)
         wifimsg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
         wifimsg.setWindowTitle("WiFi Status")
 
-        self.create_wifi_profile_xml(ssid, psk) # create WiFiProfile.xml within ssid and psk 
+        self.create_wifi_profile_xml(ssid, psk) # create WiFiProfile.xml within ssid and psk
         WiFiexist = subprocess.getoutput(f' netsh wlan show networks | findstr "\<{ssid}\>"') # check if ssid exist
         # if ssid exits
         if ssid in WiFiexist:
             current_connected_ssid = subprocess.getoutput('netsh wlan show interfaces | Findstr "\<SSID\>"').split(':')[-1].strip() # check if this ssid already connected
             wifimsg.setIcon(QMessageBox.Information)
             if ssid != current_connected_ssid: # if ssid is not connected
-                subprocess.check_output('netsh wlan add profile filename=WiFiProfile.xml', shell=True) # add wifi profile 
+                subprocess.check_output('netsh wlan add profile filename=WiFiProfile.xml', shell=True) # add wifi profile
                 # connect wifi with ssid
                 subprocess.check_output(f'netsh wlan connect name="{ssid}"', shell=True)
                 # wait secs wilfi connect to build needs time, Recommended waiting time >=8s
@@ -399,7 +399,7 @@ class Ui_RaspiSshConnection(QMainWindow):
                 wifimsg.exec()
                 self.delete_file('WiFiProfile.xml')
                 return True
-                
+
             wifimsg.setIcon(QMessageBox.Critical)
             wifimsg.setText("WiFi {} connection failed, please check SSID and Key".format(ssid))
             QTimer.singleShot(1500, lambda : wifimsg.done(0))
@@ -411,11 +411,11 @@ class Ui_RaspiSshConnection(QMainWindow):
         QTimer.singleShot(1500, lambda : wifimsg.done(0))
         wifimsg.show()
         self.delete_file('WiFiProfile.xml')
-        return False          
+        return False
 
     def validate_input(self)-> bool:
         '''
-        validate the input parameter by QValidator, if all fields are valid, it return true otherweise return false 
+        validate the input parameter by QValidator, if all fields are valid, it return true otherweise return false
         '''
         self.msg.setIcon(QMessageBox.Critical)
         IPState = self.IP_validator.validate(self.LE_IP.text(), 0)[0]
@@ -471,7 +471,7 @@ class Ui_RaspiSshConnection(QMainWindow):
 
     def validate_input_save_parma(self, validate:bool) -> None:
         '''
-        validate input paramter through QValidator for each field and save them in Config.json file 
+        validate input paramter through QValidator for each field and save them in Config.json file
         '''
 
         self.setup_dict['SSHConf']['User'] = self.LE_User.text()
@@ -496,13 +496,13 @@ class Ui_RaspiSshConnection(QMainWindow):
             with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
                 json.dump(self.setup_dict, f)
                 f.close()
-            
+
     def remove_zeros_from_ip(self, ip_add) -> str:
         '''
         split the IP address into its octets and convert each octet to an integer with no leading zeros
         return the new IP address with no leading zeros
         '''
-        new_ip_add = ".".join([str(int(i)) for i in ip_add.split(".")])  
+        new_ip_add = ".".join([str(int(i)) for i in ip_add.split(".")])
         return new_ip_add
 
     def save_param_validate_input_connect_wifi(self):
@@ -520,13 +520,13 @@ class Ui_RaspiSshConnection(QMainWindow):
             IP = self.remove_zeros_from_ip(self.LE_IP.text())
             Key = self.LE_Key.text()
             Log = self.LE_LogPath.text()
-                   
+
             paramdict = {"Port": Port, "IP": IP, "User": User,
             "Key": Key, "Log": Log}
-            
+
             self.SSHConnection_signal.emit(paramdict) # pass parameter dict to slot
             return self.Confwin.accept
-        
+
         return self.Confwin.show()
 
 

@@ -14,7 +14,7 @@ class DeviceDictCreator():
             device_dict = json.load(f)
             f.close()
         return device_dict
-    
+
     def fill_msc_dictionary(self) -> None:
         device_dict = self._transfer_json_to_dict()
         for _, proj in enumerate(device_dict):
@@ -28,4 +28,3 @@ class DeviceDictCreator():
             for _, FS in enumerate(device_dict[proj]["Robot"]):
                 if FS not in self.msc_dict.keys():
                     self.msc_dict[FS] = {"img": device_dict[proj]["Robot"][FS]["img"], "mnt": device_dict[proj]["Robot"][FS]["mnt"]}
-                

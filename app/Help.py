@@ -61,7 +61,7 @@ class Ui_Form(object):
 
         #### Precondition #<a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a>
         "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Precondition:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Prepare hardware (RaspberryPi zero W, USB Mico-B Cable (OTG), USB Mico-B Cable (Power), micoSD Card, etc.) for more details please read <a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a> </p>\n"
+        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Prepare hardware (RaspberryPi zero W, USB Micro-B Cable (OTG), USB Micro-B Cable (Power), microSD Card, etc.) for more details please read <a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a> </p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Plug in a fully prepared microSD card with the desired OS, necessary scripts, and installed packages</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">3.</span> Power Paspberry Pi Zero W by connecting its PWR port to a PC USB port or an external power supply (of output 5V). Hint: A solid green light indicates a proper connection</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">4.</span> Connect the Rpi device and the DUT through a USB Micro-B to USB A cable</p>\n"
@@ -78,7 +78,7 @@ class Ui_Form(object):
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">1.</span> The <span style=\" font-weight:600;\">MSC Tab</span> enables the tester to simulate their desired File System (FS), such as exFAT and NTFS, etc. To begin, select your desired FS and click on Mount</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">2.</span> If the selected FS exists, the LED will indicate its existence. If not, this file system will first be created first, for which the tester must define parameters such as the disc size in the command window</p>\n"
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"><br /></p>\n"
-        
+
         "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\">USB Peripherals:</p>\n"
         "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">1.</span> The <span style=\" font-weight:600;\">ECM, HID, CDC, NCM, MTP, UAC</span> Tabs enable the user to test whether the DUT supports an emulated USB device. These tabs usually list all devices that could be mounted directly. However, if the tester wants to see if some device from beyond the list is supported, they must input its customized VID and PID numbers</p>\n"
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"><br /></p>\n"
@@ -89,7 +89,7 @@ class Ui_Form(object):
         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
         "</body></html>")
         self.textBrowser.setOpenExternalLinks(True) # Specifies whether QTextBrowser should automatically open links to external sources
-        
+
 # if __name__ == "__main__":
 #     import sys
 #     app = QtWidgets.QApplication(sys.argv)

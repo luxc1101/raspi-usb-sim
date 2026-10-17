@@ -1,4 +1,4 @@
-import os
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
 
@@ -11,7 +11,7 @@ class DeviceDescriptors:
     '''
     idVendor: hex = 0x00           # Vendor ID https://knowledgebase.42gears.com/article/how-to-find-the-deviceclassid-and-deviceinstanceid-for-the-usb-devices/
     idProduct: hex = 0x00          # Product ID https://knowledgebase.42gears.com/article/how-to-find-the-deviceclassid-and-deviceinstanceid-for-the-usb-devices/
-    serialnumber: str = os.popen("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2").read().split("\n")[0]       # device serial number
+    serialnumber: str = subprocess.run("grep Serial /proc/cpuinfo | cut -d ' ' -f 2", shell=True, capture_output=True, text=True).stdout.splitlines()[0]       # device serial number
     manufacturer: str = "Raspi"      # manufacturer attribute
     product: str = ""            # cleartext product description
     configuration: str = "Config 1"        # name of this configuration

@@ -24,7 +24,7 @@ class Ui_RaspiInstallation(QMainWindow):
     def setup_ui(self, RaspiInstallation:QtWidgets.QDialog, ssh_client=None):
         self.ssh_client = ssh_client
         self.remote_path = "/home/pi/"  # Change this to desired remote path
-        self.install_script = "install.sh"  # Name of the installation script   
+        self.install_script = "install.sh"  # Name of the installation script
         RaspiInstallation.setWindowTitle("Install USB Gadget on Rpi")
         RaspiInstallation.resize(400, 200)
         RaspiInstallation.setWindowIcon(QtGui.QIcon(":/icon/install.png"))
@@ -70,7 +70,7 @@ class Ui_RaspiInstallation(QMainWindow):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText("Install")
         self.gridLayout_2.addWidget(self.buttonBox, 2, 0, 1, 1)
-        
+
         self.worker = InstallWorker(self.ssh_client, self.LE_Upload.text(), self.remote_path)
         self.buttonBox.rejected.connect(lambda: self._cancel_installation(RaspiInstallation)) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(RaspiInstallation)
@@ -97,7 +97,7 @@ class Ui_RaspiInstallation(QMainWindow):
         folder = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Installation Folder", os.getcwd())
         if folder:
             self.LE_Upload.setText(folder)
-    
+
     def ansi_to_html(self, text):
         ansi_map = {
         '\033[1;96m': '<span style="color:#00ffff; font-size:8pt; font-weight:800;">',  # bright cyan
@@ -108,19 +108,19 @@ class Ui_RaspiInstallation(QMainWindow):
         for code, html in ansi_map.items():
             text = text.replace(code, html)
         return text
-    
+
     def scp_installation(self):
         """
         Securely copy the installation files to the Raspberry Pi.
         """
         if not self.ssh_client:
             self._update_trace("No SSH connection available.")
-            return 
+            return
 
         if not os.path.isdir(self.LE_Upload.text()):
             self._update_trace("Please select a valid folder to upload.")
             return
-        
+
         self.PB_Install.setValue(0)
         self.PB_Install.setFormat("Starting...")
 
@@ -129,13 +129,13 @@ class Ui_RaspiInstallation(QMainWindow):
         self.worker.finished_signal.connect(self._on_install_finished)
         self.worker.local_path = self.LE_Upload.text()
         self.worker.start()
-    
+
     def _update_trace(self, text):
         """
         Update the trace output in the details section.
         """
         self.Install_Details.append(self.ansi_to_html(text))
-        
+
     def _on_scp_progress(self, filename, percent):
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
         self.PB_Install.setValue(percent)
@@ -178,7 +178,7 @@ class InstallWorker(QThread):
             cmd = f'sudo chmod -R 777 "{remote_target}"'
             self.ssh_client.exec_command(cmd)
             self.detail_signal.emit("Upload successfully.")
-            
+
             self.progress_signal.emit("installing...", 0)
             self.detail_signal.emit("\033[1;96mStarting install...\033[0m")
             cmd = f'cd {remote_target} && dos2unix install.sh && sh install.sh .'
@@ -193,7 +193,7 @@ class InstallWorker(QThread):
                 else:
                     self.detail_signal.emit(line)
             self.finished_signal.emit("Installation finished.")
-        
+
         except Exception as e:
             self.finished_signal.emit(f"failed: {str(e)}")
 

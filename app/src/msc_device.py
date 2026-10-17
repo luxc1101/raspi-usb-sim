@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import subprocess
 
 from .a_device import ADevice
 from .device_data import DeviceDescriptors
@@ -10,12 +11,25 @@ from .watchdog_service import WatchdogService
 from .stdout_writer import StdoutWriter
 
 class MSC(ADevice):
+    """Expose a filesystem image as a USB mass-storage gadget.
+
+    Creates the image when needed, mounts it according to its filesystem type,
+    and presents it through Linux's ``g_mass_storage`` module. Samba and
+    watchdog services are configured when their respective flags are set to 2.
+
+    Args:
+        image_name: Name of the filesystem image to expose.
+        mnt_path: Local mount point for the image's filesystem.
+        samba: Set to 2 to configure and start Samba for the mounted image.
+        watchdog: Set to 2 to configure and start the filesystem watchdog.
+    """
+
     def __init__(self, image_name: str, mnt_path: str, samba: int, watchdog: int):
         self.mount_target = MountTarget(img_name=image_name.lower(), mnt_path=mnt_path)
         self.samba = samba
         self.watchdog = watchdog
         self.dev_desc = DeviceDescriptors()
-        self.dev_desc.serialnumber = os.popen("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2").read().split("\n")[0]
+        self.dev_desc.serialnumber = subprocess.run("grep Serial /proc/cpuinfo | cut -d ' ' -f 2", shell=True, capture_output=True, text=True).stdout.splitlines()[0]
 
     def create_the_configurations(self):
         if self._isSambaOn():
@@ -35,7 +49,7 @@ class MSC(ADevice):
         elif self.mount_target.img_name == FilesystemImage.FAT32.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.VFAT.value:
-            return self._mount_fat()                                                                                                  
+            return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.EXFAT.value:
             return self._mount_fat()
         elif self.mount_target.img_name == FilesystemImage.MIBCOM.value:
@@ -52,10 +66,10 @@ class MSC(ADevice):
             return self._mount_partitions()
         else:
             return self._mount_others()
-    
+
     def create_the_gadgets(self):
         FSCreator(img_name=self.mount_target.img_name, mnt_path=self.mount_target.mnt_path).create_filesystem()
-    
+
     def enable_the_gadget(self):
         if not self._isimgcreated():
             self.create_the_gadgets()
@@ -64,7 +78,7 @@ class MSC(ADevice):
         if not self._ismounted():
             StdoutWriter.write("going to mount " + self.mount_target.img_name + "\n")
             self.create_the_functions()
-        StdoutWriter.write("Information about the mounted filesystem:\n") 
+        StdoutWriter.write("Information about the mounted filesystem:\n")
         StdoutWriter.write("="*30 + "\n")
         self._output_info_of_mounted_fs()
         if self.mount_target.img_name != FilesystemImage.PARTITION.value:
@@ -86,111 +100,111 @@ class MSC(ADevice):
 
     @staticmethod
     def eject_msc():
-        os.system('sudo /sbin/modprobe g_mass_storage -r')
+        subprocess.run('sudo /sbin/modprobe g_mass_storage -r', shell=True)
         SambaService.stop_samba_service()
         WatchdogService.stop_watchdog_service()
         StdoutWriter.write("eject current mounted device\n")
-    
+
     @staticmethod
     def delete_img(fs_img: str):
         SambaService.stop_samba_service()
         WatchdogService.stop_watchdog_service()
-        os.system("sudo rm {}.img > error 2>&1".format(fs_img))
-        lpds = os.popen("sudo lsblk -f | grep '/mnt/usb_{}'".format(fs_img)).read().strip().split("\n")
+        subprocess.run("sudo rm {}.img > error 2>&1".format(fs_img), shell=True)
+        lpds = subprocess.run("sudo lsblk -f | grep '/mnt/usb_{}'".format(fs_img), shell=True, capture_output=True, text=True).stdout.strip().split("\n")
         if lpds:
                 for lpd in lpds:
                     StdoutWriter.write(lpd + "\n")
                     lpnum = lpd.split(' ')[0] # loop2
                     if fs_img == 'part':
                         lpnum = lpd.split(' ')[0][2:] # part is e.g. '|-loop2p1'
-                    os.system("sudo umount /dev/{} > error 2>&1".format(lpnum))
+                    subprocess.run("sudo umount /dev/{} > error 2>&1".format(lpnum), shell=True)
                     mnt = lpd.split(' ')[-1]
-                    os.system("sudo rm -r {} > error 2>&1".format(mnt))
-                    os.system("sudo losetup -d /dev/{} > error 2>&1".format(lpnum)) # detach the backing store from the loop device
+                    subprocess.run("sudo rm -r {} > error 2>&1".format(mnt), shell=True)
+                    subprocess.run("sudo losetup -d /dev/{} > error 2>&1".format(lpnum), shell=True) # detach the backing store from the loop device
                     StdoutWriter.write("delete {}.img -> umount {} -> remove {}\n".format(fs_img, lpnum, mnt))
                     StdoutWriter.write("delete job finished!\n")
         else:
             StdoutWriter.write(f'WARN: None of loop device with mount point /mnt/usb_{fs_img}')
-    
+
     def _reinsert_msc(self):
-        os.system('sudo /sbin/modprobe g_mass_storage -r')
+        subprocess.run('sudo /sbin/modprobe g_mass_storage -r', shell=True)
         time.sleep(1.5)
-        os.system('sudo /sbin/modprobe g_mass_storage file=./{} stall=0 removable=1 ro=0 iManufacturer="Raspi" iProduct="PiZeroMsc_{}" iSerialNumber="{}"'.format(self.mount_target.img_name, self.mount_target.img_name.split('.')[0], self.dev_desc.serialnumber))
+        subprocess.run('sudo /sbin/modprobe g_mass_storage file=./{} stall=0 removable=1 ro=0 iManufacturer="Raspi" iProduct="PiZeroMsc_{}" iSerialNumber="{}"'.format(self.mount_target.img_name, self.mount_target.img_name.split('.')[0], self.dev_desc.serialnumber), shell=True)
         StdoutWriter.write("mount job finished!\n")
 
     def _umount_msc(self):
         StdoutWriter.write("umount job ongoing\n")
         if self.mount_target.img_name == FilesystemImage.PARTITION.value:
-            os.system("sudo umount /mnt/usb_part_1 > error 2>&1")
-            os.system("sudo umount /mnt/usb_part_2 > error 2>&1")
+            subprocess.run("sudo umount /mnt/usb_part_1 > error 2>&1", shell=True)
+            subprocess.run("sudo umount /mnt/usb_part_2 > error 2>&1", shell=True)
         else:
-            os.system("sudo umount {} > error 2>&1".format(self.mount_target.mnt_path))
+            subprocess.run("sudo umount {} > error 2>&1".format(self.mount_target.mnt_path), shell=True)
         StdoutWriter.write("umount job done\n")
 
     def _isSambaOn(self) -> bool:
         if self.samba == 2 and self.mount_target.img_name != FilesystemImage.PARTITION.value:
             return True
         return False
-    
+
     def _isWatchdogOn(self) -> bool:
         if self.watchdog == 2 and self.mount_target.img_name != FilesystemImage.PARTITION.value:
             return True
         return False
-    
+
     def _ismounted(self) -> bool:
          if os.path.ismount(self.mount_target.mnt_path):
             StdoutWriter.write("{} already mounted\n".format(self.mount_target.mnt_path))
             return True
          return False
-    
+
     def _isimgcreated(self) -> bool:
         if os.path.exists("/home/pi/{}".format(self.mount_target.img_name)):
             StdoutWriter.write(f"{self.mount_target.img_name} already existed\n")
             return True
         return False
-    
+
     def _output_info_of_mounted_fs(self) -> None:
         if self.mount_target.img_name == FilesystemImage.CORRUPTED.value:
             StdoutWriter.write("Corrupted filesystem\n")
         elif self.mount_target.img_name == FilesystemImage.PARTITION.value:
-            os.system("sudo lsblk -f | grep -E '.*(loop[0-9]p[12]|loop[0-9][0-9]p[12]).*mnt.*'")
+            subprocess.run("sudo lsblk -f | grep -E '.*(loop[0-9]p[12]|loop[0-9][0-9]p[12]).*mnt.*'", shell=True)
         else:
-            os.system("findmnt | grep -i {} | while read MP SOURCE FS OP; do echo MountPoint:$MP Source:$SOURCE FStype:$FS Option:$OP; done".format(self.mount_target.mnt_path))
-            os.system("lsblk --fs -o NAME,FSTYPE,FSAVAIL,FSUSE%,MOUNTPOINT | grep -i {} | while read NAME FS FSAVAIL FSUSE MP; do echo Name:$NAME FStype:$FS FSavaiable:$FSAVAIL FSused:$FSUSE MountPoint:$MP; done".format(self.mount_target.mnt_path))
+            subprocess.run("findmnt | grep -i {} | while read MP SOURCE FS OP; do echo MountPoint:$MP Source:$SOURCE FStype:$FS Option:$OP; done".format(self.mount_target.mnt_path), shell=True)
+            subprocess.run("lsblk --fs -o NAME,FSTYPE,FSAVAIL,FSUSE%,MOUNTPOINT | grep -i {} | while read NAME FS FSAVAIL FSUSE MP; do echo Name:$NAME Fstyp	=$FS FSavaiable:$FSAVAIL FSused:$FSUSE MountPoint:$MP; done".format(self.mount_target.mnt_path), shell=True)
 
     def _mount_others(self):
         '''
         ext2, ext3, ext4, btrfs, ntfs
         '''
-        os.system('sudo mount -o rw,users,sync,nofail {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
+        subprocess.run('sudo mount -o rw,users,sync,nofail {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path), shell=True)
 
     def _mount_fat(self):
         '''
         fat16, fat32, vfat, exfat, mibcom, usercom, arccom, free
         '''
-        os.system('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
-    
+        subprocess.run('sudo mount -o rw,users,sync,nofail,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path), shell=True)
+
     def _mount_corrupted(self):
-        os.system('sudo mount -o rw,users,sync,nofail {} {} 2>&1'.format(self.mount_target.img_name, self.mount_target.mnt_path))
+        subprocess.run('sudo mount -o rw,users,sync,nofail {} {} 2>&1'.format(self.mount_target.img_name, self.mount_target.mnt_path), shell=True)
 
     def _mount_hfsplus(self):
-        os.system("sudo fsck.hfsplus -f {} > error 2>&1".format(self.mount_target.img_name))
-        os.system('sudo mount -t hfsplus -o rw,force,uid=1000,gid=1000,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path))
+        subprocess.run("sudo fsck.hfsplus -f {} > error 2>&1".format(self.mount_target.img_name), shell=True)
+        subprocess.run('sudo mount -t hfsplus -o rw,force,uid=1000,gid=1000,umask=0000 {} {}'.format(self.mount_target.img_name, self.mount_target.mnt_path), shell=True)
 
     def _mount_partitions(self):
-        lpds = os.popen("sudo losetup -a | grep 'part'").read().strip()
+        lpds = subprocess.run("sudo losetup -a | grep 'part'", shell=True, capture_output=True, text=True).stdout.strip()
         if not lpds:
-            os.system("sudo losetup -fP {}".format(self.mount_target.img_name))
+            subprocess.run("sudo losetup -fP {}".format(self.mount_target.img_name), shell=True)
             return self._mount_partitions()
         valid_lpds = [line for line in lpds.splitlines() if '(deleted)' not in line]
         if valid_lpds:
             lpd = valid_lpds[0].split(':')[0]
             lpd += "p1"
             StdoutWriter.write(f'loop device: {lpd}\n')
-            os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_1".format(lpd))
+            subprocess.run("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_1".format(lpd), shell=True)
             lpd = lpd[:-2]
             lpd += "p2"
             StdoutWriter.write(f'loop device: {lpd}\n')
-            os.system("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_2".format(lpd))
+            subprocess.run("sudo mount -o rw,users,sync,nofail,umask=0000 {} /mnt/usb_part_2".format(lpd), shell=True)
         else:
             sys.stderr.write(f'valid loop device is empty\n')

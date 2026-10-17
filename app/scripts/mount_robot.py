@@ -33,22 +33,21 @@ parser.add_argument('--enable_input', type=int, choices=[0, 1], default=0, help=
 parser.add_argument('--input', type=str, default='swte', help='Input string for HID keyboard device (e.g., "hello world"). Only valid if --type is HID')
 
 
-'''
-A Python script saved in the /home/pi directory of a Raspberry Pi Zero W device, which will be executed in the new HADES to simulate a USB device
-
-# New usage with --type, --vid, --pid, and --fs arguments:
-python mount_robot.py --type MSC --fs FAT32                     # MSC device
-python mount_robot.py --type HID --vid 0x1234 --pid 0x5678 --enable_input 1 --input "hello world"       # HID device  
-python mount_robot.py --type CDC --vid 0x1234 --pid 0x5678     # CDC device
-python mount_robot.py --type ECM --vid 0x1234 --pid 0x5678     # ECM device
-python mount_robot.py --type MTP --vid 0x1234 --pid 0x5678     # MTP device
-python mount_robot.py --type UAC --vid 0x1234 --pid 0x5678     # UAC device
-python mount_robot.py --type MULTI --vid 0x1234 --pid 0x5678     # MULTI device
-python mount_robot.py --type EJECT                              # Eject device
-python mount_robot.py --type DELETE --fs image_name             # Delete image
-'''
-
 class DeviceOperator():
+    """Configure a USB gadget on Raspberry Pi from command-line options.
+
+    Usage examples::
+
+        python mount_robot.py --type MSC --fs FAT32
+        python mount_robot.py --type HID --vid 0x1234 --pid 0x5678 --enable_input 1 --input "hello"
+        python mount_robot.py --type ECM --vid 0x1234 --pid 0x5678
+        python mount_robot.py --type EJECT
+        python mount_robot.py --type DELETE --fs NTFS
+
+    Use ``--help`` to see supported device types and options.
+    MSC requires ``--fs``.
+    HID input string is optional.
+    """
 
     def __init__(self):
         self.args = parser.parse_args()
@@ -80,7 +79,7 @@ class DeviceOperator():
         return False
 
     def _isRNDIS(self) -> bool:
-        if self.args.type == "RNDIS":             
+        if self.args.type == "RNDIS":
             self.device_desc.idVendor = self.args.vid
             self.device_desc.idProduct = self.args.pid
             self.device_desc.bDeviceClass = 0xEF
@@ -105,7 +104,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
-    
+
     def _isAMC(self) -> bool:
         if self.args.type == "CDC":
             self.device_desc.idVendor = self.args.vid
@@ -118,7 +117,7 @@ class DeviceOperator():
             self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
-    
+
     def _isNCM(self) -> bool:
         if self.args.type == "NCM":
             self.device_desc.idVendor = self.args.vid
@@ -131,7 +130,7 @@ class DeviceOperator():
             self.device_desc.CDC_PORT_NUM = 0
             return True
         return False
-    
+
     def _isMTP(self) -> bool:
         if self.args.type == "MTP":
             self.device_desc.idVendor = self.args.vid
@@ -143,7 +142,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
-    
+
     def _isUAC(self) -> bool:
         if self.args.type == "UAC":
             self.device_desc.idVendor = self.args.vid
@@ -155,7 +154,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             return True
         return False
-    
+
     def _isMULTI(self) -> bool:
         if self.args.type == "MULTI":
             self.device_desc.idVendor = self.args.vid
@@ -176,7 +175,7 @@ class DeviceOperator():
         if self.args.type == "EJECT":
             return True
         return False
-    
+
     def _isDELETE(self) -> bool:
         if self.args.type == "DELETE":
             return True
@@ -219,10 +218,10 @@ class DeviceOperator():
 
         elif self._isAMC():
             self.device.usb_device = ACM(self.device_desc, DeviceFunction.acm.value)
-        
+
         elif self._isNCM():
             self.device.usb_device = NCM(self.device_desc, DeviceFunction.ncm.value)
-        
+
         elif self._isMTP():
             self.device.usb_device = MTP(self.device_desc, DeviceFunction.mtp.value)
 
@@ -235,7 +234,7 @@ class DeviceOperator():
         elif self._isEJECT():
             self._eject_device()
             return
-        
+
         elif self._isDELETE():
             fs_image = self.args.fs
             MSC.delete_img(fs_image)

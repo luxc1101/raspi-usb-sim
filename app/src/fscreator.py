@@ -4,7 +4,7 @@
 # Autor:     Xiaochuan Lu
 # Abteilung: SWTE
 #*****************************************************
-import os
+import subprocess
 import sys
 from dataclasses import dataclass
 from enum import Enum
@@ -22,13 +22,13 @@ class FilesystemImage(Enum):
     EXT4        = 'ext4.img'
     FAT16       = 'fat16.img'
     FAT32       = 'fat32.img'
-    VFAT        = 'vfat.img'                        
+    VFAT        = 'vfat.img'
     EXFAT       = 'exfat.img'
     HFSPLUS     = 'hfsplus.img'
     PARTITION   = 'part.img'
     BTRFS       = 'btrfs.img'
     FREE        = 'free.img'
-    CORRUPTED   = 'corrupted.img' 
+    CORRUPTED   = 'corrupted.img'
 
 @dataclass
 class MountTarget:
@@ -36,27 +36,34 @@ class MountTarget:
     mnt_path: str
 
 class CmdExecutor():
-    
+
     def execute_cmd(self, cmd:str) -> bool:
-        result = os.system(cmd)
-        return os.WEXITSTATUS(result) == 0
-    
+        result = subprocess.run(cmd, shell=True)
+        return result.returncode == 0
+
     def read_popen(self, cmd:str):
-        return os.popen(cmd).read().strip()
+        return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
 
 class FSCreator():
-    
+
     def __init__(self, img_name:str, mnt_path:str) -> None:
         self.mount_target = MountTarget(img_name=img_name.lower(), mnt_path=mnt_path)
         self.fs_img = FilesystemImage
         self.executor = CmdExecutor()
 
     def _create_disk_image(self) -> bool:
+        """Create the requested disk image, reserving its size in MiB.
+
+        Prompts for the image size and uses ``fallocate`` to create the image
+        under the user's home directory.
+
+        Returns:
+            True if image creation succeeds; otherwise, False.
+        """
         StdoutWriter.write("going to create filesystem and partitions this is " + self.mount_target.img_name.split(".")[0] + " the mountpoint at " + self.mount_target.mnt_path + "\n")
-        self.size = input("To create {} with input size (MB), may take a few minutes\n".format(self.mount_target.img_name))
+        self.size = input("To create {} with input size (MiB)\n".format(self.mount_target.img_name))
         StdoutWriter.write("Creating......" + "\n")
-        block_size = 2
-        if self.executor.execute_cmd("sudo dd bs={}MB if=/dev/zero of=$HOME/{} count={} 2>&1".format(block_size, self.mount_target.img_name, round(int(self.size)/block_size))):
+        if self.executor.execute_cmd("sudo fallocate -l {}M $HOME/{} -v".format(round(int(self.size)), self.mount_target.img_name)):
             return True
         return False
 
@@ -66,10 +73,10 @@ class FSCreator():
         if self.executor.execute_cmd("sudo dd bs=2MB if=/dev/urandom of=$HOME/{} count=32 2>&1".format(self.mount_target.img_name)):
             return True
         return False
-    
+
     def _create_corrupted_partitions(self):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
-    
+
     def _create_ntfs(self, fs_label:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
         lpd = self.executor.read_popen("sudo losetup -f --show {}".format(self.mount_target.img_name))
@@ -83,7 +90,7 @@ class FSCreator():
 
     def _create_vfat(self, volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))
-        self.executor.execute_cmd("sudo mkfs.vfat -n {} {}".format(volume_name, self.mount_target.img_name))   
+        self.executor.execute_cmd("sudo mkfs.vfat -n {} {}".format(volume_name, self.mount_target.img_name))
 
     def _create_exfat(self, volume_name:str):
         self.executor.execute_cmd("sudo mkdir -p {}".format(self.mount_target.mnt_path))

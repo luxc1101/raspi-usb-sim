@@ -5,7 +5,7 @@
 # Abteilung: SWTE
 #*****************************************************
 ##############
-# parameters 
+# parameters
 # https://wiki.ubuntuusers.de/inotify/
 ##############
 Img=/home/pi/fat32.img

@@ -1,5 +1,5 @@
 #!/bin/bash
-# this script is going to install all requiremed packages for usb tool, setup pre-configuration and services 
+# this script is going to install all requiremed packages for usb tool, setup pre-configuration and services
 # sudo rm install.sh && sudo nano install.sh
 # sudo apt-get update
 # sudo apt-get upgrade
@@ -99,7 +99,7 @@ else
 fi
 echo "PROGRESS:16"
 if grep -q "${LIBCOMPOSITE}" $MODULES; then
-  echo "${LIBCOMPOSITE} already in ${MODULES}" 
+  echo "${LIBCOMPOSITE} already in ${MODULES}"
 else
   echo "${LIBCOMPOSITE}" | sudo tee -a $MODULES
 fi
