@@ -52,7 +52,7 @@ jobs:
           poetry run pyrcc5 ProQrc.qrc -o Icons.py
           poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=AppIcon.ico --log-level=DEBUG .\Main.py
         shell: pwsh
-      
+
       - name: Archive files
         run: |
           cd $env:APP_DIR
@@ -89,4 +89,4 @@ jobs:
           body: ${{ env.RELEASE_DESCRIPTION }}
           files: ${{ env.APP_DIR }}/${{ env.ZIP_NAME }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
