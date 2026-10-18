@@ -54,7 +54,7 @@ class Ui_SSHHelper(object):
         self.textEdit.setMarkdown("## Rpi SSH Connection")
         self.appendMarkdown("`==========================`  ")
         self.appendMarkdown("## SSH Config:")
-        self.appendMarkdown("**IP**: Rpi host IP address, which could be checked in router, please check `readme.txt`")
+        self.appendMarkdown("**IP**: Rpi host IP address, which could be checked in router, please check `readme.md`")
         self.appendMarkdown("**Port**: 22")
         self.appendMarkdown("**User**: pi")
         self.appendMarkdown("**Key**: pass")
@@ -202,7 +202,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.verticalLayout.addWidget(self.buttonBox_Conf)
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
-        self.msg = QMessageBox(self)
+        self.msg = QMessageBox(RaspiSshConnection)
         self.msg.setWindowTitle("SSH Connection")
         self.msg.setStandardButtons(QMessageBox.NoButton)
         self.msg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
@@ -249,10 +249,9 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.find_ssid() # find visable ssid
         # self.B_ImgPath.clicked.connect(self.OCfolder)
         self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.save_param_validate_input_connect_wifi)
-        self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Help).clicked.connect(self.confighelp)
-        self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(lambda: self.validate_input_save_parma(validate=True))
         self.CB_ssid.combobox_click_event.connect(self.find_ssid)
-
+        self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(lambda: self.validate_input_save_parma(validate=True))
+        self.buttonBox_Conf.button(QtWidgets.QDialogButtonBox.Help).clicked.connect(self.confighelp)
 
 #############################
 # Functions
@@ -285,7 +284,7 @@ class Ui_RaspiSshConnection(QMainWindow):
         else:
             self.LE_psk.setEchoMode(QtWidgets.QLineEdit.Password) # Hide password
 
-    def find_ssid(self):
+    def find_ssid(self) -> bool:
         '''
         find visiable WiFi networkname and add ssid into combobox
         if the ssid, which was saved in config.json, is visiable, this ssid will be move up to the first index
@@ -304,11 +303,13 @@ class Ui_RaspiSshConnection(QMainWindow):
                     self.CB_ssid.removeItem(index) # remove time by index
                     self.CB_ssid.insertItem(0, item_text) # insert item at index 0
                     self.CB_ssid.setCurrentIndex(0) # holds the index 0 of the current item in the combobox
+            return True
         except Exception as e:
             self.msg.setIcon(QMessageBox.Critical)
             self.msg.setText(f"{e} Please check WiFi setup on your PC!")
-            QTimer.singleShot(3000, lambda : self.msg.done(0))
+            self.msg.setStandardButtons(QMessageBox.Ok)
             self.msg.show()
+            return False
 
     def create_wifi_profile_xml(self, ssid, password) -> None:
         '''
@@ -390,11 +391,21 @@ class Ui_RaspiSshConnection(QMainWindow):
                 subprocess.check_output(f'netsh wlan connect name="{ssid}"', shell=True)
                 # wait secs wilfi connect to build needs time, Recommended waiting time >=8s
                 wifimsg.setText("WiFi {} is connecting...".format(ssid))
+                wifimsg.setIcon(QMessageBox.NoIcon)
+                info_icon = QtWidgets.QApplication.style().standardIcon(
+                QtWidgets.QStyle.SP_MessageBoxInformation
+                )
+                wifimsg.setIconPixmap(info_icon.pixmap(32, 32))
                 QTimer.singleShot(8000, lambda : wifimsg.done(0))
                 wifimsg.exec()
 
             if 'Online' in subprocess.getoutput('netsh wlan show interfaces | Findstr /c:"Signal" && Echo Online || Echo Offline'):
                 wifimsg.setText("WiFi {} connected".format(ssid))
+                wifimsg.setIcon(QMessageBox.NoIcon)
+                info_icon = QtWidgets.QApplication.style().standardIcon(
+                QtWidgets.QStyle.SP_MessageBoxInformation
+                )
+                wifimsg.setIconPixmap(info_icon.pixmap(32, 32))
                 QTimer.singleShot(1000, lambda : wifimsg.done(0))
                 wifimsg.exec()
                 self.delete_file('WiFiProfile.xml')
@@ -482,20 +493,18 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.setup_dict['WiFi']['ssid'] = self.CB_ssid.currentText()
         self.setup_dict['WiFi']['psk'] = self.LE_psk.text()
 
-        if validate:
-            if self.validate_input():
-                with open(os.path.join(os.getcwd(), "Config.json"), 'w') as f:
-                    json.dump(self.setup_dict, f)
-                    f.close()
-
-                self.msg.setIcon(QMessageBox.Information)
-                self.msg.setText(f"configuration saved")
-                QTimer.singleShot(1000, lambda : self.msg.done(0))
-                return self.msg.show()
-        else:
+        if validate and self.validate_input():
             with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
                 json.dump(self.setup_dict, f)
                 f.close()
+            self.msg.setIcon(QMessageBox.NoIcon)
+            info_icon = QtWidgets.QApplication.style().standardIcon(
+                QtWidgets.QStyle.SP_MessageBoxInformation
+            )
+            self.msg.setIconPixmap(info_icon.pixmap(32, 32))
+            self.msg.setText(f"configuration saved")
+            QTimer.singleShot(1000, lambda : self.msg.done(0))
+            return self.msg.show()
 
     def remove_zeros_from_ip(self, ip_add) -> str:
         '''
