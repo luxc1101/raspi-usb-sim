@@ -37,7 +37,7 @@ class MSC(ADevice):
             samba_service.config_samba_service()
             samba_service.start_samba_service()
         if self._isWatchdogOn():
-            watchdog_service = WatchdogService(target=self.mount_target, file='/home/pi/usbtool_install/fswd.sh')
+            watchdog_service = WatchdogService(target=self.mount_target, file=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts", "fswd.sh")))
             watchdog_service.config_watchdog_service()
             watchdog_service.start_watchdog_service()
 

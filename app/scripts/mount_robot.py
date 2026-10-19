@@ -53,7 +53,7 @@ class DeviceOperator():
         self.args = parser.parse_args()
         if self.args.type == "MSC" and not self.args.fs:
             parser.error("--fs argument is required when --type is MSC")
-        self.device_dict = DeviceDictCreator(os.path.join(os.getcwd(),"device_proj.json"))
+        self.device_dict = DeviceDictCreator(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "config", "device_proj.json")))
         self.device_desc = DeviceDescriptors()
         self.device = USBPeripheral()
 
@@ -73,7 +73,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             self.device_desc.HID_PROTOCOL = 1
             self.device_desc.HID_SUBCLASS = 1
-            self.device_desc.HID_DESCRIPTOR = "kybd-descriptor.bin"
+            self.device_desc.HID_DESCRIPTOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kybd-descriptor.bin")
             self.device_desc.HID_REPORT_LENGTH = 8
             return True
         return False
@@ -166,7 +166,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             self.device_desc.HID_PROTOCOL = 1
             self.device_desc.HID_SUBCLASS = 1
-            self.device_desc.HID_DESCRIPTOR = "kybd-descriptor.bin"
+            self.device_desc.HID_DESCRIPTOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kybd-descriptor.bin")
             self.device_desc.HID_REPORT_LENGTH = 8
             return True
         return False
@@ -244,12 +244,15 @@ class DeviceOperator():
             sys.stderr.write(f"{Color.Red}{self.args.type} is not supported!{Color.C_off}")
             return
 
+        self._eject_device()
         self.device.create_the_gadgets()
         self.device.create_the_configurations()
         self.device.create_the_functions()
         self.device.enable_the_gadget()
 
-if __name__ == "__main__":
+def main():
     device_operator = DeviceOperator()
     device_operator.operate_device()
 
+if __name__ == "__main__":
+    main()
