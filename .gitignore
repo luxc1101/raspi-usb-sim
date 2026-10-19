@@ -2,6 +2,7 @@
 /app/test.ui
 /app/*.spec
 /app/*.log
+/app/dist/*
 poetry.lock
 .poetry
 *.log
