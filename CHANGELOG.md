@@ -134,3 +134,6 @@
 
 #### version 1.2.1
 - `feat` add device type `MULTI` in `mount_robot.py` as device with multiple interfaces (uac + hid)
+
+#### version 1.2.2
+- `feat` build `rpi_usb_sim` pypi .whl package to optimize the init setup process in rpi

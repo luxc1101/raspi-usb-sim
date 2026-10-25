@@ -1,0 +1,45 @@
+name: Attach Python package to GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to attach the package files to
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: python -m pip install poetry
+
+      - name: Build package
+        working-directory: app
+        run: |
+          if (Test-Path "dist") {
+            Get-ChildItem "dist" -File | Remove-Item -Force
+          }
+          poetry build
+        shell: pwsh
+
+      - name: Upload package files to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            app/dist/*.whl
+            app/dist/*.tar.gz
+          fail_on_unmatched_files: true

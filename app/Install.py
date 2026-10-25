@@ -24,7 +24,6 @@ class Ui_RaspiInstallation(QMainWindow):
     def setup_ui(self, RaspiInstallation:QtWidgets.QDialog, ssh_client=None):
         self.ssh_client = ssh_client
         self.remote_path = "/home/pi/"  # Change this to desired remote path
-        self.install_script = "install.sh"  # Name of the installation script
         RaspiInstallation.setWindowTitle("Install USB Gadget on Rpi")
         RaspiInstallation.resize(400, 200)
         RaspiInstallation.setWindowIcon(QtGui.QIcon(":/icon/install.png"))
@@ -80,7 +79,7 @@ class Ui_RaspiInstallation(QMainWindow):
         self.groupBox_install.setTitle("Install")
         self.groupBox_details.setTitle("Details")
 
-        self.toolButton.clicked.connect(self.select_installation_folder)
+        self.toolButton.clicked.connect(self.select_installation_package)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.scp_installation)
 
     def closeEvent(self, event):
@@ -93,12 +92,15 @@ class Ui_RaspiInstallation(QMainWindow):
             self.worker.stop()
         dialog.reject()
 
-    def select_installation_folder(self):
-        folder = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Installation Folder", os.getcwd())
-        if folder:
-            self.LE_Upload.setText(folder)
+    def select_installation_package(self):
+        package: tuple[str, str] = QtWidgets.QFileDialog.getOpenFileName(parent=None, caption="Select .whl file for installation", directory=os.getcwd(), filter="Wheel files (*.whl)")
+        print(package[0])
+        if package[0]:
+            self.LE_Upload.setText(package[0])
 
-    def ansi_to_html(self, text):
+    @staticmethod
+    def ansi_to_html(text):
+        text = text.replace(r"\033", "\033").replace(r"\x1b", "\033")
         ansi_map = {
         '\033[1;96m': '<span style="color:#00ffff; font-size:8pt; font-weight:800;">',  # bright cyan
         '\033[1;92m': '<span style="color:#00ff00; font-size:8pt; font-weight:800;">',  # bright green
@@ -115,10 +117,6 @@ class Ui_RaspiInstallation(QMainWindow):
         """
         if not self.ssh_client:
             self._update_trace("No SSH connection available.")
-            return
-
-        if not os.path.isdir(self.LE_Upload.text()):
-            self._update_trace("Please select a valid folder to upload.")
             return
 
         self.PB_Install.setValue(0)
@@ -179,10 +177,25 @@ class InstallWorker(QThread):
             self.ssh_client.exec_command(cmd)
             self.detail_signal.emit("Upload successfully.")
 
-            self.progress_signal.emit("installing...", 0)
-            self.detail_signal.emit("\033[1;96mStarting install...\033[0m")
-            cmd = f'cd {remote_target} && dos2unix install.sh && sh install.sh .'
-            stdin, stdout, stderr = self.ssh_client.exec_command(cmd)
+            self.progress_signal.emit("installing...", 1)
+            self.detail_signal.emit("\033[1;96mInstalling python3-pip...\033[0m")
+            stdin, stdout, stderr = self.ssh_client.exec_command("sudo apt update")
+            self._read_stdout(stdout)
+            stdin, stdout, stderr = self.ssh_client.exec_command("sudo apt install -y python3-pip")
+            self._read_stdout(stdout)
+            self.progress_signal.emit("installing...", 2)
+            self.detail_signal.emit(f"\033[1;96mInstalling {os.path.basename(self.local_path)}...\033[0m")
+            stdin, stdout, stderr = self.ssh_client.exec_command(f"sudo python3 -m pip install --no-index --find-links=. {os.path.basename(self.local_path)} --break-system-packages --force-reinstall")
+            self._read_stdout(stdout)
+            self.progress_signal.emit("installing...", 3)
+            stdin, stdout, stderr = self.ssh_client.exec_command("usbsim-setup")
+            self._read_stdout(stdout)
+            self.finished_signal.emit("Installation finished.")
+
+        except Exception as e:
+            self.finished_signal.emit(f"failed: {str(e)}")
+
+    def _read_stdout(self, stdout):
             for line in iter(lambda: stdout.readline(2048), ""):
                 if not line:
                     break
@@ -192,10 +205,6 @@ class InstallWorker(QThread):
                     self.progress_signal.emit("installing...", percent)
                 else:
                     self.detail_signal.emit(line)
-            self.finished_signal.emit("Installation finished.")
-
-        except Exception as e:
-            self.finished_signal.emit(f"failed: {str(e)}")
 
     def stop(self):
         self._running = False

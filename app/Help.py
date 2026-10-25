@@ -48,46 +48,55 @@ class Ui_Form(object):
         Form.setWindowTitle("About USB Tool")
         self.LB_Contact.setText("Contact: ")
         self.LB_Name.setText("<a href='mailto:xiaochuan_lu@yahoo.com'>Xiaochuan Lu</a>")
-        self.textBrowser.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-        "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-        "p, li { white-space: pre-wrap; }\n"
-        "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Quick User Guide</span></p>\n"
-        "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600; text-decoration: underline;\"><br /></p>\n"
-        #### Introduction
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Introduction:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\nThe USB Emulator is a tool developed by Software Test Entertainment. It is designed to simplify the testing of supported USB devices and enhance the team's media-device testing capabilities</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+        self.textBrowser.setHtml("""
+            <html>
+                <head>
+                    <style>
+                        body { font-family: sans-serif; font-size: 10pt; }
+                        h2 { text-align: center; text-decoration: underline; }
+                        h3 { margin-bottom: 4px; }
+                        p, li { margin-bottom: 4px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Quick User Guide</h2>
+                    <h3>Introduction:</h3>
+                    <p>The USB Emulator is a tool developed by Software Test Entertainment. It is designed to simplify the testing of supported USB devices and enhance the team's media-device testing capabilities</p>
 
-        #### Precondition #<a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a>
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Precondition:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Prepare hardware (RaspberryPi zero W, USB Micro-B Cable (OTG), USB Micro-B Cable (Power), microSD Card, etc.) for more details please read <a href=\"https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md\">Raspi USB Tool</a> </p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Plug in a fully prepared microSD card with the desired OS, necessary scripts, and installed packages</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">3.</span> Power Paspberry Pi Zero W by connecting its PWR port to a PC USB port or an external power supply (of output 5V). Hint: A solid green light indicates a proper connection</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">4.</span> Connect the Rpi device and the DUT through a USB Micro-B to USB A cable</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">5.</span> Plug in a USB WiFi receiver/adapter to the test PC (if your computer cannot receive WiFi without an adapter)</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-        #### Configuration
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Configuration:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Click on <span style=\" font-weight:600;\">SSH Connect</span> (Raspberry icon) to configure the SSHClient and WiFi parameters and establish an SSH connection</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Click on <span style=\" font-weight:600;\">Project</span> on the menubar to select the desired environment</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-        #### Features:
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Features:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\">Mass Storage Class (MSC):</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">1.</span> The <span style=\" font-weight:600;\">MSC Tab</span> enables the tester to simulate their desired File System (FS), such as exFAT and NTFS, etc. To begin, select your desired FS and click on Mount</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">2.</span> If the selected FS exists, the LED will indicate its existence. If not, this file system will first be created first, for which the tester must define parameters such as the disc size in the command window</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"><br /></p>\n"
+                    <h3>Precondition:</h3>
+                    <ol>
+                        <li>Prepare hardware (RaspberryPi zero W, USB Micro-B Cable (OTG), USB Micro-B Cable (Power), microSD Card, etc.) for more details please read <a href="https://github.com/luxc1101/raspi-usb-sim/blob/master/README.md">Raspi USB Tool</a></li>
+                        <li>Plug in a fully prepared microSD card with the desired OS, necessary scripts, and installed packages</li>
+                        <li>Power Paspberry Pi Zero W by connecting its PWR port to a PC USB port or an external power supply (of output 5V). Hint: A solid green light indicates a proper connection</li>
+                        <li>Connect the Rpi device and the DUT through a USB Micro-B to USB A cable</li>
+                        <li>Plug in a USB WiFi receiver/adapter to the test PC (if your computer cannot receive WiFi without an adapter)</li>
+                    </ol>
 
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\">USB Peripherals:</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:10px;\"><span style=\" font-weight:600;\">1.</span> The <span style=\" font-weight:600;\">ECM, HID, CDC, NCM, MTP, UAC</span> Tabs enable the user to test whether the DUT supports an emulated USB device. These tabs usually list all devices that could be mounted directly. However, if the tester wants to see if some device from beyond the list is supported, they must input its customized VID and PID numbers</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"><br /></p>\n"
-        #### Hint:
-        "<p style=\" margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Hints:</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">1.</span> Inputting value or sending a command to the SSHClent through <span style=\" font-weight:600;\">Command LineEdit</span> is also possible</p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:2px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:5px;\"><span style=\" font-weight:600;\">2.</span> Once the <span style=\" font-weight:600;\">POWER OFF RASPI</span> in in command line drop-down has been sent, the Rpi device will be powered off and can only be powered on again by re-plugging USB Micro-B cable</p>\n"
-        "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-        "</body></html>")
+                    <h3>Configuration:</h3>
+                    <ol>
+                        <li>Click on <b>SSH Connect</b> (Raspberry icon) to configure the SSHClient and WiFi parameters and establish an SSH connection</li>
+                        <li>Click on <b>Project</b> on the menubar to select the desired environment</li>
+                    </ol>
+
+                    <h3>Features:</h3>
+                    <p>Mass Storage Class (MSC):</p>
+                    <ol>
+                        <li>The <b>MSC Tab</b> enables the tester to simulate their desired File System (FS), such as exFAT and NTFS, etc. To begin, select your desired FS and click on Mount</li>
+                        <li>If the selected FS exists, the LED will indicate its existence. If not, this file system will first be created first, for which the tester must define parameters such as the disc size in the command window</li>
+                    </ol>
+                    <p>USB Peripherals:</p>
+                    <ol>
+                        <li>The <b>ECM, HID, CDC, NCM, MTP, UAC</b> Tabs enable the user to test whether the DUT supports an emulated USB device. These tabs usually list all devices that could be mounted directly. However, if the tester wants to see if some device from beyond the list is supported, they must input its customized VID and PID numbers</li>
+                    </ol>
+
+                    <h3>Hints:</h3>
+                    <ol>
+                        <li>Inputting value or sending a command to the SSHClent through <b>Command LineEdit</b> is also possible</li>
+                        <li>Once the <b>POWER OFF RASPI</b> in in command line drop-down has been sent, the Rpi device will be powered off and can only be powered on again by re-plugging USB Micro-B cable</li>
+                    </ol>
+                </body>
+            </html>
+        """)
         self.textBrowser.setOpenExternalLinks(True) # Specifies whether QTextBrowser should automatically open links to external sources
 
 # if __name__ == "__main__":

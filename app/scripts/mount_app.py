@@ -16,12 +16,12 @@ from src.usb_peripheral import USBPeripheral
 
 
 parser = argparse.ArgumentParser(description='Simulate a USB device on Rpi')
-parser.add_argument('--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE', 'REMOUNT', 'QUIT'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE, REMOUNT)')
-parser.add_argument('--vid', type=str, help='Vendor ID for the USB device')
-parser.add_argument('--pid', type=str, help='Product ID for the USB device')
-parser.add_argument('--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
-parser.add_argument('--samba', type=int, choices=[0, 2], default=0, help='Whether to configure samba service for MSC device (0 or 2)')
-parser.add_argument('--wado', type=int, choices=[0, 2], default=0, help='Whether to start watchdog for MSC device (0 or 2)')
+parser.add_argument('-t', '--type', type=str, required=True, choices=['MSC', 'HID', 'ECM', 'CDC', 'NCM', 'MTP', 'UAC', 'EJECT', 'DELETE', 'REMOUNT', 'QUIT'], help='Type of USB device to simulate (MSC, HID, ECM, CDC, NCM, MTP, UAC, EJECT, DELETE, REMOUNT)')
+parser.add_argument('-v', '--vid', type=str, help='Vendor ID for the USB device')
+parser.add_argument('-p', '--pid', type=str, help='Product ID for the USB device')
+parser.add_argument('-f', '--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
+parser.add_argument('-s', '--samba', type=int, choices=[0, 2], default=0, help='Whether to configure samba service for MSC device (0 or 2)')
+parser.add_argument('-w', '--wado', type=int, choices=[0, 2], default=0, help='Whether to start watchdog for MSC device (0 or 2)')
 
 
 class DeviceOperator():
@@ -33,6 +33,7 @@ class DeviceOperator():
     Usage examples::
 
         python mount_app.py --type MSC --fs FAT32
+        python mount_app.py -t MSC --fs FAT32
         python mount_app.py --type HID --vid 0x1234 --pid 0x5678
         python mount_app.py --type REMOUNT --fs FAT32
         python mount_app.py --type EJECT
@@ -46,7 +47,7 @@ class DeviceOperator():
         self.args = parser.parse_args()
         if self.args.type == "MSC" and not self.args.fs:
             parser.error("--fs argument is required when --type is MSC")
-        self.device_dict = DeviceDictCreator(os.path.join(os.getcwd(),"device_proj.json"))
+        self.device_dict = DeviceDictCreator(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "config", "device_proj.json")))
         self.device_desc = DeviceDescriptors()
         self.device = USBPeripheral()
 
@@ -67,7 +68,7 @@ class DeviceOperator():
             self.device_desc.bmAttributes = 0x80
             self.device_desc.HID_PROTOCAL = 1
             self.device_desc.HID_SUBCLASS = 1
-            self.device_desc.HID_DESCRIPTOR = "kybd-descriptor.bin"
+            self.device_desc.HID_DESCRIPTOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kybd-descriptor.bin")
             self.device_desc.HID_REPORT_LENGTH = 8
             return True
         return False
@@ -250,6 +251,9 @@ class DeviceOperator():
         self.device.create_the_functions()
         self.device.enable_the_gadget()
 
-if __name__ == "__main__":
+def main():
     device_operator = DeviceOperator()
     device_operator.operate_device()
+
+if __name__ == "__main__":
+    main()

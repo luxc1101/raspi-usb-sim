@@ -21,7 +21,7 @@ from PyQt5.QtCore import QDate, QEventLoop, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFrame, QLabel, QMainWindow, QMessageBox
 from QLed import QLed
 
-version = '1.2.1'
+version = '1.2.2'
 '''
 This setup is going to make application look better on high-DPI displays (such as 4K or Retina screens),
 handling both UI scaling and sharpness of icons/images.
@@ -701,18 +701,18 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = self.cmd_dic[hotkey]
                 self.paramdict["FS"] = self.comboBox_MSC.currentText()
                 self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=True)
-                newcmd = f'call python -u mount_app.py \
-                --type "{self.paramdict["Type"]}" \
-                --fs "{self.paramdict["FS"]}" \
-                --samba {self.paramdict["Samba"]} \
-                --wado {self.paramdict["WaDo"]}'
+                newcmd = f'usbsim-gui \
+                -t "{self.paramdict["Type"]}" \
+                -f "{self.paramdict["FS"]}" \
+                -s {self.paramdict["Samba"]} \
+                -w {self.paramdict["WaDo"]}'
                 return newcmd
             elif hotkey == 'EJECT + QUIT': # eject the mounted device
                 self.paramdict["Type"] = self.cmd_dic[hotkey]
                 self.actionEject.setEnabled(False)
                 self.actionMount.setEnabled(True)
                 self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=False)
-                newcmd = f'call python -u mount_app.py --type "{self.paramdict["Type"]}"'
+                newcmd = f'usbsim-gui -t "{self.paramdict["Type"]}"'
                 return newcmd
             elif hotkey == "REBOOT" or hotkey == "POWER OFF RASPI": # reboot or power off raspi device
                 return self.cmd_dic[hotkey]
@@ -840,12 +840,12 @@ class Ui_MainWindow(QMainWindow):
         '''
         delete image file of current filesytem in combobox
         '''
-        cmd = 'call'
+        cmd = ''
         self.paramdict["Type"] = "DELETE"
         self.paramdict["FS"] = f"{self.msc_dict[self.comboBox_MSC.currentText()][0]}"
-        cmd += f'python -u mount_app.py \
-                --type "{self.paramdict["Type"]}" \
-                --fs "{self.paramdict["FS"]}"'
+        cmd += f'usbsim-gui \
+                -t "{self.paramdict["Type"]}" \
+                -f "{self.paramdict["FS"]}"'
         result = self.create_messagebox(title='Delete Filesystem', msgtext=f'ready to delete {self.msc_dict[self.comboBox_MSC.currentText()][0]} file system?', msgtype='w', iconimg='delete.png')
         if result == QtWidgets.QMessageBox.Ok:
             self.send_command_to_SSHClient(cmd)
@@ -942,21 +942,21 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 4: NCM
         tabwidget 5: MTP
         '''
-        cmd = 'call'
+        cmd = ''
 
         if self.tabWidget.currentIndex() == 0: # tab 0: MSC
             self.paramdict["Type"] = "MSC"
             self.paramdict["FS"] = self.comboBox_MSC.currentText()
             self.paramdict["VID"] = ''
             self.paramdict["PID"] = ''
-            cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --fs "{self.paramdict["FS"]}" --samba {self.paramdict["Samba"]} --wado {self.paramdict["WaDo"]}'
+            cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -f "{self.paramdict["FS"]}" -s {self.paramdict["Samba"]} -w {self.paramdict["WaDo"]}'
 
         if self.tabWidget.currentIndex() == 1: # tab 1: ECM
             if self.ECM.radioButton_sup.isChecked() and self.ECM.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "ECM"
                 self.paramdict["VID"] = self.ECM.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.ECM.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.ECM.LE_VID.text()) != 4 or len(self.ECM.LE_PID.text()) != 4:
                     self.create_messagebox(title="ECM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -964,14 +964,14 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "ECM"
                 self.paramdict["VID"] = f'0x{self.ECM.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.ECM.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 2: # tab 2: HID
             if self.HID.radioButton_sup.isChecked() and self.HID.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "HID"
                 self.paramdict["VID"] = self.HID.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.HID.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.HID.LE_VID.text()) != 4 or len(self.HID.LE_PID.text()) != 4:
                     self.create_messagebox(title="HID Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -979,14 +979,14 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "HID"
                 self.paramdict["VID"] = f'0x{self.HID.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.HID.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 3: # tab 3: CDC
             if self.CDC.radioButton_sup.isChecked() and self.CDC.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "CDC"
                 self.paramdict["VID"] = self.CDC.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.CDC.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.CDC.LE_VID.text()) != 4 or len(self.CDC.LE_PID.text()) != 4:
                     self.create_messagebox(title="CDC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -994,14 +994,14 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "CDC"
                 self.paramdict["VID"] = f'0x{self.CDC.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.CDC.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 4: # tab 4: NCM
             if self.NCM.radioButton_sup.isChecked() and self.NCM.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "NCM"
                 self.paramdict["VID"] = self.NCM.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.NCM.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.NCM.LE_VID.text()) != 4 or len(self.NCM.LE_PID.text()) != 4:
                     self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -1009,14 +1009,14 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "NCM"
                 self.paramdict["VID"] = f'0x{self.NCM.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.NCM.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 5: # tab 5: MTP
             if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "MTP"
                 self.paramdict["VID"] = self.MTP.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.MTP.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.MTP.LE_VID.text()) != 4 or len(self.MTP.LE_PID.text()) != 4:
                     self.create_messagebox(title="MTP Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -1024,14 +1024,14 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "MTP"
                 self.paramdict["VID"] = f'0x{self.MTP.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.MTP.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         if self.tabWidget.currentIndex() == 6: # tab 6: UAC
             if self.UAC.radioButton_sup.isChecked() and self.UAC.comboBox_Device.currentText() != '':
                 self.paramdict["Type"] = "UAC"
                 self.paramdict["VID"] = self.UAC.comboBox_Device.currentText().split()[-2]
                 self.paramdict["PID"] = self.UAC.comboBox_Device.currentText().split()[-1]
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
             else:
                 if len(self.UAC.LE_VID.text()) != 4 or len(self.UAC.LE_PID.text()) != 4:
                     self.create_messagebox(title="UAC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
@@ -1039,11 +1039,12 @@ class Ui_MainWindow(QMainWindow):
                 self.paramdict["Type"] = "UAC"
                 self.paramdict["VID"] = f'0x{self.UAC.LE_VID.text()}'
                 self.paramdict["PID"] = f'0x{self.UAC.LE_PID.text()}'
-                cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}" --vid {self.paramdict["VID"]} --pid {self.paramdict["PID"]}'
+                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
 
         # print(cmd)
         self.send_command_to_SSHClient(cmd)
-        self.thread_trace_update(f'{self.paramdict["Type"]} {self.paramdict["VID"]} {self.paramdict["PID"]}', '#c69deb')
+        # self.thread_trace_update(f'{self.paramdict["Type"]} {self.paramdict["VID"]} {self.paramdict["PID"]}', '#c69deb')
+        # self.thread_trace_update(f'{cmd}', '#c69deb')
         loop = QEventLoop()
         self.actionEject.setEnabled(False)
         self.actionMount.setEnabled(False)
@@ -1060,9 +1061,9 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject the current mounted drive device
         '''
-        cmd = 'call'
+        cmd = ''
         self.paramdict["Type"] = "EJECT"
-        cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
+        cmd += f'usbsim-gui -t "{self.paramdict["Type"]}"'
         self.send_command_to_SSHClient(cmd)
         loop = QEventLoop()
         self.actionEject.setEnabled(False)
@@ -1080,9 +1081,9 @@ class Ui_MainWindow(QMainWindow):
         '''
         eject current mounted device and stop sharedfolder and watchdog for Mainwindow closeEvent()
         '''
-        cmd = 'call'
+        cmd = ''
         self.paramdict["Type"] = "QUIT"
-        cmd += f'python -u mount_app.py --type "{self.paramdict["Type"]}"'
+        cmd += f'usbsim-gui -t "{self.paramdict["Type"]}"'
         # print(cmd)
         self.send_command_to_SSHClient(cmd)
         time.sleep(1)
@@ -1228,7 +1229,7 @@ class FSavaiableMonitor(QThread):
 
     def _read_fsused(self, fs_name):
         try:
-            # _, stdout, _ = self.ssh.exec_command(f'lsblk --fs -o FSAVAIL,FSUSE%,MOUNTPOINT | grep -i "/mnt/usb_{fs_name}"')
+            # _, stdout, _ = self.ssh.exec_command(f'lsblk -f -o FSAVAIL,FSUSE%,MOUNTPOINT | grep -i "/mnt/usb_{fs_name}"')
             _, stdout, _ = self.ssh.exec_command(f'df -Bm | grep -i "/mnt/usb_{fs_name}"')
             out = str(stdout.read().decode('ascii', errors='ignore').strip())
             if "part" not in out:
