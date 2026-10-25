@@ -37,7 +37,6 @@ jobs:
       - name: Install Poetry
         run: |
           pip install poetry
-          poetry self add poetry-plugin-shell
 
       - name: Install Dependencies
         run: |
@@ -47,10 +46,13 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          poetry shell
-          cd $env:APP_DIR
-          poetry run pyrcc5 ProQrc.qrc -o ./Icons.py
-          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=./AppIcon.ico --log-level=INFO ./Main.py
+          $appPath = Resolve-Path $env:APP_DIR
+          $resourceFile = Join-Path $appPath "ProQrc.qrc"
+          $iconFile = Join-Path $appPath "AppIcon.ico"
+          $mainFile = Join-Path $appPath "Main.py"
+          $artifactPath = Join-Path $appPath $env:ARTIFACTS_DIR
+          poetry run pyrcc5 $resourceFile -o (Join-Path $appPath "Icons.py")
+          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" "--icon=$iconFile" --log-level=INFO --distpath $artifactPath --workpath (Join-Path $appPath "build") --specpath $appPath $mainFile
         shell: pwsh
 
       - name: Build with Poetry
