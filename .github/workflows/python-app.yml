@@ -7,13 +7,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-  workflow_dispatch:
-    inputs:
-      build_with_pyinstaller:
-        description: Run the PyInstaller build step
-        required: true
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -54,7 +47,6 @@ jobs:
         shell: pwsh
 
       - name: Build with PyInstaller
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_with_pyinstaller }}
         run: |
           cd $env:APP_DIR
           poetry run pyrcc5 ProQrc.qrc -o Icons.py
