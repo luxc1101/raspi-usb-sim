@@ -6,48 +6,39 @@ Library    Process
 
 
 *** Variables ***
-${USBTOOL_CONFIG}             testcases/resources/usbtool_config.json
+${USER}                 pi
+${KEY}                  pass
+${RASPI_IP}             192.168.2.77
 
 
 *** Keywords ***
-Read USBTool Config File
-    [Documentation]    Read usbtool config json file with ssh connection info
-    [Arguments]    ${path}=${USBTOOL_CONFIG}
-    ${json_data}        Evaluate    json.load(open('${path}'))    modules=json
-    ${USER}             Set Variable        ${json_data['SSHConf']['User']}
-    ${RASPI_IP}         Set Variable        ${json_data['SSHConf']['IPAddress']}
-    ${KEY}              Set Variable        ${json_data['SSHConf']['Key']}
-    RETURN    ${USER}    ${RASPI_IP}    ${KEY}
-
 Ping USBTool IP
     [Documentation]    ping an IP address and chenk if it is reachable
-    ${USER}    ${RASPI_IP}    ${KEY}    Read USBTool Config File
-    ${result}=    Run Process    ping    -c    4    ${RASPI_IP}
+    ${result}=    Run Process    ping    -n    2    ${RASPI_IP}
     Should Not Contain     ${result.stdout}     Unreachable
+    Should Not Contain     ${result.stdout}     erreichbar
     RETURN    ${USER}    ${RASPI_IP}    ${KEY}
 
 Connect SSH To Raspi USB SIM
-    [Documentation]    SSH connection to Raspi USB SIM (pi@192.168.188.38 )
+    [Documentation]    SSH connection to Raspi USB SIM
     ...    Arguments:
-    ...    ${Alias}    Enables logging of SSH protocol and output to gaven logfile "${Alias}.log"
+    ...    ${Alias}    Enables logging of SSH protocol
     [Arguments]    ${alias}=raspi
     ${USER}    ${RASPI_IP}    ${KEY}    Ping USBTool IP
     SSHLibrary.Open Connection    ${RASPI_IP}
     Set Default Configuration    timeout=10s
     Login    ${USER}    ${KEY}
-    Enable Ssh Logging    ${alias}.log
+    # Enable Ssh Logging    ${alias}.log
 
 Reboot Raspi
-    [Documentation]    reboot Raspi and sleep for ${Sleep} second
+    [Documentation]    reboot Raspi
     ...    Arguments:
-    ...    ${Sleep}    defaut timeout=60s
-    [Arguments]    ${Sleep}=60s
-    Write    reboot
-    Sleep    ${Sleep}
+    Execute Command    reboot
 
 Reboot Raspi And Reconnect
     [Documentation]    reboot and reconnect raspi
     Reboot Raspi
+    Sleep    60s    reason=wait for raspi reboot
     Connect SSH To Raspi USB SIM
 
 Mount Filesystem Raspi
@@ -64,29 +55,21 @@ Mount Filesystem Raspi
     ...    "HFSPLUS": Extended Hierarchical Filesystem
     ...    "PARTITION": Partition Filesystem
     ...    "Free Partition": Free Filesystem
-    ...    "QUIT": Quit and eject the device
-    ...
-    ...    Arguements:
-    ...    ${FS}    filesystem
-    ...
-    ...    Example:
-    ...    Mount Filesystem Raspi | ${FS}
     [Arguments]    ${Fs}
-    Write    python mountfs_robot.py "${Fs}" - -
-    Sleep    3s    reason=mount filesystem
+    Write    usbsim-robot -t MSC -f "${Fs}"
+    Sleep    5s    reason=mount filesystem
     ${Readoutput}    Read Until    pi@
     Should End With    ${Readoutput}    pi@
 
 Unmount USB Device Raspi
     [Documentation]    Unmount Filesystem from Raspi
-    ...    "QUIT": Quit and unmount the device
-    Write    python mountfs_robot.py QUIT - -
-    Sleep    3s    reason=unmount Raspi
+    Write    usbsim-robot -t EJECT
+    Sleep    5s    reason=unmount Raspi
     ${Readoutput}    Read Until    pi@
     Should End With    ${Readoutput}    pi@
 
 Mount USB Device Raspi
-    [Documentation]    mount different type of USB equipment (HID, ECM. CDC) except MSC device
+    [Documentation]    Mount different type of USB equipment (HID, ECM. CDC) except MSC device
     ...
     ...  Arguements:
     ...  ${DeviceType}    USB device type: HID, ECM or CDC
@@ -95,9 +78,9 @@ Mount USB Device Raspi
     ...
     ...  Example:
     ...  Mount USB Device Raspi | ${DeviceType} | ${DeviceVID} | ${DevicePID}
-    [Arguments]    ${DeviceType}  ${DeviceVID}  ${DevicePID}
-    Write    python mountfs_robot.py "${DeviceType}" "${DeviceVID}" "${DevicePID}"
-    Sleep    2s    reason=mount usb device
+    [Arguments]    ${DeviceType}  ${DeviceVID}  ${DevicePID}    ${EnableInput}=0    ${Input}=swte
+    Write    usbsim-robot -t "${DeviceType}" -v "${DeviceVID}" -p "${DevicePID}" -e ${EnableInput} -k "${Input}"
+    Sleep    5s    reason=mount usb device
     ${Readoutput}    Read Until    pi@
     Should End With    ${Readoutput}    pi@
 

@@ -3,6 +3,8 @@
 /app/*.spec
 /app/*.log
 /app/dist/*
+/app/build/*
 poetry.lock
 .poetry
 *.log
+.venv

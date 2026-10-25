@@ -29,8 +29,8 @@ parser.add_argument('-t', '--type', type=str, required=True, choices=['MSC', 'HI
 parser.add_argument('-v', '--vid', type=str, help='Vendor ID for the USB device')
 parser.add_argument('-p', '--pid', type=str, help='Product ID for the USB device')
 parser.add_argument('-f', '--fs', type=str, help='Filesystem type for MSC device (e.g., FAT32, NTFS)')
-parser.add_argument('-i', '--enable_input', type=int, choices=[0, 1], default=0, help='Whether to enable typing input for HID device (0 or 1)')
-parser.add_argument('-s', '--input', type=str, default='swte', help='Input string for HID keyboard device (e.g., "hello world"). Only valid if --type is HID')
+parser.add_argument('-e', '--enable_input', type=int, choices=[0, 1], default=0, help='Whether to enable typing input for HID device (0 or 1)')
+parser.add_argument('-k', '--input', type=str, default='swte', help='Input string for HID keyboard device (e.g., "hello world"). Only valid if --type is HID')
 
 
 class DeviceOperator():
