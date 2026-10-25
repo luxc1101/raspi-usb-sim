@@ -16,7 +16,6 @@ env:
   CONFIG_DIR: 'config'
   ARTIFACTS_DIR: 'dist'
   ARTIFACTS_NAME: 'USBSimulator'
-  USBTOOL_INSTALL: 'usbtool_install'
   ZIP_NAME: 'usb-tool_${{ github.ref_name }}.zip'
   WIFI_CONFIG: '${{ github.workspace }}/wificonfig'
   RELEASE_HELPER: 'release_description_helper.py'
@@ -48,14 +47,16 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          cd $env:APP_DIR
-          poetry run pyrcc5 ProQrc.qrc -o Icons.py
-          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=AppIcon.ico --log-level=DEBUG .\Main.py
+          poetry shell
+          poetry run pyrcc5 ProQrc.qrc -o $env:APP_DIR/Icons.py
+          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=AppIcon.ico --log-level=DEBUG $env:APP_DIR/Main.py
         shell: pwsh
 
       - name: Build with Poetry
         run: |
           cd $env:APP_DIR
+          poetry install
+          poetry shell
           poetry build
         shell: pwsh
 
