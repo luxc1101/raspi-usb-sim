@@ -48,15 +48,14 @@ jobs:
       - name: Build with PyInstaller
         run: |
           poetry shell
-          poetry run pyrcc5 ProQrc.qrc -o $env:APP_DIR/Icons.py
-          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=$env:APP_DIR/AppIcon.ico --log-level=DEBUG $env:APP_DIR/Main.py
+          cd $env:APP_DIR
+          poetry run pyrcc5 ProQrc.qrc -o ./Icons.py
+          poetry run pyinstaller --onefile --windowed --noconsole --name "USBSimulator" --icon=./AppIcon.ico --log-level=INFO ./Main.py
         shell: pwsh
 
       - name: Build with Poetry
         run: |
           cd $env:APP_DIR
-          poetry install
-          poetry shell
           poetry build
         shell: pwsh
 
