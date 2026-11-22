@@ -1,393 +1,303 @@
-[TOC]
+# Raspberry Pi USB Simulator
 
+<p align="center">
+  <img src="image/BigPic.png" alt="Raspberry Pi USB Simulator overview" width="300">
+</p>
 
-<!-- 
+Raspberry Pi USB Simulator turns a Raspberry Pi Zero W into a USB device for testing host PCs and embedded devices. It provides a Windows GUI, SSH-based device control, and Robot Framework support for automated testing.
 
-[![download][mdversion-button]][md-pypi]
+Supported USB device types:
 
-[mdversion-button]: downlaod
-[md-pypi]: https://pypi.org/project/Markdown/ -->
+- MSC - Mass Storage
+- HID - Human Interface Device
+- ECM - Ethernet Control Model
+- CDC - Communications Device Class
+- NCM - Network Control Model
+- MTP - Media Transfer Protocol
+- UAC - USB Audio Class
+- MULTI - Multiple interfaces
 
-# USB Simulator
+## Requirements
 
-<img src="https://content.instructables.com/ORIG/F60/5H8G/KNHGQNWP/F605H8GKNHGQNWP.png?auto=webp&frame=1&width=810&fit=bounds&md=38489d1a10177d77d78f77287ad3bd0a" width="100" >
+### Hardware
 
-The idea aims to reduice the amount of work for USB sticks plug in & out during the testing. Raspberry Pi Zero can emulate USB devices: 
- - MSC
- - HID
- - ECM
- - CDC
- - NCM
- - MTP
- - UAC
- 
- The tool can also automate tests via SSH communication. The PID/VID of the emulated USB devices can be easily adjusted as well.
+- Raspberry Pi Zero or Raspberry Pi Zero W
+- One microSD card and card reader
+- Two micro USB cables:
+  - one OTG cable for the data connection
+  - one for power
+- A 2.4 GHz Wi-Fi network
+- A USB Wi-Fi adapter for the test PC if it has no usable Wi-Fi
 
-## Big Picture
+### Software
 
-<img src="image/BigPic.png" width="350">
+- Windows test PC
+- [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+- [USB Simulator release package](https://github.com/luxc1101/raspi-usb-sim/releases)
 
-## Prerequisites
+> The Raspberry Pi and test PC must be able to reach each other over the same Wi-Fi network.
 
-| Hardware                   | Software                                                       |
-| -------------              | -------------                                                  |
-| RaspberryPi zero W         | [Raspberry Pi Imanger (download)](https://www.raspberrypi.com/software/)  |
-| USB Mico-B Cable (OTG)     | [The latest released USBTool](https://github.com/luxc1101/raspi-usb-sim/releases) |
-| USB Mico-B Cable (Power)   |                                                                |
-| micoSD Card (e.g. 128 GB)  |                                                                |
-| micoSD Card Reader         |                                                                |
-| WiFi with known SSID and Password (router or 2.4 GHz Mobile Hotspot)             |                                                                |
-| USB WiFi adapter |                                                                |
+## Quick start
 
-> **NOTE**:  
-> if the PC is unable to receive WiFi, then USB WiFi adapter is needed, once USB WiFi adapter is plunged in, to connect WiFi through adapter should be available
+### 1. Prepare the Raspberry Pi
 
-## Quick Tutorial
+1. Open Raspberry Pi Imager.
+2. Select **Raspberry Pi Zero**.
+3. Select **Raspberry Pi OS (Legacy, 32-bit) Lite** (Bullseye or Bookworm is recommended).
+4. Select the microSD card.
+5. Configure the OS:
+   - Hostname, for example `rpi0`
+   - Username and password
+   - 2.4 GHz Wi-Fi SSID and password
+   - Country
+   - Timezone
+   - Keyboard layout
+   - Enable SSH
+6. Write the OS image and insert the microSD card into the Raspberry Pi.
 
-### Operation System Installation
+To configure the Raspberry Pi's Wi-Fi from the SD card, see [Wi-Fi configuration](#wi-fi-configuration).
 
-#### SD card format
+### 2. Connect the hardware
 
-- right click → format as FAT32
-- or in Raspberry Pi Imager app format SD card
+1. Connect the USB OTG/data cable to the Pi Zero OTG port and to the DUT or test PC.
+2. Connect the power cable.
+3. Wait for the Raspberry Pi to join the configured Wi-Fi network.
+4. Find the Raspberry Pi IP address through your router, mobile hotspot, or this command:
 
-#### [Rpi Imager (download)](https://www.raspberrypi.com/software/)
+   ```bash
+   ping rpi0.local
+   ```
 
-- Raspberry Pi Modell: Raspberry Pi Zero
-- Select OS: 
-  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bullseye**) (old OS)
-  - `Raspberry Pi OS (Legacy, 32-bit) Lite` (**bookworm**) (recommand)
-  - `Raspberry Pi OS (32-bit) Lite` (**trixie**) (latest OS, ssh connection somehow slow)
-- Choose SD card
-- Setting option
-  - Hostname: rpi<?>.local # e.g. rpi0.local
-  - Username: pi
-  - PW: pass
-  - WiFi:
-    - SSID: <WiFi network name (ssid)>
-    - PW: <password of ssid>
-    - country: DE
-  - Timezone: Europe/Berlin
-  - Keyboard layout: de
-  - SSH activate
+   If the hostname does not resolve, use the router or hotspot client list to find the Pi's IP address.
 
-### Download USBTool Software
+<p>
+  <img src="image/RaspiZeroW.png" alt="Raspberry Pi Zero connection" width="250">
+  <img src="image/RaspiZeroWAssembly.png" alt="Raspberry Pi USB cable assembly" width="250">
+</p>
 
-find the latest released version from [Releases · Raspi-USB-Simulator · Github](https://github.com/luxc1101/raspi-usb-sim/releases), click packages usbtool-vx.x.x to download.
+### 3. Install USB Simulator on Windows
 
-unzip the downloaded packages, the downloaded release folder structure:
-<details>
-  <summary>folder structure (./usb-tool_vx.x.x/dist/)</summary>
-  
-  ```
-  .
-  │   USBSimulator.exe
-  │
-  ├───config
-  │       Config.json
-  │       device_proj.json
-  │
-  ├───usbtool_install
-  │   │   device_proj.json
-  │   │   fswd.service
-  │   │   fswd.sh
-  │   │   install.sh
-  │   │   kybd-descriptor.bin
-  │   │   mount_app.py
-  │   │   mount_robot.py
-  │   │   requirements.txt
-  │   │   umtprd
-  │   │   umtprd.conf
-  │   │
-  │   └───src
-  │           acm_device.py
-  │           a_device.py
-  │           a_validator.py
-  │           device_data.py
-  │           device_dictcreator.py
-  │           ecm_device.py
-  │           fscreator.py
-  │           hid_device.py
-  │           msc_device.py
-  │           mtp_device.py
-  │           ncm_device.py
-  │           rndis_device.py
-  │           samba_service.py
-  │           stdout_writer.py
-  │           uac_devcie.py
-  │           usb_peripheral.py
-  │           watchdog_service.py
-  │
-  └───wificonfig
-          ssh
-          wpa_supplicant.conf
-  ```
+1. Download the latest `usb-tool_<tag>.zip` package from [GitHub Releases](https://github.com/luxc1101/raspi-usb-sim/releases).
+2. Extract the ZIP file.
+3. Keep `USBSimulator.exe` and the `config` folder at the same directory level.
+4. Start `USBSimulator.exe`.
 
-</details>
+The package layout is:
 
-### Connections
-
-Before starting, it is important to know that the Raspberry Pi and the test PC need to be on the same wireless network. Therefore, you must first secure that PC is able to connect to the desired 2.4 GHz WiFi network wirelessly.
-
-#### Preparing the Rpi: Editing the WiFi Configuration File
->
-> **NOTE**:  
->Once you have already configured the WiFi SSID and PSK in step [Operation System Installation](#operation-system-installation) and the WiFi is not changed (SSID, PSK) and still available, you can skip this step.
-
-<details>
-  <summary>Change WiFi for old rpi OS e.g. bullseye</summary>
-  
-  Only if WiFi network was changed, `ssh` (without file typ) and `wpa_supplicant.conf` (with new WiFi ssid and password) should write into bootfs partition of SD card.
-
-  <details>
-    <summary>wpa_supplicant.conf</summary>
-  
-    # Datei wpa_supplicant.conf in der Boot-Partition (Raspbian Stretch)
-    country=DE
-    update_config=1
-    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-    network={
-     key_mgmt=WPA-PSK
-     ssid="<SSID>>"
-     psk="<password>"
-    }
-
-  </details>
-</details>
-
-<details>
-  <summary>Change WiFi for new rpi OS e.g. bookworm/trixie</summary>
-  
-  scan availabel wifi list
-
-  ```shell
-  sudo iwlist scan | grep "<SSID>"
-  ```
-  list availbale WiFi metworks
-  
-  ```shell
-  nmcli dev wifi list
-  ```
-  Connect to new WiFi
-  
-  ```shell
-  sudo nmcli dev wifi connect "YourWiFiName" password "YourPassword"
-  ```
-</details>
-  
-#### Preparing the Rpi: Mounting and Connections
-
-Once the microSD card has been updated, remove it from the microSD card reader and mount it on the Rpi.
-
-Then plugin USB Micro-B cable (Power) and USB Micro-B cable (OTG). Now, the tester is instructed to make the following connections.
-
-<img src="image/RaspiZeroW.png" width="250">
-<img src="image/RaspiZeroWAssembly.png" width="250">
-
-#### Preparing the SSH Connection: IP, Port, SSID and Password
->
-> **NOTE**:  
->it could take few mins at FIRST time until Rpi connected to the WiFi.
-
-WiFi sources may be different, such as routers, hotspots, etc. Raspberry IP address could be check in different ways:
-
-##### Router
->
-> **Hint**:  
-> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should be firstly written into bootfs partition of micoSD card.
-<details>
-
-- solution 1 (recommend)
-  - connect local machine to WiFi via USB WiFi adapter, e.g. WiFi SSID: `AMB-StreamWLAN`, PW: *********
-  - typing router ip address http://xxx.xxx.xxx.xxx/ on browser, check IP-Address of the conencted device with name e.g. `raspberrypi`
-
-      <img src="image/RouterIPList.png" width="500">
-
-- solution 2
-  - Using Putty to connect to Rpi to allow access to the Rpi via ssh and save login info as session
-    - Hostname: e.g. `raspberrypi.local`→[enter]
-    - Login as: `pi`
-    - PW: `raspberry`
-
-        ```bash
-        hostname -I # 192.168.188.xx
-        ```
-
-- solution 3
-  - open a terminal
-
-      ```powershell
-      ping <Hostname> # ping raspberrypi.local
-      ```
-
-      expected output
-
-      ```
-      Ping wird ausgeführt für raspberrypi.local [192.168.188.38] mit 32 Bytes Daten:
-      Antwort von 192.168.188.38: Bytes=32 Zeit=22ms TTL=64
-      ...
-      ```
-</details>
-
-##### Mobile Hotspot
->
-> **Hint**:  
-> if WiFi network was changed, ssh (without file typ) and wpa_supplicant.conf (with new WiFi ssid and password) should firstly be written into bootfs partition of micoSD card.
-<details>
-
-- activate Hotspot with Band **2.4 GHz** through mobile hotspot device (e.g. Samsung Galaxy S21)
-- make sure that PC and Rpi device is connected to Android Phone Hotspot
-  
-    <img src="image/Mobile_hotspot.jpg" width="100">
-- check rapberry pi device IP address from Android Phone
-
-    <img src="image/IP_in_Phone.jpg" width="100">
-
-once WiFi connection in Rpi is establish, connect PC to the same WiFi, and go ping Rpi device is to find out if a device is reachable at a particular IP address:
-
-open a terminal (PC or VM)
-
-```powershell
-ping <raspi ip address> 
+```text
+usb-tool-vX.X.X/
+├── USBSimulator.exe
+├── config/
+│   ├── Config.json
+│   └── device_proj.json
+├── wificonfig/
+│   ├── ssh
+│   └── wpa_supplicant.conf
+├── rpi_usb_sim-*.whl
+└── rpi_usb_sim-*.tar.gz
 ```
 
-expected output
+### 4. Connect to the Raspberry Pi
 
-```Confluence
-Ping wird ausgeführt für 192.168.209.31 mit 32 Bytes Daten:
-Antwort von 192.168.209.31: Bytes=32 Zeit=241ms TTL=64
-Antwort von 192.168.209.31: Bytes=32 Zeit=12ms TTL=64
-...
+1. In the USB Simulator GUI, select **SSH Connect**.
+2. Enter:
+   - Hostname or IP address
+   - Port, usually `22`
+   - Username
+   - Password
+3. Select **Connect**.
+
+<img src="image/SSHConnectionDialog.png" alt="SSH connection dialog" width="250">
+
+<img src="image/SSHClient.png" alt="Connected SSH client" width="250">
+
+A green status indicator means the SSH connection is active.
+
+### 5. Install the Raspberry Pi runtime
+
+1. Select **Install USB Gadget**.
+2. Choose the `rpi_usb_sim-*.whl` file from the release package.
+3. Start the installation and wait for it to finish.
+4. The Raspberry Pi will reboot after a successful installation.
+
+
+<img src="image/USBSwUpload.png" alt="Selecting the Raspberry Pi runtime package" width="250">
+
+<img src="image/USBSwInstall.png" alt="Installing the Raspberry Pi runtime" width="250">
+
+
+After the reboot, reconnect over SSH.
+
+## Using the GUI
+
+The interface contains an SSH menu, device tabs, a command trace window, and a connection status indicator.
+
+
+<img src="image/UI_Explain.jpg" alt="USB Simulator interface" width="900">
+
+
+### Actions
+
+| Action | Purpose |
+| --- | --- |
+| SSH Connect / Disconnect | Open or close the Raspberry Pi SSH session |
+| Mount | Activate the selected USB gadget |
+| Eject | Disable the active USB gadget |
+| Install USB Gadget | Transfer and install the runtime wheel |
+| Clear | Clear the trace and command output |
+| MSC | Create or mount a mass-storage filesystem |
+| ECM / CDC / NCM | Configure network or communication devices |
+| HID | Configure keyboard or HID input |
+| MTP | Configure a Media Transfer Protocol device |
+| UAC | Configure a USB audio device |
+
+The trace window shows SSH commands and their output. The command line editor can send commands directly to the Raspberry Pi.
+
+### Mount a device
+
+1. Connect to the Raspberry Pi.
+2. Open the tab for the required USB device class.
+3. Set its VID and PID, or use the default device configuration.
+4. Configure any device-specific options, such as a filesystem for MSC.
+5. Select **Mount**.
+
+Use **Eject** before changing the active device type.
+
+## Command-line runtime
+
+The runtime package installs three console commands:
+
+| Command | Purpose |
+| --- | --- |
+| `usbsim-gui` | Start the runtime GUI |
+| `usbsim-robot` | Run a USB gadget for Robot Framework or automation |
+| `usbsim-setup` | Install the Raspberry Pi system configuration |
+
+Run `usbsim-setup` on the Raspberry Pi after installing the wheel. It installs system packages, enables the USB gadget modules, configures Samba and the filesystem watchdog, and reboots the Pi.
+
+For automation help:
+
+```bash
+usbsim-robot --help
 ```
-</details>
 
-### SSHClient Creation
+Example:
 
-With the GUI `USBSimulator.exe` launched, click on the `SSH Connect` button and new menu (Raspi SSH Connection) will pop up asking you for details such as IP Address, Port Number, Username, and SSID, etc., as shown below:
+```bash
+usbsim-robot --type HID --vid 0x1234 --pid 0x5678 --enable_input 1 --input "hello world"
+usbsim-robot --type MSC --fs FAT32
+usbsim-robot --type EJECT
+```
 
-<img src="image/SSHConnectionDialog.png" width="250">
+Supported `--type` values are `MSC`, `HID`, `ECM`, `CDC`, `NCM`, `MTP`, `UAC`, `MULTI`, `EJECT`, and `DELETE`.
 
-Now input the IP address in the SSH connect sub menu, select the SSID and  input its corresponding password and hit Connect.
+## Wi-Fi configuration
 
-<img src="image/SSHClient.png" width="250">
+Skip this section when Wi-Fi was configured correctly in Raspberry Pi Imager and has not changed.
 
-Now a SSHClient is via USB Tool created, you can try to type and sent command through command line editor, e.g. pwd, it should work.
+### Bullseye and older OS images
 
-<img src="image/SSHPwd.png" width="250">
+Place `ssh` and `wpa_supplicant.conf` in the SD card boot partition.
 
-### Configuration
+```ini
+country=DE
+update_config=1
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 
-#### Preparing package installation and configuration for Rpi
+network={
+    key_mgmt=WPA-PSK
+    ssid="YOUR_WIFI_SSID"
+    psk="YOUR_WIFI_PASSWORD"
+}
+```
 
-click button `Install USB Gadget`, installation dialog will pop up, select folder `./usbtool_install` from browser
+### Bookworm and newer OS images
 
-<img src="image/USBSwUpload.png" width="250">
+Connect to the Raspberry Pi over SSH, or use a temporary network connection, then run:
 
-click button `install`, start the installation and wait until the progress is complete
+```bash
+nmcli dev wifi list
+sudo nmcli dev wifi connect "YOUR_WIFI_SSID" password "YOUR_WIFI_PASSWORD"
+```
 
-<img src="image/USBSwInstall.png" width="250">
-
-If no errors occur during the installation process, the Rpi device will automatically reboot.
-<details>
-
-  ```
-  apt-get update and upgrade
-  Get:1 http://raspbian.raspberrypi.org/raspbian bullseye InRelease [15.0 kB]
-  Get:2 http://archive.raspberrypi.org/debian bullseye InRelease [39.0 kB]
-  Get:3 http://raspbian.raspberrypi.org/raspbian bullseye/main armhf Packages [13.2 MB]
-  Get:4 http://archive.raspberrypi.org/debian bullseye/main armhf Packages [327 kB]
-  Fetched 13.6 MB in 25s (542 kB/s)
-  Reading package lists...
-  Reading package lists...
-  Building dependency tree...
-  Reading state information...
-  ...
-  USBTool enabled. Rebooting system now...
-  ```
-</details>
-
-### GUI and Elements
-
-<details>
-
-UI Design Elements:
-
-<img src="image/UI_Explain.jpg" width="1000">
-
-State Machine:
-
-<img src="image/State_Machine.png" width="800">
-
-#### Menubar
-
-- **Calls**
-  - **SSH Connect**: connect WiFi and build SSHClient connection with correct login parameters
-  - **SSH Disconnect**: disconnect SSHClient
-  - **Mount**: mount device.
-  - **Eject**: eject device.
-  <!-- - **Remote Folder**: open remote folder (NAS) of mounted filesystem only if samba service is enable. It will provide a possibility to modify the files in remote folder. The modifications will also be synchronised at the raspi mount point. -->
-  - **Clear**: clear the trace window up.
-  - **Install USB Gadget**: USB tool installation and configuration for Rpi
-  <!-- - **Delete**: delete filesystem image. -->
-  - **Help**: quick user guaid.
-- **Project**
-  - MIB3 (Done)
-  - ARC (Progressing)
-  - User (Progressing)
-  
-#### Device Tab
-
-- **Mass Storage Class (MSC)**: mount MSC device with different filesystems, it is able to create and delete filesystem and open its shared folder
-- **Ethernet Adapter (ECM)**: mount ECM devices with specific VID and PID
-- **Human Interface Device (HID)**: mount HID devices with specific VID and PID
-- **Communication Device Class (CDC)**: mount CDC devices with specific VID and PID
-- **Network Control Model (NCM)**: mount NCM devices with specific VID and PID
-- **Media Transfer Protocal (MTP)**: mount MTP devices with specific VID and PID
-- **USB Audio Class (UAC)**: mount UAC devices with specific VID and PIP (stereo, 48kHz, 16bits) 
-
-#### Trace
-
-- **Trace Window**: (read only) shows commands and the standard output and error, in case standard input as well
-- **Command LineEdit**: send command to remote Rpi device via SSHClient
-
-#### Statusbar
-
-- QLed will indicate the SSHClient connection state. <span style="color:lime">Green</span>: SSH Connected <span style="color:gray">Gray</span>: SSH Disconnected
-
-</details>
-
-## Checklist
-
-- [x] WiFi with known SSID and Passport
-- [x] microSD card within correct OS, needed scripts and installed packages
-- [x] Rpi, USB micro-B to USB A Cabel x2, USB WiFi adapter (if needed)
-- [x] WiFi for rpi ssh connection is succefully configured
-- [x] power Rpi up and connect Rpi to DUT, USB WiFi adapter is connected to PC (if needed)
-- [x] WiFi & SSH connection is establish
-- [x] `config` folder and `USBSimulator.exe` should be in **SAME** folder or root path
+For a mobile hotspot, ensure that the test PC and Raspberry Pi use the same 2.4 GHz hotspot and that hotspot access is allowed.
 
 ## Troubleshooting
-- Unclean file system
-  - if NTFS file system is removed from windows system but without safely removing before, then at next time after mounting the same NTFS filesystem those warnings will be shown on trace usbtool trace window.
-    ```text
-    WARN: The disk contains an unclean file system (0, 0).
-    WARN: The file system wasn't safely closed on Windows. Fixing.
-    ```
 
-- Shared folder will not be able to access xxx.xxx.xxx.xxx
-  - [AllowInsecureGuestAuth | Microsoft Learn](https://learn.microsoft.com/de-de/windows-hardware/customize/desktop/unattend/microsoft-windows-workstationservice-allowinsecureguestauth)
+### `rpi[x].local` does not resolve
 
-    | Value           | Info           |
-    | -------------   | -------------  |
-    | 0 | SMB client rejects insecure guest logons.This is the default, and recommended value |
-    | 1 | SMB client allows insecure guest logons. |
-  - win + R → regedit → HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
-    
-    "AllowInsecureGuestAuth"=dword:00000001
-    
-    <img src="image/AllowInsecureGuestAuth.png" width="400">
-  
-  - If there is no AllowInsecureGuestAuth file, please create AllowInsecureGuestAuth and assign value as a DWORD
+Use the router or hotspot client list to find the Pi's IP address, then connect to that address instead of the hostname.
 
-- [BUG: Wi-Fi config via Raspberry Pi Imager failed](https://github.com/raspberrypi/rpi-imager/issues/1067) 
-  - resolved in Raspberry Pi Imager version 1.9.5
+### USB gadget is not detected
+
+- Confirm the Raspberry Pi Zero OTG port is connected.
+- Run the runtime installation and allow the required reboot.
+- Verify `dtoverlay=dwc2` and `modules-load=dwc2` are present after installation.
+- Reconnect the OTG cable after the reboot.
+
+### The NTFS filesystem is reported as unclean
+
+This warning is normally shown when the filesystem was removed without safely ejecting it from Windows:
+
+```text
+WARN: The disk contains an unclean file system (0, 0).
+WARN: The file system wasn't safely closed on Windows. Fixing.
+```
+
+Safely eject the shared drive from Windows before disconnecting or ejecting it.
+
+### Windows cannot open the shared folder
+
+If Windows rejects an SMB guest logon, enable insecure guest authentication:
+
+1. Open **Registry Editor**.
+2. Go to `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters`.
+3. Create or edit `AllowInsecureGuestAuth` as a `DWORD`.
+4. Set its value to `1`.
+
+
+<img src="image/AllowInsecureGuestAuth.png" alt="Windows SMB insecure guest authentication setting" width="400">
+
+
+## Development
+
+### Requirements
+
+- Python 3.10 through 3.12
+- Poetry
+
+Install dependencies and run the Windows GUI:
+
+```powershell
+poetry install
+poetry run python app/Main.py
+```
+
+Build the runtime package:
+
+```powershell
+cd app
+poetry build
+```
+
+Run Robot Framework test cases:
+
+```powershell
+cd testcases
+poetry install
+poetry run robot test_keywords.robot
+```
+
+## Project structure
+
+```text
+app/
+├── Main.py                  # Windows GUI entry point
+├── src/                     # USB gadget implementations
+├── scripts/                 # Raspberry Pi runtime and installer
+└── config/                  # GUI configuration
+testcases/
+├── test_keywords.robot      # Robot Framework keywords
+└── resource/                # Robot Framework resources
+image/                       # README screenshots
+```
