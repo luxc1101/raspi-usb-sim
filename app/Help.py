@@ -94,16 +94,44 @@ class Ui_Form(object):
                         <li>Inputting value or sending a command to the SSHClent through <b>Command LineEdit</b> is also possible</li>
                         <li>Once the <b>POWER OFF RASPI</b> in in command line drop-down has been sent, the Rpi device will be powered off and can only be powered on again by re-plugging USB Micro-B cable</li>
                     </ol>
+
+                    <h3>CLI Help:</h3>
+                    <p>Run <code>usbsim-robot -h</code> on the Raspberry Pi to see command-line options.</p>
+<pre>usage: usbsim-robot [-h] -t {MSC,HID,ECM,CDC,NCM,MTP,UAC,MULTI,EJECT,DELETE}
+[-v VID] [-p PID] [-f FS] [-e {0,1}] [-k INPUT]
+
+Simulate a USB device on Rpi
+
+options:
+-h, --help            show this help message and exit
+-t, --type            {MSC,HID,ECM,CDC,NCM,MTP,UAC,MULTI,EJECT,DELETE}
+                      Type of USB device to simulate
+-v VID, --vid VID     Vendor ID for the USB device
+-p PID, --pid PID     Product ID for the USB device
+-f FS, --fs FS        Filesystem type for MSC device (e.g., FAT32, NTFS)
+-e {0,1}, --enable_input {0,1}
+                      Whether to enable typing input for HID device (0 or 1)
+-k INPUT, --input INPUT
+                      Input string for HID keyboard device (e.g., "hello world"). Only valid if --type is HID
+</pre>
+
+<h4>CLI Input Examples:</h4>
+<pre>
+usbsim-robot --type MSC --fs FAT32
+usbsim-robot --type HID --vid 0x1234 --pid 0x5678 --enable_input 1 --input "hello world"
+usbsim-robot --type ECM --vid 0x1234 --pid 0x5678
+usbsim-robot --type EJECT
+</pre>
                 </body>
             </html>
         """)
         self.textBrowser.setOpenExternalLinks(True) # Specifies whether QTextBrowser should automatically open links to external sources
 
-# if __name__ == "__main__":
-#     import sys
-#     app = QtWidgets.QApplication(sys.argv)
-#     Form = QtWidgets.QWidget()
-#     ui = Ui_Form()
-#     ui.setup_ui(Form)
-#     Form.show()
-#     sys.exit(app.exec_())
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setup_ui(Form)
+    Form.show()
+    sys.exit(app.exec_())

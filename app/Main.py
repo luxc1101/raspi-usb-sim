@@ -40,14 +40,10 @@ class Ui_MainWindow(QMainWindow):
     '''
     UI Main window
     '''
-    with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
-        setup_dict = json.load(f)
-
-    with open(os.path.join(os.getcwd(),"./config/device_proj.json"),'r', encoding="utf8") as f:
-        device_dict_proj = json.load(f)
-
     def __init__(self):
         super().__init__()
+        self.setup_dict = self._load_json_config("Config.json")
+        self.device_dict_proj = self._load_json_config("device_proj.json")
         self.Param = {}                                                      # login parameter dictionary
         self.ssh = SSHClient()                                               # create new ssh client
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())       # Set policy to use when connecting to servers without a known host key.
@@ -56,6 +52,13 @@ class Ui_MainWindow(QMainWindow):
         self.logger = logging.getLogger(__name__)                            # create a logger
         self.msc_dict = {"":["None",""]}                                     # defualt case when the combobox MSC is empty
         self.setup_ui()
+
+    @staticmethod
+    def _load_json_config(filename: str):
+        """Load one application configuration file from the config directory."""
+        path = os.path.join(os.getcwd(), "config", filename)
+        with open(path, "r", encoding="utf-8") as config_file:
+            return json.load(config_file)
 
     def connect_ssh(self):
         '''
@@ -519,16 +522,14 @@ class Ui_MainWindow(QMainWindow):
         initialize raspberry device and save the latest loaded project name in `Config.json`
         afterwards close app
         '''
-        with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
-            setup_dict = json.load(f)
-
         if self.ssh_isconnected:
             self.quit_application() # initialze raspi device
         for action in self.projectGroup.actions(): # last selected project name saved in Config.json
             if action.isChecked():
-                setup_dict["Project"] = action.text()
-                with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
-                    json.dump(setup_dict, f)
+                self.setup_dict["Project"] = action.text()
+                path = os.path.join(os.getcwd(), "config", "Config.json")
+                with open(path, "w", encoding="utf-8") as config_file:
+                    json.dump(self.setup_dict, config_file)
                 break
         # subprocess.check_output('cmd /c "netsh wlan disconnect"', shell=True) # disconnect WiFi
         event.accept()
@@ -942,104 +943,9 @@ class Ui_MainWindow(QMainWindow):
         tabwidget 4: NCM
         tabwidget 5: MTP
         '''
-        cmd = ''
-
-        if self.tabWidget.currentIndex() == 0: # tab 0: MSC
-            self.paramdict["Type"] = "MSC"
-            self.paramdict["FS"] = self.comboBox_MSC.currentText()
-            self.paramdict["VID"] = ''
-            self.paramdict["PID"] = ''
-            cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -f "{self.paramdict["FS"]}" -s {self.paramdict["Samba"]} -w {self.paramdict["WaDo"]}'
-
-        if self.tabWidget.currentIndex() == 1: # tab 1: ECM
-            if self.ECM.radioButton_sup.isChecked() and self.ECM.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "ECM"
-                self.paramdict["VID"] = self.ECM.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.ECM.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.ECM.LE_VID.text()) != 4 or len(self.ECM.LE_PID.text()) != 4:
-                    self.create_messagebox(title="ECM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "ECM"
-                self.paramdict["VID"] = f'0x{self.ECM.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.ECM.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-
-        if self.tabWidget.currentIndex() == 2: # tab 2: HID
-            if self.HID.radioButton_sup.isChecked() and self.HID.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "HID"
-                self.paramdict["VID"] = self.HID.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.HID.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.HID.LE_VID.text()) != 4 or len(self.HID.LE_PID.text()) != 4:
-                    self.create_messagebox(title="HID Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "HID"
-                self.paramdict["VID"] = f'0x{self.HID.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.HID.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-
-        if self.tabWidget.currentIndex() == 3: # tab 3: CDC
-            if self.CDC.radioButton_sup.isChecked() and self.CDC.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "CDC"
-                self.paramdict["VID"] = self.CDC.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.CDC.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.CDC.LE_VID.text()) != 4 or len(self.CDC.LE_PID.text()) != 4:
-                    self.create_messagebox(title="CDC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "CDC"
-                self.paramdict["VID"] = f'0x{self.CDC.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.CDC.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-
-        if self.tabWidget.currentIndex() == 4: # tab 4: NCM
-            if self.NCM.radioButton_sup.isChecked() and self.NCM.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "NCM"
-                self.paramdict["VID"] = self.NCM.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.NCM.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.NCM.LE_VID.text()) != 4 or len(self.NCM.LE_PID.text()) != 4:
-                    self.create_messagebox(title="NCM Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "NCM"
-                self.paramdict["VID"] = f'0x{self.NCM.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.NCM.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-
-        if self.tabWidget.currentIndex() == 5: # tab 5: MTP
-            if self.MTP.radioButton_sup.isChecked() and self.MTP.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "MTP"
-                self.paramdict["VID"] = self.MTP.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.MTP.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.MTP.LE_VID.text()) != 4 or len(self.MTP.LE_PID.text()) != 4:
-                    self.create_messagebox(title="MTP Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "MTP"
-                self.paramdict["VID"] = f'0x{self.MTP.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.MTP.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-
-        if self.tabWidget.currentIndex() == 6: # tab 6: UAC
-            if self.UAC.radioButton_sup.isChecked() and self.UAC.comboBox_Device.currentText() != '':
-                self.paramdict["Type"] = "UAC"
-                self.paramdict["VID"] = self.UAC.comboBox_Device.currentText().split()[-2]
-                self.paramdict["PID"] = self.UAC.comboBox_Device.currentText().split()[-1]
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
-            else:
-                if len(self.UAC.LE_VID.text()) != 4 or len(self.UAC.LE_PID.text()) != 4:
-                    self.create_messagebox(title="UAC Device", msgtext="please give 2 Byte number for VID and PID", msgtype= "e", iconimg="connect.png")
-                    return
-                self.paramdict["Type"] = "UAC"
-                self.paramdict["VID"] = f'0x{self.UAC.LE_VID.text()}'
-                self.paramdict["PID"] = f'0x{self.UAC.LE_PID.text()}'
-                cmd += f'usbsim-gui -t "{self.paramdict["Type"]}" -v {self.paramdict["VID"]} -p {self.paramdict["PID"]}'
+        cmd = self._build_mount_command(self.tabWidget.currentIndex())
+        if not cmd:
+            return
 
         # print(cmd)
         self.send_command_to_SSHClient(cmd)
@@ -1053,9 +959,42 @@ class Ui_MainWindow(QMainWindow):
         loop.exec_()  # This blocks until loop.quit() is called
         self.actionEject.setEnabled(True)
         if self.tabWidget.currentIndex() == 0: # MSC
-            # self.check_fsavailability()
             self.thread_fsavaiablestatus_update(fsname=self.msc_dict[self.comboBox_MSC.currentText()][0])
         self.change_tabwidgets_state_by_mount(tabID=self.tabWidget.currentIndex(), mounted=True)
+
+    def _build_mount_command(self, tab_index: int) -> str:
+        """Build a mount command and update the selected device parameters."""
+        if tab_index == 0:
+            self.paramdict.update({
+                "Type": "MSC", "FS": self.comboBox_MSC.currentText(),
+                "VID": "", "PID": "",
+            })
+            return (f'usbsim-gui -t "MSC" -f "{self.paramdict["FS"]}" '
+                    f'-s {self.paramdict["Samba"]} -w {self.paramdict["WaDo"]}')
+
+        tabs = {1: ("ECM", self.ECM), 2: ("HID", self.HID),
+                3: ("CDC", self.CDC), 4: ("NCM", self.NCM),
+                5: ("MTP", self.MTP), 6: ("UAC", self.UAC)}
+        selected = tabs.get(tab_index)
+        if selected is None:
+            return ""
+
+        device_type, tab = selected
+        if tab.radioButton_sup.isChecked() and tab.comboBox_Device.currentText():
+            vid, pid = tab.comboBox_Device.currentText().split()[-2:]
+        else:
+            vid, pid = tab.LE_VID.text(), tab.LE_PID.text()
+            if len(vid) != 4 or len(pid) != 4:
+                self.create_messagebox(
+                    title=f"{device_type} Device",
+                    msgtext="please give 2 Byte number for VID and PID",
+                    msgtype="e", iconimg="connect.png",
+                )
+                return ""
+            vid, pid = f"0x{vid}", f"0x{pid}"
+
+        self.paramdict.update({"Type": device_type, "VID": vid, "PID": pid})
+        return f'usbsim-gui -t "{device_type}" -v {vid} -p {pid}'
 
     def eject_device(self):
         '''

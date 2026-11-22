@@ -10,17 +10,33 @@ import os
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import Icons
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 os.environ["QT_ENABLE_HIGHDPI_SCALING"]   = "1"
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 os.environ["QT_SCALE_FACTOR"]             = "1"
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+
+class ConfigStore:
+    """Read and persist the application's SSH and Wi-Fi settings."""
+
+    def __init__(self, path=None):
+        self.path = Path(path) if path else Path.cwd() / "config" / "Config.json"
+
+    def load(self) -> dict:
+        with self.path.open("r", encoding="utf-8") as config_file:
+            return json.load(config_file)
+
+    def save(self, configuration: dict) -> None:
+        with self.path.open("w", encoding="utf-8") as config_file:
+            json.dump(configuration, config_file)
+
 
 class ComboBox(QtWidgets.QComboBox):
     combobox_click_event = pyqtSignal()
@@ -78,7 +94,7 @@ class Ui_SSHHelper(object):
         self.textEdit.setMarkdown(combined_markdown)
 
 
-class Ui_RaspiSshConnection(QMainWindow):
+class Ui_RaspiSshConnection(QtCore.QObject):
 
     SSHConnection_signal = pyqtSignal(dict)
 
@@ -208,9 +224,8 @@ class Ui_RaspiSshConnection(QMainWindow):
         self.msg.setWindowIcon(QtGui.QIcon(":/icon/ssh-raspi.png"))
 
 
-        with open(os.path.join(os.getcwd(), "./config/Config.json"),'r',encoding="utf8") as f:
-            self.setup_dict = json.load(f)
-            f.close()
+        self.config_store = ConfigStore()
+        self.setup_dict = self.config_store.load()
 
         RaspiSshConnection.setWindowTitle("Rpi SSH Connection")
         self.groupBox_SSH.setTitle("SSH Config")
@@ -242,7 +257,6 @@ class Ui_RaspiSshConnection(QMainWindow):
 #############################
 
         #self.retranslateUi(RaspiSshConnection)
-        self.buttonBox_Conf.accepted.connect(RaspiSshConnection.accept) # type: ignore
         self.buttonBox_Conf.rejected.connect(RaspiSshConnection.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(RaspiSshConnection)
 
@@ -273,7 +287,7 @@ class Ui_RaspiSshConnection(QMainWindow):
                     self.LE_IP.setCursorPosition(cursor_position - 1)  # Move cursor left
 
         # Call the base class event filter for any other events
-        return super(Ui_RaspiSshConnection, self).eventFilter(obj, event)
+        return super().eventFilter(obj, event)
 
     def toggle_PW_visibility(self):
         '''
@@ -485,18 +499,10 @@ class Ui_RaspiSshConnection(QMainWindow):
         validate input paramter through QValidator for each field and save them in Config.json file
         '''
 
-        self.setup_dict['SSHConf']['User'] = self.LE_User.text()
-        self.setup_dict['SSHConf']['Port'] = self.LE_Port.text()
-        self.setup_dict['SSHConf']['IPAddress'] = self.LE_IP.text()
-        self.setup_dict['SSHConf']['Key'] = self.LE_Key.text()
-        self.setup_dict['SSHConf']['Log'] = self.LE_LogPath.text()
-        self.setup_dict['WiFi']['ssid'] = self.CB_ssid.currentText()
-        self.setup_dict['WiFi']['psk'] = self.LE_psk.text()
+        self._update_configuration_from_form()
 
         if validate and self.validate_input():
-            with open(os.path.join(os.getcwd(), "./config/Config.json"), 'w') as f:
-                json.dump(self.setup_dict, f)
-                f.close()
+            self.config_store.save(self.setup_dict)
             self.msg.setIcon(QMessageBox.NoIcon)
             info_icon = QtWidgets.QApplication.style().standardIcon(
                 QtWidgets.QStyle.SP_MessageBoxInformation
@@ -505,6 +511,20 @@ class Ui_RaspiSshConnection(QMainWindow):
             self.msg.setText(f"configuration saved")
             QTimer.singleShot(1000, lambda : self.msg.done(0))
             return self.msg.show()
+
+    def _update_configuration_from_form(self) -> None:
+        """Copy dialog values into the configuration model."""
+        self.setup_dict['SSHConf'].update({
+            'User': self.LE_User.text(),
+            'Port': self.LE_Port.text(),
+            'IPAddress': self.LE_IP.text(),
+            'Key': self.LE_Key.text(),
+            'Log': self.LE_LogPath.text(),
+        })
+        self.setup_dict['WiFi'].update({
+            'ssid': self.CB_ssid.currentText(),
+            'psk': self.LE_psk.text(),
+        })
 
     def remove_zeros_from_ip(self, ip_add) -> str:
         '''
@@ -518,25 +538,22 @@ class Ui_RaspiSshConnection(QMainWindow):
         '''
         validate input parameter and connect wifi, if wifi is connected scusessfully, pass the parameter to slots
         '''
-        self.validate_input_save_parma(validate=False)
-        self.Confwin = QtWidgets.QDialog()
-        self.ui = Ui_RaspiSshConnection()
-        self.ui.setup_ui(self.Confwin)
+        self._update_configuration_from_form()
+        if not self.validate_input():
+            return
+        if not self.wificonnect():
+            return
 
-        if self.validate_input() and self.wificonnect():
-            User = self.LE_User.text()
-            Port = self.LE_Port.text()
-            IP = self.remove_zeros_from_ip(self.LE_IP.text())
-            Key = self.LE_Key.text()
-            Log = self.LE_LogPath.text()
-
-            paramdict = {"Port": Port, "IP": IP, "User": User,
-            "Key": Key, "Log": Log}
-
-            self.SSHConnection_signal.emit(paramdict) # pass parameter dict to slot
-            return self.Confwin.accept
-
-        return self.Confwin.show()
+        self.config_store.save(self.setup_dict)
+        parameters = {
+            "Port": self.LE_Port.text(),
+            "IP": self.remove_zeros_from_ip(self.LE_IP.text()),
+            "User": self.LE_User.text(),
+            "Key": self.LE_Key.text(),
+            "Log": self.LE_LogPath.text(),
+        }
+        self.SSHConnection_signal.emit(parameters)
+        self._dialog.accept()
 
 
 if __name__ == "__main__":

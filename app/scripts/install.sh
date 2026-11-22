@@ -32,6 +32,7 @@ MOUNTFS_HADES_SCRIPT=$SCRIPT_DIR/mount_robot.py
 KB_DESCRIPTOR=$SCRIPT_DIR/kybd-descriptor.bin
 UMTPRESPONDER=$SCRIPT_DIR/umtprd
 UMTPRESPONDER_CONF=$SCRIPT_DIR/umtprd.conf
+HUSHLOGIN_FILE="/home/${USER}/.hushlogin"
 
 ###################
 # Color map       #
@@ -70,6 +71,18 @@ echo "${Cyan}apt-get update and upgrade${C_off}"
 sudo apt-get update && sudo apt-get upgrade -y
 echo "${Cyan}apt-get update and upgrade finished${C_off}"
 echo "PROGRESS:10"
+
+#################################
+# suppress SSH login messages   #
+#################################
+if [ -e "${HUSHLOGIN_FILE}" ]; then
+  echo "${HUSHLOGIN_FILE} already exists; skipping"
+else
+  sudo -u "${USER}" touch "${HUSHLOGIN_FILE}" || {
+    echo "${Red}Could not create ${HUSHLOGIN_FILE} file${C_off}"
+    exit 1
+  }
+fi
 
 #################################
 # Check if [all] section exists #
